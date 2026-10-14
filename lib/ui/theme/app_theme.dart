@@ -128,10 +128,53 @@ ThemeData construirTema(TemaCor cor, Brightness brilho, {Color? corDoSistema}) {
   }
 
   final tema = ThemeData(colorScheme: esquema, fontFamily: 'RobotoFlex');
+  final anel = anelDeFoco(esquema);
   return tema.copyWith(
     textTheme: _tipografia(tema.textTheme),
+    filledButtonTheme: FilledButtonThemeData(style: ButtonStyle(side: _borda(anel))),
+    elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle(side: _borda(anel))),
+    textButtonTheme: TextButtonThemeData(style: ButtonStyle(side: _borda(anel))),
+    iconButtonTheme: IconButtonThemeData(style: ButtonStyle(side: _borda(anel))),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(side: _borda(anel, contorno: esquema)),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(shape: _FormatoComFoco(anel)),
     extensions: [aviso],
   );
+}
+
+/// Anel de foco dos botões: 3 px de `onSurface` por fora, como o indicador
+/// de foco do Material 3. Sem ele, o foco pelo Tab só clareia 10% do botão,
+/// o que quase não aparece num botão preenchido.
+BorderSide anelDeFoco(ColorScheme esquema) => BorderSide(
+  color: esquema.onSurface,
+  width: 3,
+  strokeAlign: BorderSide.strokeAlignOutside,
+);
+
+/// Borda dos botões: o [anel] com foco. Sem foco, nenhuma borda, ou o
+/// contorno padrão do Material 3 quando o botão é de [contorno].
+WidgetStateProperty<BorderSide?> _borda(BorderSide anel, {ColorScheme? contorno}) =>
+    WidgetStateProperty.resolveWith((estados) {
+      final desativado = estados.contains(WidgetState.disabled);
+      if (estados.contains(WidgetState.focused) && !desativado) return anel;
+      if (contorno == null) return null;
+      return BorderSide(
+        color: desativado ? contorno.onSurface.withValues(alpha: 0.12) : contorno.outline,
+      );
+    });
+
+/// Formato do botão +: o canto de 16 px do Material 3, com o [anel] quando
+/// tem foco. O botão + não aceita borda por estado, só o formato.
+class _FormatoComFoco extends RoundedRectangleBorder implements WidgetStateOutlinedBorder {
+  const _FormatoComFoco(this.anel)
+    : super(borderRadius: const BorderRadius.all(Radius.circular(16)));
+
+  final BorderSide anel;
+
+  @override
+  OutlinedBorder resolve(Set<WidgetState> estados) =>
+      estados.contains(WidgetState.focused) ? copyWith(side: anel) : this;
 }
 
 const _numerosFixos = [FontFeature.tabularFigures()];

@@ -6,6 +6,7 @@ import 'package:centavinhos/ui/casca_principal.dart';
 import 'package:centavinhos/ui/telas/tela_boas_vindas.dart';
 import 'package:centavinhos/ui/widgets/campo_valor.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -81,6 +82,27 @@ void main() {
 
     expect(find.text('−R\$ 200,00'), findsOneWidget);
     expect(find.text('Aperte - para negativo'), findsOneWidget);
+    await fecharApp(tester);
+  });
+
+  testWidgets('Tab até "Começar" mostra o anel de foco', (tester) async {
+    await abrirApp(tester);
+    final comecar = find.widgetWithText(FilledButton, 'Começar');
+    final foco = Focus.of(tester.element(find.text('Começar')));
+    OutlinedBorder borda() => tester
+        .widget<Material>(find.descendant(of: comecar, matching: find.byType(Material)).first)
+        .shape! as OutlinedBorder;
+
+    expect(borda().side, BorderSide.none);
+    for (var i = 0; i < 30 && !foco.hasPrimaryFocus; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+    }
+
+    expect(foco.hasPrimaryFocus, isTrue);
+    final cores = Theme.of(tester.element(comecar)).colorScheme;
+    expect(borda().side.color, cores.onSurface);
+    expect(borda().side.width, 3);
     await fecharApp(tester);
   });
 

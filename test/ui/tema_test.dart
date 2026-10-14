@@ -61,6 +61,42 @@ void main() {
     }
   });
 
+  group('anel de foco', () {
+    const focado = {WidgetState.focused};
+    const normal = <WidgetState>{};
+
+    for (final brilho in Brightness.values) {
+      test('aparece em todos os botões só com foco (${brilho.name})', () {
+        final tema = construirTema(TemaCor.verde, brilho);
+        final anel = anelDeFoco(tema.colorScheme);
+        expect(anel.color, tema.colorScheme.onSurface);
+        expect(anel.width, 3);
+        expect(anel.strokeAlign, BorderSide.strokeAlignOutside);
+
+        for (final estilo in [
+          tema.filledButtonTheme.style,
+          tema.elevatedButtonTheme.style,
+          tema.textButtonTheme.style,
+          tema.iconButtonTheme.style,
+        ]) {
+          expect(estilo!.side!.resolve(focado), anel);
+          expect(estilo.side!.resolve(normal), isNull);
+          expect(estilo.side!.resolve({WidgetState.focused, WidgetState.disabled}), isNull);
+        }
+
+        final contorno = tema.outlinedButtonTheme.style!.side!;
+        expect(contorno.resolve(focado), anel);
+        expect(contorno.resolve(normal), BorderSide(color: tema.colorScheme.outline));
+
+        final formatoMais = tema.floatingActionButtonTheme.shape;
+        final comFoco = WidgetStateProperty.resolveAs<ShapeBorder?>(formatoMais, focado);
+        final semFoco = WidgetStateProperty.resolveAs<ShapeBorder?>(formatoMais, normal);
+        expect((comFoco! as OutlinedBorder).side, anel);
+        expect((semFoco! as OutlinedBorder).side, BorderSide.none);
+      });
+    }
+  });
+
   test('valores guardados no banco', () {
     expect(TemaCor.deValor('roxo'), TemaCor.roxo);
     expect(TemaCor.deValor('desconhecido'), TemaCor.verde);

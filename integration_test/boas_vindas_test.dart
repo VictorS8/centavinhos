@@ -41,12 +41,21 @@ void main() {
     await tester.tap(find.widgetWithText(MenuItemButton, 'Nubank').last);
     await tester.pumpAndSettle();
 
-    // 5. Nada trava o botão, e "Começar" leva para a tela do mês. Com duas
-    // contas e um cartão, o botão fica abaixo da dobra: rola até ele.
+    // 5. Nada trava o botão. Só com o teclado: Tab até "Começar", que ganha
+    // o anel de foco, e Enter leva para a tela do mês.
     expect(find.text('Escolha a conta que paga cada cartão.'), findsNothing);
-    await tester.ensureVisible(find.text('Começar'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Começar'));
+    final foco = Focus.of(tester.element(find.text('Começar')));
+    for (var i = 0; i < 40 && !foco.hasPrimaryFocus; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+    }
+    expect(foco.hasPrimaryFocus, isTrue);
+    final comecar = find.widgetWithText(FilledButton, 'Começar');
+    final borda = tester
+        .widget<Material>(find.descendant(of: comecar, matching: find.byType(Material)).first)
+        .shape! as OutlinedBorder;
+    expect(borda.side.color, Theme.of(tester.element(comecar)).colorScheme.onSurface);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(find.text('Outubro 2026'), findsOneWidget);
 

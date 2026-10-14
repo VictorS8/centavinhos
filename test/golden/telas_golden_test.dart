@@ -28,7 +28,8 @@ void main() {
   tearDown(() => db.close());
 
   /// Abre o app com a cor e o modo pedidos, vai até [destino] na barra
-  /// lateral (se houver) e compara com a captura [nome].
+  /// lateral (se houver), põe o foco do teclado no botão [foco] (se houver)
+  /// e compara com a captura [nome].
   Future<void> capturar(
     WidgetTester tester,
     String nome, {
@@ -36,6 +37,7 @@ void main() {
     String modo = 'claro',
     bool boasVindasConcluida = false,
     String? destino,
+    String? foco,
   }) async {
     await tester.runAsync(() async {
       await db.definirConfiguracao(ChaveConfiguracao.temaCor, cor);
@@ -61,6 +63,12 @@ void main() {
     await tester.pumpAndSettle();
     if (destino != null) {
       await tester.tap(find.text(destino).last);
+      await tester.pumpAndSettle();
+    }
+    if (foco != null) {
+      FocusManager.instance.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(() => FocusManager.instance.highlightStrategy = FocusHighlightStrategy.automatic);
+      Focus.of(tester.element(find.text(foco))).requestFocus();
       await tester.pumpAndSettle();
     }
 
@@ -89,6 +97,14 @@ void main() {
 
   testWidgets('boas-vindas, roxo escuro', (tester) async {
     await capturar(tester, 'boas_vindas_roxo_escuro', cor: 'roxo', modo: 'escuro');
+  });
+
+  testWidgets('boas-vindas com foco no "Começar", verde claro', (tester) async {
+    await capturar(tester, 'boas_vindas_foco_verde_claro', foco: 'Começar');
+  });
+
+  testWidgets('boas-vindas com foco no "Começar", verde escuro', (tester) async {
+    await capturar(tester, 'boas_vindas_foco_verde_escuro', modo: 'escuro', foco: 'Começar');
   });
 
   testWidgets('tela do mês, verde claro', (tester) async {
