@@ -46,3 +46,18 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Kit original (cópia de marca/, docs/ e CLAUDE.md)
+centavinhos-kit.zip
+
+# Claude Code: permissões pessoais ficam fora, settings.json compartilhado entra
+.claude/settings.local.json
+
+# Banco local e backups gerados em testes
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Certificado de assinatura do MSIX
+*.pfx
