@@ -61,3 +61,6 @@ centavinhos-kit.zip
 
 # Certificado de assinatura do MSIX
 *.pfx
+
+# Diferenças geradas quando uma captura de tela falha
+test/golden/failures/
