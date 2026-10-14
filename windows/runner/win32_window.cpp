@@ -26,6 +26,10 @@ constexpr const wchar_t kGetPreferredBrightnessRegKey[] =
   L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
 constexpr const wchar_t kGetPreferredBrightnessRegValue[] = L"AppsUseLightTheme";
 
+// Tamanho mínimo da janela, em pixels lógicos.
+constexpr int kMinWidth = 1000;
+constexpr int kMinHeight = 680;
+
 // The number of Win32Window objects that currently exist.
 static int g_active_window_count = 0;
 
@@ -197,6 +201,16 @@ Win32Window::MessageHandler(HWND hwnd,
 
       return 0;
     }
+    case WM_GETMINMAXINFO: {
+      // Tamanho mínimo da janela (1000 x 680), na escala do monitor atual.
+      auto info = reinterpret_cast<MINMAXINFO*>(lparam);
+      HMONITOR monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+      double scale_factor = FlutterDesktopGetDpiForMonitor(monitor) / 96.0;
+      info->ptMinTrackSize.x = Scale(kMinWidth, scale_factor);
+      info->ptMinTrackSize.y = Scale(kMinHeight, scale_factor);
+      return 0;
+    }
+
     case WM_SIZE: {
       RECT rect = GetClientArea();
       if (child_content_ != nullptr) {

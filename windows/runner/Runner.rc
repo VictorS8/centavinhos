@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "br.com.centavinhosfinancas" "\0"
-            VALUE "FileDescription", "centavinhos" "\0"
+            VALUE "CompanyName", "Centavinhos" "\0"
+            VALUE "FileDescription", "Centavinhos" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "centavinhos" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 br.com.centavinhosfinancas. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 João Victor das Neves Sousa Almeida" "\0"
             VALUE "OriginalFilename", "centavinhos.exe" "\0"
-            VALUE "ProductName", "centavinhos" "\0"
+            VALUE "ProductName", "Centavinhos" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
