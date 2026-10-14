@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 1 · Centavinhos</title>
+<style>
+:root { --fundo:#F5FBF7; --cartao:#FFFFFF; --texto:#171D1A; --apoio:#3F4945; --borda:#BFC9C3;
+  --primaria:#1F6F5C; --bom:#1F6F5C; --bom-fundo:#A6F2DB; --ruim:#BA1A1A; --ruim-fundo:#FFDAD6; --novo-fundo:#C5E7FF; --novo-texto:#001E2D; }
+@media (prefers-color-scheme: dark) { :root { --fundo:#0F1512; --cartao:#171D1A; --texto:#DEE4DF; --apoio:#BFC9C3;
+  --borda:#3F4945; --primaria:#8AD6BF; --bom:#8AD6BF; --bom-fundo:#005142; --ruim:#FFB4AB; --ruim-fundo:#93000A; --novo-fundo:#284B5F; --novo-texto:#C5E7FF; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--fundo); color:var(--texto); font:15px/1.5 "Segoe UI", Roboto, sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:32px 16px 64px; }
+h1 { font-size:28px; margin:0 0 4px; } h2 { font-size:20px; margin:40px 0 12px; } h3 { font-size:16px; margin:24px 0 8px; }
+.apoio { color:var(--apoio); }
+.resumo { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0; }
+.bloco { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:16px 20px; min-width:180px; }
+.bloco b { display:block; font-size:24px; }
+.bom { color:var(--bom); } .ruim { color:var(--ruim); }
+details { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; margin:12px 0; padding:4px 16px; }
+summary { cursor:pointer; padding:10px 0; display:flex; justify-content:space-between; gap:12px; }
+summary .titulo { font-weight:600; }
+ul.testes { list-style:none; margin:0 0 12px; padding:0; }
+ul.testes li { padding:6px 0; border-top:1px solid var(--borda); display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; }
+ul.testes li.arquivo { color:var(--apoio); font:12px Consolas, monospace; border-top:none; padding-top:12px; }
+.icone { width:16px; font-weight:700; } .passou .icone { color:var(--bom); } .falhou .icone { color:var(--ruim); }
+.falhou { background:var(--ruim-fundo); border-radius:8px; padding:6px 8px !important; }
+.nome { flex:1; min-width:200px; } .tempo { color:var(--apoio); font-size:13px; }
+.novo { background:var(--novo-fundo); color:var(--novo-texto); border-radius:8px; padding:0 8px; font-size:12px; font-weight:600; }
+pre { width:100%; overflow-x:auto; background:var(--fundo); padding:12px; border-radius:8px; font-size:12px; white-space:pre-wrap; }
+.galeria { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; }
+figure { margin:0; background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px; }
+figure img { width:100%; border-radius:8px; display:block; } figcaption { padding:8px 4px 0; color:var(--apoio); font-size:13px; }
+.roteiro { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px 24px 16px; }
+.roteiro li { margin:4px 0; } .roteiro ul.marcar { list-style:none; padding-left:4px; }
+.roteiro label { cursor:pointer; display:flex; gap:10px; align-items:baseline; }
+.roteiro input[type=checkbox] { accent-color:var(--primaria); width:16px; height:16px; flex:none; transform:translateY(2px); }
+.roteiro li.feito { color:var(--apoio); }
+#limpar-roteiro { margin-left:8px; font:inherit; font-size:13px; color:var(--primaria); background:none; border:1px solid var(--borda); border-radius:16px; padding:2px 12px; cursor:pointer; }
+code { font-family:Consolas, monospace; font-size:13px; background:var(--fundo); padding:1px 4px; border-radius:4px; }
+</style>
+</head>
+<body><main>
+<h1>Centavinhos · Etapa 1</h1>
+<p class="apoio">Gerado em 14/10/2026 19:00</p>
+
+<div class="resumo">
+  <div class="bloco"><span class="apoio">flutter analyze</span><b class="bom">Sem problemas</b></div>
+  <div class="bloco"><span class="apoio">Testes</span><b class="bom">60 de 60</b></div>
+  <div class="bloco"><span class="apoio">Novos nesta etapa</span><b>60</b></div>
+  <div class="bloco"><span class="apoio">Capturas de tela</span><b>5</b></div>
+</div>
+
+
+
+<h2>Testes</h2>
+<details open>
+<summary><span class="titulo">Regras (lib/domain)</span><span class="contagem bom">25 de 25</span></summary>
+<ul class="testes">
+<li class="arquivo">test/domain/dinheiro_e_datas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">formatarCentavos valores pequenos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">formatarCentavos milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">formatarCentavos negativo com o sinal de menos tipográfico</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">datas dia e mês no formato do banco</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/valor_caixa_eletronico_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">digitar começa em R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">digitar cada número entra pela direita, como no escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">digitar vírgula, ponto e letras são ignorados</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">digitar agrupa milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">digitar para no limite de 11 números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">apagar backspace tira o último número</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">apagar apagar tudo volta para R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar "12,50" vira R$ 12,50</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar aceita o símbolo e os milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar texto sem centavos é lido como reais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar um número só depois da vírgula vira dezena de centavos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar texto sem números não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar valor acima do máximo não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar sinal de menos é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">colar sinal de menos vale com permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal "-" deixa negativo e mostra −R$</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal "-" de novo volta para positivo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal com o campo zerado, o sinal fica guardado para os próximos números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal apagar com o valor zerado tira o sinal</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal "-" é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">troca de sinal começa com valor negativo quando permitido</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Banco</span><span class="contagem bom">14 de 14</span></summary>
+<ul class="testes">
+<li class="arquivo">test/data/database_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cria as doze tabelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cria os índices do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">chaves estrangeiras ligadas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias padrão: 10 de despesa, 5 de ganho e 25 subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">configurações iniciais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lançamento com conta e cartão ao mesmo tempo é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lançamento sem conta e sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartão com conta de pagamento inexistente é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">conta com saldo inicial negativo é gravada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">boas-vindas grava contas e cartões e marca como concluída</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">boas-vindas sem contas não grava nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">dados de exemplo geram um cenário válido e concluem as boas-vindas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">dados de exemplo apagarTudo volta ao banco recém-criado</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Interface</span><span class="contagem bom">14 de 14</span></summary>
+<ul class="testes">
+<li class="arquivo">test/ui/app_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">banco novo abre nas boas-vindas</span><span class="tempo">1.1 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">com as boas-vindas concluídas, abre na tela do mês</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">saldo: digitar 2, 0, 0, 0, 0 e "-" mostra −R$ 200,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">formatador: backspace, vírgula e texto colado</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/tema_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">verde claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">verde escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">roxo claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">roxo escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">azul claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">azul escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cor do sistema usa a cor de destaque e harmoniza o aviso</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cor do sistema sem cor de destaque cai no verde</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">fontes: Libron nos títulos, Roboto Flex nos textos, números fixos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">valores guardados no banco</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Capturas de tela</span><span class="contagem bom">5 de 5</span></summary>
+<ul class="testes">
+<li class="arquivo">test/golden/telas_golden_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">boas-vindas, verde claro</span><span class="tempo">1.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">boas-vindas, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">boas-vindas, roxo escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">tela do mês, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">ajustes, verde claro</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">App real (integração)</span><span class="contagem bom">2 de 2</span></summary>
+<ul class="testes">
+<li class="arquivo">integration_test/boas_vindas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">primeira abertura completa: conta negativa, cartão e Ctrl+N</span><span class="tempo">5.0 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">barra lateral troca de tela e mantém o botão +</span><span class="tempo">3.0 s</span></li>
+</ul></details>
+
+
+
+
+<h2>Capturas de tela</h2>
+<div class="galeria"><figure><a href="capturas/ajustes_verde_claro.png"><img src="capturas/ajustes_verde_claro.png" alt="ajustes_verde_claro.png" loading="lazy"></a><figcaption>ajustes verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_roxo_escuro.png"><img src="capturas/boas_vindas_roxo_escuro.png" alt="boas_vindas_roxo_escuro.png" loading="lazy"></a><figcaption>boas vindas roxo escuro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_claro.png"><img src="capturas/boas_vindas_verde_claro.png" alt="boas_vindas_verde_claro.png" loading="lazy"></a><figcaption>boas vindas verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_escuro.png"><img src="capturas/boas_vindas_verde_escuro.png" alt="boas_vindas_verde_escuro.png" loading="lazy"></a><figcaption>boas vindas verde escuro</figcaption></figure>
+<figure><a href="capturas/mes_verde_claro.png"><img src="capturas/mes_verde_claro.png" alt="mes_verde_claro.png" loading="lazy"></a><figcaption>mes verde claro</figcaption></figure></div>
+
+<h2 id="roteiro">Roteiro para testar na mão</h2>
+<p class="apoio"><b id="contador-roteiro"></b> · As marcações ficam só neste navegador; o <code>roteiro-manual.md</code> não muda.
+<button id="limpar-roteiro" type="button">Limpar marcações</button></p>
+<div class="roteiro"><h3>Roteiro manual · Etapa 1</h3>
+<p class="apoio">Abra com <code>flutter run -d windows</code>. Se o app já foi usado antes, vá em Ajustes → "Apagar tudo e voltar às boas-vindas" para começar do zero.</p>
+<h4>Janela</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="A barra de título mostra &quot;Centavinhos&quot; com o ícone do peso de papel, e o mesmo ícone aparece na barra de tarefas." data-md="0"> A barra de título mostra "Centavinhos" com o ícone do peso de papel, e o mesmo ícone aparece na barra de tarefas.</label></li>
+<li><label><input type="checkbox" data-item="Ao tentar diminuir a janela, ela para em 1000 × 680." data-md="0"> Ao tentar diminuir a janela, ela para em 1000 × 680.</label></li>
+</ul>
+<h4>Boas-vindas</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Abre com o logo, &quot;Boas-vindas ao Centavinhos&quot; e uma conta &quot;Carteira&quot; já preenchida." data-md="0"> Abre com o logo, "Boas-vindas ao Centavinhos" e uma conta "Carteira" já preenchida.</label></li>
+<li><label><input type="checkbox" data-item="No &quot;Saldo hoje&quot;, digite 1, 2, 5 e 0: o campo mostra R$ 0,01, R$ 0,12, R$ 1,25 e R$ 12,50." data-md="0"> No "Saldo hoje", digite 1, 2, 5 e 0: o campo mostra R$ 0,01, R$ 0,12, R$ 1,25 e R$ 12,50.</label></li>
+<li><label><input type="checkbox" data-item="Backspace volta para R$ 1,25. Vírgula e ponto não fazem nada." data-md="0"> Backspace volta para R$ 1,25. Vírgula e ponto não fazem nada.</label></li>
+<li><label><input type="checkbox" data-item="Aperte &quot;-&quot;: vira −R$ 1,25. Aperte &quot;-&quot; de novo: volta para R$ 1,25." data-md="0"> Aperte "-": vira −R$ 1,25. Aperte "-" de novo: volta para R$ 1,25.</label></li>
+<li><label><input type="checkbox" data-item="Copie o texto `1.234,56` e cole no campo com Ctrl+V: mostra R$ 1.234,56." data-md="0"> Copie o texto <code>1.234,56</code> e cole no campo com Ctrl+V: mostra R$ 1.234,56.</label></li>
+<li><label><input type="checkbox" data-item="Apague o nome da Carteira: o botão &quot;Começar&quot; trava e aparece &quot;Dê um nome a cada conta.&quot;. Escreva o nome de novo." data-md="0"> Apague o nome da Carteira: o botão "Começar" trava e aparece "Dê um nome a cada conta.". Escreva o nome de novo.</label></li>
+<li><label><input type="checkbox" data-item="Em &quot;Adicionar conta&quot;, cadastre &quot;Nubank&quot;, tipo Banco, com saldo −R$ 200,00." data-md="0"> Em "Adicionar conta", cadastre "Nubank", tipo Banco, com saldo −R$ 200,00.</label></li>
+<li><label><input type="checkbox" data-item="Em &quot;Adicionar cartão&quot;, preencha &quot;Nubank&quot;, fechamento 5 e vencimento 12, sem escolher a conta: aparece &quot;Escolha a conta que paga cada cartão.&quot;." data-md="0"> Em "Adicionar cartão", preencha "Nubank", fechamento 5 e vencimento 12, sem escolher a conta: aparece "Escolha a conta que paga cada cartão.".</label></li>
+<li><label><input type="checkbox" data-item="Em &quot;Pago pela conta&quot;, aparecem só Carteira e Nubank. Escolha Nubank." data-md="0"> Em "Pago pela conta", aparecem só Carteira e Nubank. Escolha Nubank.</label></li>
+<li><label><input type="checkbox" data-item="Troque o fechamento para 0 ou 32: aparece &quot;Fechamento e vencimento vão de 1 a 31.&quot;. Volte para 5." data-md="0"> Troque o fechamento para 0 ou 32: aparece "Fechamento e vencimento vão de 1 a 31.". Volte para 5.</label></li>
+<li><label><input type="checkbox" data-item="Usando só o Tab, passe por todos os campos: a ordem segue a da tela, da esquerda para a direita e de cima para baixo." data-md="0"> Usando só o Tab, passe por todos os campos: a ordem segue a da tela, da esquerda para a direita e de cima para baixo.</label></li>
+<li><label><input type="checkbox" data-item="Clique em &quot;Começar&quot;: abre a tela do mês com o mês atual (ex.: &quot;Outubro 2026&quot;)." data-md="0"> Clique em "Começar": abre a tela do mês com o mês atual (ex.: "Outubro 2026").</label></li>
+</ul>
+<h4>Tela principal</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="A barra lateral tem o logo, o botão +, Mês, Filtros, Cartões, Cadastros e Ajustes. Cada destino abre a sua tela com &quot;Esta tela chega na etapa N.&quot;." data-md="0"> A barra lateral tem o logo, o botão +, Mês, Filtros, Cartões, Cadastros e Ajustes. Cada destino abre a sua tela com "Esta tela chega na etapa N.".</label></li>
+<li><label><input type="checkbox" data-item="Ctrl+N ou o botão + abrem o aviso &quot;Novo lançamento&quot;. Esc fecha." data-md="0"> Ctrl+N ou o botão + abrem o aviso "Novo lançamento". Esc fecha.</label></li>
+<li><label><input type="checkbox" data-item="Feche e abra o app de novo: ele vai direto para a tela do mês, sem as boas-vindas." data-md="0"> Feche e abra o app de novo: ele vai direto para a tela do mês, sem as boas-vindas.</label></li>
+</ul>
+<h4>Tema</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Troque o Windows entre claro e escuro (Configurações → Personalização → Cores → Escolha o modo): o app acompanha na hora." data-md="0"> Troque o Windows entre claro e escuro (Configurações → Personalização → Cores → Escolha o modo): o app acompanha na hora.</label></li>
+</ul>
+<h4>Ferramentas de desenvolvimento</h4>
+<p class="apoio">Só aparecem rodando com <code>flutter run</code>.</p>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Ajustes → &quot;Apagar tudo e voltar às boas-vindas&quot; → &quot;Apagar tudo&quot;: o app volta para as boas-vindas." data-md="0"> Ajustes → "Apagar tudo e voltar às boas-vindas" → "Apagar tudo": o app volta para as boas-vindas.</label></li>
+<li><label><input type="checkbox" data-item="Nas boas-vindas, &quot;Preencher com dados de exemplo&quot; vai direto para a tela do mês. Os lançamentos de exemplo só aparecem na tela a partir da etapa 4." data-md="0"> Nas boas-vindas, "Preencher com dados de exemplo" vai direto para a tela do mês. Os lançamentos de exemplo só aparecem na tela a partir da etapa 4.</label></li>
+<li><label><input type="checkbox" data-item="Ajustes → &quot;Recriar dados de exemplo&quot; → &quot;Apagar tudo&quot;: continua na tela do mês, sem erro." data-md="0"> Ajustes → "Recriar dados de exemplo" → "Apagar tudo": continua na tela do mês, sem erro.</label></li>
+</ul>
+</div>
+</main>
+<script>
+// Caixas do roteiro clicáveis, guardadas só neste navegador. Vale o clique,
+// a não ser que o item tenha mudado no .md depois dele: aí vale o .md.
+(function () {
+  var chave = 'centavinhos-roteiro-etapa-1';
+  var salvo = {};
+  try { salvo = JSON.parse(localStorage.getItem(chave) || '{}'); } catch (e) {}
+  var caixas = document.querySelectorAll('.roteiro input[type=checkbox]');
+  var contador = document.getElementById('contador-roteiro');
+  function atualizar() {
+    var feitos = 0;
+    caixas.forEach(function (caixa) {
+      if (caixa.checked) feitos++;
+      caixa.closest('li').classList.toggle('feito', caixa.checked);
+    });
+    if (contador) contador.textContent = feitos + ' de ' + caixas.length + ' conferidos';
+  }
+  caixas.forEach(function (caixa) {
+    var item = caixa.dataset.item;
+    var doMd = caixa.dataset.md === '1';
+    var anterior = salvo[item];
+    caixa.checked = anterior && anterior.md === doMd ? anterior.marcado : doMd;
+    caixa.addEventListener('change', function () {
+      salvo[item] = { marcado: caixa.checked, md: doMd };
+      try { localStorage.setItem(chave, JSON.stringify(salvo)); } catch (e) {}
+      atualizar();
+    });
+  });
+  var limpar = document.getElementById('limpar-roteiro');
+  if (limpar) {
+    limpar.addEventListener('click', function () {
+      try { localStorage.removeItem(chave); } catch (e) {}
+      location.reload();
+    });
+  }
+  atualizar();
+})();
+</script>
+</body>
+</html>
