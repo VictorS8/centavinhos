@@ -28,5 +28,11 @@ void main() {
       expect(dataIso(data), '2026-03-07');
       expect(mesIso(data), '2026-03');
     });
+
+    test('dia no formato da tela e leitura do formato do banco', () {
+      expect(dataBr(DateTime(2026, 3, 7)), '07/03/2026');
+      expect(lerDataIso('2026-03-07'), DateTime(2026, 3, 7));
+      expect(lerDataIso(dataIso(DateTime(2024, 2, 29))), DateTime(2024, 2, 29));
+    });
   });
 }
