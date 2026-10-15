@@ -2,6 +2,7 @@ import 'package:centavinhos/data/database.dart';
 import 'package:centavinhos/data/providers.dart';
 import 'package:centavinhos/ui/app.dart';
 import 'package:centavinhos/ui/hoje_provider.dart';
+import 'package:centavinhos/ui/widgets/lista_cadastro.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,5 +79,35 @@ Future<void> apertarCtrl(WidgetTester tester, LogicalKeyboardKey tecla) async {
   await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
   await tester.sendKeyEvent(tecla);
   await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+  await tester.pumpAndSettle();
+}
+
+/// Botão de ação (pela dica, como "Arquivar") na linha do cadastro [nome].
+Finder acaoDaLinha(String nome, String dica) => find.descendant(
+  of: find.ancestor(of: find.text(nome), matching: find.byType(LinhaCadastro)),
+  matching: find.byTooltip(dica),
+);
+
+/// Rola a lista da tela até [alvo] aparecer. Listas longas só montam as
+/// linhas visíveis, então um item fora da tela ainda não existe.
+Future<void> rolarAte(WidgetTester tester, Finder alvo) async {
+  if (alvo.evaluate().isNotEmpty) return;
+  final lista = find
+      .byWidgetPredicate(
+        (w) => w is Scrollable && axisDirectionToAxis(w.axisDirection) == Axis.vertical,
+      )
+      .first;
+  tester.state<ScrollableState>(lista).position.jumpTo(0);
+  await tester.pumpAndSettle();
+  await tester.scrollUntilVisible(alvo, 300, scrollable: lista, maxScrolls: 60);
+  await tester.pumpAndSettle();
+}
+
+/// Rola até [alvo], toca nele e espera a tela assentar.
+Future<void> tocar(WidgetTester tester, Finder alvo) async {
+  await rolarAte(tester, alvo);
+  await tester.ensureVisible(alvo);
+  await tester.pumpAndSettle();
+  await tester.tap(alvo);
   await tester.pumpAndSettle();
 }
