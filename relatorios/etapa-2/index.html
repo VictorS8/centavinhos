@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 2 · Centavinhos</title>
+<style>
+:root { --fundo:#F5FBF7; --cartao:#FFFFFF; --texto:#171D1A; --apoio:#3F4945; --borda:#BFC9C3;
+  --primaria:#1F6F5C; --bom:#1F6F5C; --bom-fundo:#A6F2DB; --ruim:#BA1A1A; --ruim-fundo:#FFDAD6; --novo-fundo:#C5E7FF; --novo-texto:#001E2D; }
+@media (prefers-color-scheme: dark) { :root { --fundo:#0F1512; --cartao:#171D1A; --texto:#DEE4DF; --apoio:#BFC9C3;
+  --borda:#3F4945; --primaria:#8AD6BF; --bom:#8AD6BF; --bom-fundo:#005142; --ruim:#FFB4AB; --ruim-fundo:#93000A; --novo-fundo:#284B5F; --novo-texto:#C5E7FF; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--fundo); color:var(--texto); font:15px/1.5 "Segoe UI", Roboto, sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:32px 16px 64px; }
+h1 { font-size:28px; margin:0 0 4px; } h2 { font-size:20px; margin:40px 0 12px; } h3 { font-size:16px; margin:24px 0 8px; }
+.apoio { color:var(--apoio); }
+.resumo { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0; }
+.bloco { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:16px 20px; min-width:180px; }
+.bloco b { display:block; font-size:24px; }
+.bom { color:var(--bom); } .ruim { color:var(--ruim); }
+details { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; margin:12px 0; padding:4px 16px; }
+summary { cursor:pointer; padding:10px 0; display:flex; justify-content:space-between; gap:12px; }
+summary .titulo { font-weight:600; }
+ul.testes { list-style:none; margin:0 0 12px; padding:0; }
+ul.testes li { padding:6px 0; border-top:1px solid var(--borda); display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; }
+ul.testes li.arquivo { color:var(--apoio); font:12px Consolas, monospace; border-top:none; padding-top:12px; }
+.icone { width:16px; font-weight:700; } .passou .icone { color:var(--bom); } .falhou .icone { color:var(--ruim); }
+.falhou { background:var(--ruim-fundo); border-radius:8px; padding:6px 8px !important; }
+.nome { flex:1; min-width:200px; } .tempo { color:var(--apoio); font-size:13px; }
+.novo { background:var(--novo-fundo); color:var(--novo-texto); border-radius:8px; padding:0 8px; font-size:12px; font-weight:600; }
+pre { width:100%; overflow-x:auto; background:var(--fundo); padding:12px; border-radius:8px; font-size:12px; white-space:pre-wrap; }
+.galeria { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; }
+figure { margin:0; background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px; }
+figure img { width:100%; border-radius:8px; display:block; } figcaption { padding:8px 4px 0; color:var(--apoio); font-size:13px; }
+.roteiro { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px 24px 16px; }
+.roteiro li { margin:4px 0; } .roteiro ul.marcar { list-style:none; padding-left:4px; }
+.roteiro label { cursor:pointer; display:flex; gap:10px; align-items:baseline; }
+.roteiro input[type=checkbox] { accent-color:var(--primaria); width:16px; height:16px; flex:none; transform:translateY(2px); }
+.roteiro li.feito { color:var(--apoio); }
+#limpar-roteiro { margin-left:8px; font:inherit; font-size:13px; color:var(--primaria); background:none; border:1px solid var(--borda); border-radius:16px; padding:2px 12px; cursor:pointer; }
+code { font-family:Consolas, monospace; font-size:13px; background:var(--fundo); padding:1px 4px; border-radius:4px; }
+</style>
+</head>
+<body><main>
+<h1>Centavinhos · Etapa 2</h1>
+<p class="apoio">Gerado em 15/10/2026 12:26</p>
+
+<div class="resumo">
+  <div class="bloco"><span class="apoio">flutter analyze</span><b class="bom">Sem problemas</b></div>
+  <div class="bloco"><span class="apoio">Testes</span><b class="bom">137 de 137</b></div>
+  <div class="bloco"><span class="apoio">Novos nesta etapa</span><b>72</b></div>
+  <div class="bloco"><span class="apoio">Capturas de tela</span><b>19</b></div>
+</div>
+
+
+
+<h2>Testes</h2>
+<details open>
+<summary><span class="titulo">Regras (lib/domain)</span><span class="contagem bom">50 de 50</span></summary>
+<ul class="testes">
+<li class="arquivo">test/domain/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">nomes limpa espaços nas pontas e repetidos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">nomes tag perde o # do começo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">nomes comparação ignora maiúsculas e acentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoNomeInvalido nome livre passa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoNomeInvalido nome vazio</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoNomeInvalido repetido entre os ativos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoNomeInvalido repetido com um arquivado sugere desarquivar</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoNomeInvalido tag compara sem o #</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lerDiaDoMes de 1 a 31</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lerDiaDoMes fora da faixa ou vazio</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoParaNaoTirarConta conta livre pode sair</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoParaNaoTirarConta última conta ativa fica</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoParaNaoTirarConta conta que paga cartão ativo fica</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoDataSaldoInvalida hoje e dias anteriores servem</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoDataSaldoInvalida futuro não serve</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivoDataSaldoInvalida data inválida</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">textos de contagem subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">textos de contagem uso de tags</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/data_digitada_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">dd/mm completa com o ano de hoje</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">dd/mm/aaaa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">aceita dia e mês com um número só e espaços</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">datas que não existem</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">29/02 só em ano bissexto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">textos que não são data</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/dinheiro_e_datas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos valores pequenos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos negativo com o sinal de menos tipográfico</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas dia e mês no formato do banco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">datas dia no formato da tela e leitura do formato do banco</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/valor_caixa_eletronico_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar começa em R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar cada número entra pela direita, como no escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar vírgula, ponto e letras são ignorados</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar agrupa milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar para no limite de 11 números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">apagar backspace tira o último número</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">apagar apagar tudo volta para R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar "12,50" vira R$ 12,50</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar aceita o símbolo e os milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar texto sem centavos é lido como reais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar um número só depois da vírgula vira dezena de centavos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar texto sem números não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar valor acima do máximo não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar sinal de menos é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar sinal de menos vale com permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" deixa negativo e mostra −R$</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" de novo volta para positivo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal com o campo zerado, o sinal fica guardado para os próximos números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal apagar com o valor zerado tira o sinal</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal começa com valor negativo quando permitido</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Banco</span><span class="contagem bom">36 de 36</span></summary>
+<ul class="testes">
+<li class="arquivo">test/data/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">migração banco da versão 1 ganha a coluna arquivada em tags e mantém as tags</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas cria e edita com saldo inicial e data</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas lista as ativas primeiro, em ordem de nome sem ligar para acentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas conta nova não está em uso; com lançamento, transferência ou cartão, está</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas exclui a conta nunca usada e arquiva a usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas não arquiva nem exclui a última conta ativa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas não arquiva a conta que paga um cartão ativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões cria e edita fechamento, vencimento e conta de pagamento</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões exclui o cartão nunca usado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões cartão usado só é arquivado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões só desarquiva com a conta de pagamento ativa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias árvore em ordem de nome, com as subcategorias de cada uma</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias subcategoria herda o tipo da principal e tem um nível só</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias cria e renomeia</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias arquivar a principal leva as subcategorias; desarquivar traz de volta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias desarquivar uma subcategoria traz a principal, mas não as irmãs</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias uso: a principal conta como usada quando uma subcategoria foi usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias exclui a principal nunca usada junto com as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias não exclui categoria usada, nem a principal de uma subcategoria usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">tags cria sem o #, renomeia e conta os lançamentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">tags exclui a tag nunca usada e arquiva a usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">apagarTudo também limpa as tags arquivadas</span><span class="tempo"></span></li>
+<li class="arquivo">test/data/database_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cria as doze tabelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cria os índices do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">chaves estrangeiras ligadas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias padrão: 10 de despesa, 5 de ganho e 25 subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">configurações iniciais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento com conta e cartão ao mesmo tempo é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento sem conta e sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">estorno sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartão com conta de pagamento inexistente é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">conta com saldo inicial negativo é gravada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas grava contas e cartões e marca como concluída</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas sem contas não grava nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dados de exemplo geram um cenário válido e concluem as boas-vindas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dados de exemplo apagarTudo volta ao banco recém-criado</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Interface</span><span class="contagem bom">28 de 28</span></summary>
+<ul class="testes">
+<li class="arquivo">test/ui/app_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">banco novo abre nas boas-vindas</span><span class="tempo">1.1 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">com as boas-vindas concluídas, abre na tela do mês</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">saldo: digitar 2, 0, 0, 0, 0 e "-" mostra −R$ 200,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">Tab até "Começar" mostra o anel de foco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatador: backspace, vírgula e texto colado</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas lista com tipo, data e saldo inicial; usada arquiva</span><span class="tempo">1.4 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas nova conta: travas do Salvar e conta salva com data passada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas Enter no nome salva e Esc cancela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas campo de data reescreve dd/mm como dd/mm/aaaa ao sair</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">contas conta que paga cartão ativo não é arquivada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias despesas e ganhos, com as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias nova subcategoria não repete o nome de uma irmã</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias excluir categoria nunca usada leva as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">tags arquivar some da lista; "Mostrar arquivadas" traz de volta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões lista e detalhe do cartão escolhido</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões novo cartão: travas do Salvar e cartão escolhido depois</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/tema_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">verde claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">verde escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">roxo claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">roxo escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">azul claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">azul escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cor do sistema usa a cor de destaque e harmoniza o aviso</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cor do sistema sem cor de destaque cai no verde</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">fontes: Libron nos títulos, Roboto Flex nos textos, números fixos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">anel de foco aparece em todos os botões só com foco (dark)</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">anel de foco aparece em todos os botões só com foco (light)</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">valores guardados no banco</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Capturas de tela</span><span class="contagem bom">19 de 19</span></summary>
+<ul class="testes">
+<li class="arquivo">test/golden/telas_golden_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, verde claro</span><span class="tempo">1.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, roxo escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas com foco no "Começar", verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas com foco no "Começar", verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">ajustes, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros contas, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros contas com as arquivadas, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros categorias, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros categorias, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros categorias de ganho, roxo claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros tags, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros janela de editar conta, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cadastros janela de nova conta, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões cartões, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões cartões, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões cartões sem nenhum cadastrado, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões janela de editar cartão, verde claro</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">App real (integração)</span><span class="contagem bom">4 de 4</span></summary>
+<ul class="testes">
+<li class="arquivo">integration_test/boas_vindas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">primeira abertura completa: conta negativa, cartão e Ctrl+N</span><span class="tempo">11.4 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">barra lateral troca de tela e mantém o botão +</span><span class="tempo">3.5 s</span></li>
+<li class="arquivo">integration_test/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">conta com saldo de outra data, categoria nova, excluir e arquivar</span><span class="tempo">13.2 s</span></li>
+<li class="arquivo">integration_test/cartoes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">novo cartão, editar o vencimento e conta que paga não arquiva</span><span class="tempo">9.8 s</span></li>
+</ul></details>
+
+
+
+
+<h2>Capturas de tela</h2>
+<div class="galeria"><figure><a href="capturas/ajustes_verde_claro.png"><img src="capturas/ajustes_verde_claro.png" alt="ajustes_verde_claro.png" loading="lazy"></a><figcaption>ajustes verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_foco_verde_claro.png"><img src="capturas/boas_vindas_foco_verde_claro.png" alt="boas_vindas_foco_verde_claro.png" loading="lazy"></a><figcaption>boas vindas foco verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_foco_verde_escuro.png"><img src="capturas/boas_vindas_foco_verde_escuro.png" alt="boas_vindas_foco_verde_escuro.png" loading="lazy"></a><figcaption>boas vindas foco verde escuro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_roxo_escuro.png"><img src="capturas/boas_vindas_roxo_escuro.png" alt="boas_vindas_roxo_escuro.png" loading="lazy"></a><figcaption>boas vindas roxo escuro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_claro.png"><img src="capturas/boas_vindas_verde_claro.png" alt="boas_vindas_verde_claro.png" loading="lazy"></a><figcaption>boas vindas verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_escuro.png"><img src="capturas/boas_vindas_verde_escuro.png" alt="boas_vindas_verde_escuro.png" loading="lazy"></a><figcaption>boas vindas verde escuro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_ganhos_roxo_claro.png"><img src="capturas/cadastros_categorias_ganhos_roxo_claro.png" alt="cadastros_categorias_ganhos_roxo_claro.png" loading="lazy"></a><figcaption>cadastros categorias ganhos roxo claro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_verde_claro.png"><img src="capturas/cadastros_categorias_verde_claro.png" alt="cadastros_categorias_verde_claro.png" loading="lazy"></a><figcaption>cadastros categorias verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_verde_escuro.png"><img src="capturas/cadastros_categorias_verde_escuro.png" alt="cadastros_categorias_verde_escuro.png" loading="lazy"></a><figcaption>cadastros categorias verde escuro</figcaption></figure>
+<figure><a href="capturas/cadastros_contas_arquivadas_verde_claro.png"><img src="capturas/cadastros_contas_arquivadas_verde_claro.png" alt="cadastros_contas_arquivadas_verde_claro.png" loading="lazy"></a><figcaption>cadastros contas arquivadas verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_contas_verde_claro.png"><img src="capturas/cadastros_contas_verde_claro.png" alt="cadastros_contas_verde_claro.png" loading="lazy"></a><figcaption>cadastros contas verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_tags_verde_claro.png"><img src="capturas/cadastros_tags_verde_claro.png" alt="cadastros_tags_verde_claro.png" loading="lazy"></a><figcaption>cadastros tags verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_vazio_verde_claro.png"><img src="capturas/cartoes_vazio_verde_claro.png" alt="cartoes_vazio_verde_claro.png" loading="lazy"></a><figcaption>cartoes vazio verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_verde_claro.png"><img src="capturas/cartoes_verde_claro.png" alt="cartoes_verde_claro.png" loading="lazy"></a><figcaption>cartoes verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_verde_escuro.png"><img src="capturas/cartoes_verde_escuro.png" alt="cartoes_verde_escuro.png" loading="lazy"></a><figcaption>cartoes verde escuro</figcaption></figure>
+<figure><a href="capturas/janela_cartao_verde_claro.png"><img src="capturas/janela_cartao_verde_claro.png" alt="janela_cartao_verde_claro.png" loading="lazy"></a><figcaption>janela cartao verde claro</figcaption></figure>
+<figure><a href="capturas/janela_conta_verde_claro.png"><img src="capturas/janela_conta_verde_claro.png" alt="janela_conta_verde_claro.png" loading="lazy"></a><figcaption>janela conta verde claro</figcaption></figure>
+<figure><a href="capturas/janela_nova_conta_verde_escuro.png"><img src="capturas/janela_nova_conta_verde_escuro.png" alt="janela_nova_conta_verde_escuro.png" loading="lazy"></a><figcaption>janela nova conta verde escuro</figcaption></figure>
+<figure><a href="capturas/mes_verde_claro.png"><img src="capturas/mes_verde_claro.png" alt="mes_verde_claro.png" loading="lazy"></a><figcaption>mes verde claro</figcaption></figure></div>
+
+<h2 id="roteiro">Roteiro para testar na mão</h2>
+<p class="apoio"><b id="contador-roteiro"></b> · As marcações ficam só neste navegador; o <code>roteiro-manual.md</code> não muda.
+<button id="limpar-roteiro" type="button">Limpar marcações</button></p>
+<div class="roteiro"><h3>Roteiro manual · Etapa 2</h3>
+<p class="apoio">Abra com <code>flutter run -d windows</code>. Para ter dados para testar, vá em Ajustes → "Recriar dados de exemplo" (só no modo de desenvolvimento). Os exemplos têm as contas Carteira, Nubank e Inter, os cartões Nubank e Inter e as tags "trabalho" e "viagem".</p>
+<h4>Banco atualizado</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Se você já tinha usado o app na etapa 1, ele abre normalmente, sem voltar às boas-vindas, e as contas e cartões continuam lá (o banco passou da versão 1 para a 2 sozinho)." data-md="0"> Se você já tinha usado o app na etapa 1, ele abre normalmente, sem voltar às boas-vindas, e as contas e cartões continuam lá (o banco passou da versão 1 para a 2 sozinho).</label></li>
+</ul>
+<h4>Cadastros → Contas</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Abre com o título &quot;Cadastros&quot;, as abas Contas, Categorias e Tags, e a lista de contas: cada uma com ícone, &quot;Banco · saldo inicial em 01/09/2026&quot; (ou Carteira) e o saldo à direita." data-md="0"> Abre com o título "Cadastros", as abas Contas, Categorias e Tags, e a lista de contas: cada uma com ícone, "Banco · saldo inicial em 01/09/2026" (ou Carteira) e o saldo à direita.</label></li>
+<li><label><input type="checkbox" data-item="As três contas dos exemplos mostram o ícone de arquivar (caixa), não o de lixeira, porque já foram usadas." data-md="0"> As três contas dos exemplos mostram o ícone de arquivar (caixa), não o de lixeira, porque já foram usadas.</label></li>
+<li><label><input type="checkbox" data-item="Em &quot;Nova conta&quot;, a janela abre com o cursor em &quot;Nome da conta&quot;, &quot;Saldo em&quot; já com a data de hoje e o texto &quot;Dê um nome à conta.&quot; no rodapé, com o Salvar travado." data-md="0"> Em "Nova conta", a janela abre com o cursor em "Nome da conta", "Saldo em" já com a data de hoje e o texto "Dê um nome à conta." no rodapé, com o Salvar travado.</label></li>
+<li><label><input type="checkbox" data-item="Escreva &quot;nubank&quot; (minúsculo): aparece &quot;Já existe uma conta com esse nome.&quot;." data-md="0"> Escreva "nubank" (minúsculo): aparece "Já existe uma conta com esse nome.".</label></li>
+<li><label><input type="checkbox" data-item="Escreva &quot;Reserva&quot;, digite 5, 0, 0, 0, 0 e &quot;-&quot; no saldo: mostra −R$ 500,00." data-md="0"> Escreva "Reserva", digite 5, 0, 0, 0, 0 e "-" no saldo: mostra −R$ 500,00.</label></li>
+<li><label><input type="checkbox" data-item="Em &quot;Saldo em&quot;, escreva uma data de amanhã: aparece &quot;A data do saldo não pode ser depois de hoje.&quot;. Escreva 31/02: aparece &quot;Data inválida. Use dd/mm ou dd/mm/aaaa.&quot;." data-md="0"> Em "Saldo em", escreva uma data de amanhã: aparece "A data do saldo não pode ser depois de hoje.". Escreva 31/02: aparece "Data inválida. Use dd/mm ou dd/mm/aaaa.".</label></li>
+<li><label><input type="checkbox" data-item="Escreva 1/10 e aperte Tab: o campo vira &quot;01/10/&lt;ano atual&gt;&quot;." data-md="0"> Escreva 1/10 e aperte Tab: o campo vira "01/10/&lt;ano atual&gt;".</label></li>
+<li><label><input type="checkbox" data-item="O ícone de calendário abre o calendário em português, sem dias depois de hoje. Escolha um dia: o campo mostra a data escolhida." data-md="0"> O ícone de calendário abre o calendário em português, sem dias depois de hoje. Escolha um dia: o campo mostra a data escolhida.</label></li>
+<li><label><input type="checkbox" data-item="Usando só o Tab, a ordem é: nome, Carteira, Banco, saldo, data, calendário, Cancelar e Salvar." data-md="0"> Usando só o Tab, a ordem é: nome, Carteira, Banco, saldo, data, calendário, Cancelar e Salvar.</label></li>
+<li><label><input type="checkbox" data-item="Enter em qualquer campo salva. A Reserva aparece na lista com o ícone de lixeira (nunca usada)." data-md="0"> Enter em qualquer campo salva. A Reserva aparece na lista com o ícone de lixeira (nunca usada).</label></li>
+<li><label><input type="checkbox" data-item="Clique no lápis da Reserva: a janela &quot;Editar conta&quot; vem com tudo preenchido. Troque o saldo e salve: a lista mostra o valor novo." data-md="0"> Clique no lápis da Reserva: a janela "Editar conta" vem com tudo preenchido. Troque o saldo e salve: a lista mostra o valor novo.</label></li>
+<li><label><input type="checkbox" data-item="Esc fecha a janela sem salvar." data-md="0"> Esc fecha a janela sem salvar.</label></li>
+<li><label><input type="checkbox" data-item="Lixeira na Reserva: pergunta &quot;Excluir &quot;Reserva&quot;?&quot; dizendo que ela nunca foi usada. Confirme: ela some e aparece a mensagem &quot;Conta &quot;Reserva&quot; excluída.&quot; no rodapé." data-md="0"> Lixeira na Reserva: pergunta "Excluir "Reserva"?" dizendo que ela nunca foi usada. Confirme: ela some e aparece a mensagem "Conta "Reserva" excluída." no rodapé.</label></li>
+<li><label><input type="checkbox" data-item="Arquivar a Nubank: aparece &quot;Não é possível arquivar &quot;Nubank&quot;&quot; com &quot;Troque antes a conta que paga o cartão Nubank.&quot;. &quot;Entendi&quot; fecha e nada muda." data-md="0"> Arquivar a Nubank: aparece "Não é possível arquivar "Nubank"" com "Troque antes a conta que paga o cartão Nubank.". "Entendi" fecha e nada muda.</label></li>
+</ul>
+<h4>Cadastros → Categorias</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Abre em Despesas, com as categorias em ordem alfabética, a inicial num círculo, &quot;N subcategorias&quot; ao lado e as subcategorias com um marcador logo abaixo." data-md="0"> Abre em Despesas, com as categorias em ordem alfabética, a inicial num círculo, "N subcategorias" ao lado e as subcategorias com um marcador logo abaixo.</label></li>
+<li><label><input type="checkbox" data-item="Em Ganhos, aparecem só Outros, Reembolso, Renda extra, Rendimentos e Salário." data-md="0"> Em Ganhos, aparecem só Outros, Reembolso, Renda extra, Rendimentos e Salário.</label></li>
+<li><label><input type="checkbox" data-item="O &quot;+&quot; de Alimentação abre &quot;Nova subcategoria de Alimentação&quot;. Escreva &quot;lanches&quot;: aparece &quot;Já existe uma subcategoria com esse nome.&quot;. Escreva &quot;Padaria&quot; e salve: ela entra na lista e o contador vira &quot;4 subcategorias&quot;." data-md="0"> O "+" de Alimentação abre "Nova subcategoria de Alimentação". Escreva "lanches": aparece "Já existe uma subcategoria com esse nome.". Escreva "Padaria" e salve: ela entra na lista e o contador vira "4 subcategorias".</label></li>
+<li><label><input type="checkbox" data-item="O lápis de uma categoria abre &quot;Renomear categoria&quot; com o nome atual. Renomeie e veja a lista se reordenar." data-md="0"> O lápis de uma categoria abre "Renomear categoria" com o nome atual. Renomeie e veja a lista se reordenar.</label></li>
+<li><label><input type="checkbox" data-item="&quot;Nova categoria&quot; em Despesas cria uma categoria de despesa; em Ganhos, de ganho." data-md="0"> "Nova categoria" em Despesas cria uma categoria de despesa; em Ganhos, de ganho.</label></li>
+<li><label><input type="checkbox" data-item="Educação nunca foi usada: a lixeira pergunta &quot;Excluir &quot;Educação&quot;?&quot; e avisa &quot;As 2 subcategorias dela também.&quot;. Confirme: Educação, Cursos e Livros somem." data-md="0"> Educação nunca foi usada: a lixeira pergunta "Excluir "Educação"?" e avisa "As 2 subcategorias dela também.". Confirme: Educação, Cursos e Livros somem.</label></li>
+<li><label><input type="checkbox" data-item="Casa foi usada (Mercado, Limpeza e Aluguel nos exemplos): o ícone é de arquivar. Confirme: Casa e as subcategorias somem." data-md="0"> Casa foi usada (Mercado, Limpeza e Aluguel nos exemplos): o ícone é de arquivar. Confirme: Casa e as subcategorias somem.</label></li>
+<li><label><input type="checkbox" data-item="Marque &quot;Mostrar arquivadas&quot; (no fim da lista): Casa volta esmaecida, com &quot;5 subcategorias · arquivada&quot;, e cada subcategoria com &quot;arquivada&quot;. Só o botão de desarquivar aparece nelas." data-md="0"> Marque "Mostrar arquivadas" (no fim da lista): Casa volta esmaecida, com "5 subcategorias · arquivada", e cada subcategoria com "arquivada". Só o botão de desarquivar aparece nelas.</label></li>
+<li><label><input type="checkbox" data-item="Desarquive a Casa: ela e as cinco subcategorias voltam ao normal." data-md="0"> Desarquive a Casa: ela e as cinco subcategorias voltam ao normal.</label></li>
+<li><label><input type="checkbox" data-item="Arquive a Casa de novo e desarquive só o Mercado: a Casa volta junto, mas as outras subcategorias continuam arquivadas." data-md="0"> Arquive a Casa de novo e desarquive só o Mercado: a Casa volta junto, mas as outras subcategorias continuam arquivadas.</label></li>
+</ul>
+<h4>Cadastros → Tags</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Lista &quot;trabalho&quot; com &quot;usada em 2 lançamentos&quot; (ícone de arquivar) e &quot;viagem&quot; com &quot;sem uso&quot; (ícone de lixeira)." data-md="0"> Lista "trabalho" com "usada em 2 lançamentos" (ícone de arquivar) e "viagem" com "sem uso" (ícone de lixeira).</label></li>
+<li><label><input type="checkbox" data-item="&quot;Nova tag&quot; com &quot;#Mercado livre&quot;: salva como &quot;Mercado livre&quot;, sem o #." data-md="0"> "Nova tag" com "#Mercado livre": salva como "Mercado livre", sem o #.</label></li>
+<li><label><input type="checkbox" data-item="Criar &quot;Viagem&quot; mostra &quot;Já existe uma tag com esse nome.&quot;." data-md="0"> Criar "Viagem" mostra "Já existe uma tag com esse nome.".</label></li>
+<li><label><input type="checkbox" data-item="Arquive &quot;trabalho&quot;: ela some. Marque &quot;Mostrar arquivadas&quot;: volta com &quot;usada em 2 lançamentos · arquivada&quot;. Desarquive." data-md="0"> Arquive "trabalho": ela some. Marque "Mostrar arquivadas": volta com "usada em 2 lançamentos · arquivada". Desarquive.</label></li>
+<li><label><input type="checkbox" data-item="Depois de arquivar &quot;trabalho&quot;, tente criar uma tag &quot;Trabalho&quot;: aparece &quot;Já existe uma tag arquivada com esse nome. Desarquive-a em &quot;Mostrar arquivadas&quot;.&quot;." data-md="0"> Depois de arquivar "trabalho", tente criar uma tag "Trabalho": aparece "Já existe uma tag arquivada com esse nome. Desarquive-a em "Mostrar arquivadas".".</label></li>
+</ul>
+<h4>Cartões</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Abre com &quot;Cartões&quot;, o botão &quot;Novo cartão&quot;, a lista (Inter e Nubank, com &quot;Fecha dia N · vence dia N&quot;) e o primeiro cartão escolhido à direita." data-md="0"> Abre com "Cartões", o botão "Novo cartão", a lista (Inter e Nubank, com "Fecha dia N · vence dia N") e o primeiro cartão escolhido à direita.</label></li>
+<li><label><input type="checkbox" data-item="O quadro da direita mostra Fechamento, Vencimento e Conta de pagamento, e a seção &quot;Faturas&quot; com o aviso de que chegam na etapa 5." data-md="0"> O quadro da direita mostra Fechamento, Vencimento e Conta de pagamento, e a seção "Faturas" com o aviso de que chegam na etapa 5.</label></li>
+<li><label><input type="checkbox" data-item="Clicar no Nubank troca o quadro para ele, com o item destacado na lista." data-md="0"> Clicar no Nubank troca o quadro para ele, com o item destacado na lista.</label></li>
+<li><label><input type="checkbox" data-item="&quot;Novo cartão&quot;: sem nome, aparece &quot;Dê um nome ao cartão.&quot;; fechamento 32 mostra &quot;Fechamento e vencimento vão de 1 a 31.&quot;; sem conta, &quot;Escolha a conta que paga o cartão.&quot;." data-md="0"> "Novo cartão": sem nome, aparece "Dê um nome ao cartão."; fechamento 32 mostra "Fechamento e vencimento vão de 1 a 31."; sem conta, "Escolha a conta que paga o cartão.".</label></li>
+<li><label><input type="checkbox" data-item="O menu &quot;Pago pela conta&quot; mostra só contas ativas (sem as arquivadas)." data-md="0"> O menu "Pago pela conta" mostra só contas ativas (sem as arquivadas).</label></li>
+<li><label><input type="checkbox" data-item="Salve um cartão &quot;C6&quot; (fecha 1, vence 10, pago pela Carteira): ele aparece na lista já escolhido, com o botão &quot;Excluir&quot; (nunca usado)." data-md="0"> Salve um cartão "C6" (fecha 1, vence 10, pago pela Carteira): ele aparece na lista já escolhido, com o botão "Excluir" (nunca usado).</label></li>
+<li><label><input type="checkbox" data-item="&quot;Editar cartão&quot; no C6: troque o vencimento para 20 e aperte Enter: o quadro mostra &quot;Dia 20&quot;." data-md="0"> "Editar cartão" no C6: troque o vencimento para 20 e aperte Enter: o quadro mostra "Dia 20".</label></li>
+<li><label><input type="checkbox" data-item="Exclua o C6: pergunta &quot;Excluir &quot;C6&quot;?&quot; e ele some." data-md="0"> Exclua o C6: pergunta "Excluir "C6"?" e ele some.</label></li>
+<li><label><input type="checkbox" data-item="Os cartões dos exemplos mostram &quot;Arquivar&quot;. Arquive o Inter: ele some da lista. &quot;Mostrar arquivados&quot; traz ele esmaecido, com &quot;(arquivado)&quot; no título e o botão &quot;Desarquivar&quot;." data-md="0"> Os cartões dos exemplos mostram "Arquivar". Arquive o Inter: ele some da lista. "Mostrar arquivados" traz ele esmaecido, com "(arquivado)" no título e o botão "Desarquivar".</label></li>
+<li><label><input type="checkbox" data-item="Com o Inter arquivado, arquive a conta Inter em Cadastros. Volte em Cartões e tente desarquivar o Inter: aparece &quot;Desarquive antes a conta Inter, que paga este cartão.&quot;." data-md="0"> Com o Inter arquivado, arquive a conta Inter em Cadastros. Volte em Cartões e tente desarquivar o Inter: aparece "Desarquive antes a conta Inter, que paga este cartão.".</label></li>
+</ul>
+<h4>Boas-vindas (não mudou)</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Em Ajustes → &quot;Apagar tudo e voltar às boas-vindas&quot;, a tela de boas-vindas continua igual à da etapa 1, com Carteira/Banco, fechamento e vencimento funcionando como antes." data-md="0"> Em Ajustes → "Apagar tudo e voltar às boas-vindas", a tela de boas-vindas continua igual à da etapa 1, com Carteira/Banco, fechamento e vencimento funcionando como antes.</label></li>
+</ul>
+<h4>Tema</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Troque o Windows para o modo escuro: as telas de Cadastros e Cartões acompanham, com o texto legível em todas as linhas e janelas." data-md="0"> Troque o Windows para o modo escuro: as telas de Cadastros e Cartões acompanham, com o texto legível em todas as linhas e janelas.</label></li>
+</ul>
+</div>
+</main>
+<script>
+// Caixas do roteiro clicáveis, guardadas só neste navegador. Vale o clique,
+// a não ser que o item tenha mudado no .md depois dele: aí vale o .md.
+(function () {
+  var chave = 'centavinhos-roteiro-etapa-2';
+  var salvo = {};
+  try { salvo = JSON.parse(localStorage.getItem(chave) || '{}'); } catch (e) {}
+  var caixas = document.querySelectorAll('.roteiro input[type=checkbox]');
+  var contador = document.getElementById('contador-roteiro');
+  function atualizar() {
+    var feitos = 0;
+    caixas.forEach(function (caixa) {
+      if (caixa.checked) feitos++;
+      caixa.closest('li').classList.toggle('feito', caixa.checked);
+    });
+    if (contador) contador.textContent = feitos + ' de ' + caixas.length + ' conferidos';
+  }
+  caixas.forEach(function (caixa) {
+    var item = caixa.dataset.item;
+    var doMd = caixa.dataset.md === '1';
+    var anterior = salvo[item];
+    caixa.checked = anterior && anterior.md === doMd ? anterior.marcado : doMd;
+    caixa.addEventListener('change', function () {
+      salvo[item] = { marcado: caixa.checked, md: doMd };
+      try { localStorage.setItem(chave, JSON.stringify(salvo)); } catch (e) {}
+      atualizar();
+    });
+  });
+  var limpar = document.getElementById('limpar-roteiro');
+  if (limpar) {
+    limpar.addEventListener('click', function () {
+      try { localStorage.removeItem(chave); } catch (e) {}
+      location.reload();
+    });
+  }
+  atualizar();
+})();
+</script>
+</body>
+</html>
