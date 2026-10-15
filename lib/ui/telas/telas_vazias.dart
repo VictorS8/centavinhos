@@ -29,25 +29,3 @@ class TelaFiltros extends StatelessWidget {
     etapa: 8,
   );
 }
-
-class TelaCartoes extends StatelessWidget {
-  const TelaCartoes({super.key});
-
-  @override
-  Widget build(BuildContext context) => const TelaEmConstrucao(
-    titulo: 'Cartões',
-    descricao: 'Cartões com fechamento, vencimento e conta de pagamento, e as faturas por mês.',
-    etapa: 2,
-  );
-}
-
-class TelaCadastros extends StatelessWidget {
-  const TelaCadastros({super.key});
-
-  @override
-  Widget build(BuildContext context) => const TelaEmConstrucao(
-    titulo: 'Cadastros',
-    descricao: 'Contas com saldo inicial, categorias com subcategorias e tags.',
-    etapa: 2,
-  );
-}

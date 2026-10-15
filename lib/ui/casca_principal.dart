@@ -3,6 +3,8 @@ import 'package:material_ui/material_ui.dart';
 
 import 'brand/centavinhos_logo.dart';
 import 'telas/tela_ajustes.dart';
+import 'telas/cadastros/tela_cadastros.dart';
+import 'telas/cartoes/tela_cartoes.dart';
 import 'telas/telas_vazias.dart';
 
 /// Estrutura principal: barra lateral com o logo, o botão + e as telas.

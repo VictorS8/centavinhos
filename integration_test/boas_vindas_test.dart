@@ -86,7 +86,8 @@ void main() {
 
     for (final (destino, texto) in [
       ('Filtros', 'Esta tela chega na etapa 8.'),
-      ('Cartões', 'Esta tela chega na etapa 2.'),
+      ('Cartões', 'Nenhum cartão cadastrado'),
+      ('Cadastros', 'Nova conta'),
       ('Ajustes', 'Esta tela chega na etapa 10.'),
       ('Mês', 'Esta tela chega na etapa 4.'),
     ]) {
