@@ -54,8 +54,20 @@ Future<void> main(List<String> argumentos) async {
 
   if (comIntegracao) {
     stdout.writeln('3/3 flutter test integration_test -d windows (abre o app)...');
-    final integracao = await _rodar(['test', 'integration_test', '-d', 'windows', '--reporter', 'json']);
-    testes.addAll(_lerTestes(integracao.stdout));
+    // Um arquivo por vez: no Windows, com vários arquivos na mesma chamada,
+    // o app não abre do segundo em diante ("log reader stopped").
+    final arquivos = Directory('integration_test')
+        .listSync()
+        .whereType<File>()
+        .map((f) => _relativo(f.path))
+        .where((caminho) => caminho.endsWith('_test.dart'))
+        .toList()
+      ..sort();
+    for (final arquivo in arquivos) {
+      stdout.writeln('    $arquivo');
+      final integracao = await _rodar(['test', arquivo, '-d', 'windows', '--reporter', 'json']);
+      testes.addAll(_lerTestes(integracao.stdout));
+    }
   } else {
     stdout.writeln('3/3 testes de integração pulados (--sem-integracao).');
   }
