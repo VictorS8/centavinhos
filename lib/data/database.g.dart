@@ -1568,8 +1568,20 @@ class Tags extends Table with TableInfo<Tags, Tag> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL UNIQUE',
   );
+  static const VerificationMeta _arquivadaMeta = const VerificationMeta(
+    'arquivada',
+  );
+  late final GeneratedColumn<int> arquivada = GeneratedColumn<int>(
+    'arquivada',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, nome];
+  List<GeneratedColumn> get $columns => [id, nome, arquivada];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1593,6 +1605,12 @@ class Tags extends Table with TableInfo<Tags, Tag> {
     } else if (isInserting) {
       context.missing(_nomeMeta);
     }
+    if (data.containsKey('arquivada')) {
+      context.handle(
+        _arquivadaMeta,
+        arquivada.isAcceptableOrUnknown(data['arquivada']!, _arquivadaMeta),
+      );
+    }
     return context;
   }
 
@@ -1610,6 +1628,10 @@ class Tags extends Table with TableInfo<Tags, Tag> {
         DriftSqlType.string,
         data['${effectivePrefix}nome'],
       )!,
+      arquivada: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}arquivada'],
+      )!,
     );
   }
 
@@ -1625,17 +1647,23 @@ class Tags extends Table with TableInfo<Tags, Tag> {
 class Tag extends DataClass implements Insertable<Tag> {
   final int id;
   final String nome;
-  const Tag({required this.id, required this.nome});
+  final int arquivada;
+  const Tag({required this.id, required this.nome, required this.arquivada});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['nome'] = Variable<String>(nome);
+    map['arquivada'] = Variable<int>(arquivada);
     return map;
   }
 
   TagsCompanion toCompanion(bool nullToAbsent) {
-    return TagsCompanion(id: Value(id), nome: Value(nome));
+    return TagsCompanion(
+      id: Value(id),
+      nome: Value(nome),
+      arquivada: Value(arquivada),
+    );
   }
 
   factory Tag.fromJson(
@@ -1646,6 +1674,7 @@ class Tag extends DataClass implements Insertable<Tag> {
     return Tag(
       id: serializer.fromJson<int>(json['id']),
       nome: serializer.fromJson<String>(json['nome']),
+      arquivada: serializer.fromJson<int>(json['arquivada']),
     );
   }
   @override
@@ -1654,15 +1683,20 @@ class Tag extends DataClass implements Insertable<Tag> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'nome': serializer.toJson<String>(nome),
+      'arquivada': serializer.toJson<int>(arquivada),
     };
   }
 
-  Tag copyWith({int? id, String? nome}) =>
-      Tag(id: id ?? this.id, nome: nome ?? this.nome);
+  Tag copyWith({int? id, String? nome, int? arquivada}) => Tag(
+    id: id ?? this.id,
+    nome: nome ?? this.nome,
+    arquivada: arquivada ?? this.arquivada,
+  );
   Tag copyWithCompanion(TagsCompanion data) {
     return Tag(
       id: data.id.present ? data.id.value : this.id,
       nome: data.nome.present ? data.nome.value : this.nome,
+      arquivada: data.arquivada.present ? data.arquivada.value : this.arquivada,
     );
   }
 
@@ -1670,40 +1704,59 @@ class Tag extends DataClass implements Insertable<Tag> {
   String toString() {
     return (StringBuffer('Tag(')
           ..write('id: $id, ')
-          ..write('nome: $nome')
+          ..write('nome: $nome, ')
+          ..write('arquivada: $arquivada')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, nome);
+  int get hashCode => Object.hash(id, nome, arquivada);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Tag && other.id == this.id && other.nome == this.nome);
+      (other is Tag &&
+          other.id == this.id &&
+          other.nome == this.nome &&
+          other.arquivada == this.arquivada);
 }
 
 class TagsCompanion extends UpdateCompanion<Tag> {
   final Value<int> id;
   final Value<String> nome;
+  final Value<int> arquivada;
   const TagsCompanion({
     this.id = const Value.absent(),
     this.nome = const Value.absent(),
+    this.arquivada = const Value.absent(),
   });
-  TagsCompanion.insert({this.id = const Value.absent(), required String nome})
-    : nome = Value(nome);
+  TagsCompanion.insert({
+    this.id = const Value.absent(),
+    required String nome,
+    this.arquivada = const Value.absent(),
+  }) : nome = Value(nome);
   static Insertable<Tag> custom({
     Expression<int>? id,
     Expression<String>? nome,
+    Expression<int>? arquivada,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (nome != null) 'nome': nome,
+      if (arquivada != null) 'arquivada': arquivada,
     });
   }
 
-  TagsCompanion copyWith({Value<int>? id, Value<String>? nome}) {
-    return TagsCompanion(id: id ?? this.id, nome: nome ?? this.nome);
+  TagsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? nome,
+    Value<int>? arquivada,
+  }) {
+    return TagsCompanion(
+      id: id ?? this.id,
+      nome: nome ?? this.nome,
+      arquivada: arquivada ?? this.arquivada,
+    );
   }
 
   @override
@@ -1715,6 +1768,9 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     if (nome.present) {
       map['nome'] = Variable<String>(nome.value);
     }
+    if (arquivada.present) {
+      map['arquivada'] = Variable<int>(arquivada.value);
+    }
     return map;
   }
 
@@ -1722,7 +1778,8 @@ class TagsCompanion extends UpdateCompanion<Tag> {
   String toString() {
     return (StringBuffer('TagsCompanion(')
           ..write('id: $id, ')
-          ..write('nome: $nome')
+          ..write('nome: $nome, ')
+          ..write('arquivada: $arquivada')
           ..write(')'))
         .toString();
   }
@@ -6431,10 +6488,12 @@ typedef $CategoriasProcessedTableManager =
 typedef $TagsCreateCompanionBuilder = TagsCompanion Function({
   Value<int> id,
   required String nome,
+  Value<int> arquivada,
 });
 typedef $TagsUpdateCompanionBuilder = TagsCompanion Function({
   Value<int> id,
   Value<String> nome,
+  Value<int> arquivada,
 });
 
 final class $TagsReferences extends BaseReferences<_$AppDatabase, Tags, Tag> {
@@ -6474,6 +6533,11 @@ class $TagsFilterComposer extends Composer<_$AppDatabase, Tags> {
 
   ColumnFilters<String> get nome => $composableBuilder(
     column: $table.nome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get arquivada => $composableBuilder(
+    column: $table.arquivada,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6520,6 +6584,11 @@ class $TagsOrderingComposer extends Composer<_$AppDatabase, Tags> {
     column: $table.nome,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get arquivada => $composableBuilder(
+    column: $table.arquivada,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $TagsAnnotationComposer extends Composer<_$AppDatabase, Tags> {
@@ -6535,6 +6604,9 @@ class $TagsAnnotationComposer extends Composer<_$AppDatabase, Tags> {
 
   GeneratedColumn<String> get nome =>
       $composableBuilder(column: $table.nome, builder: (column) => column);
+
+  GeneratedColumn<int> get arquivada =>
+      $composableBuilder(column: $table.arquivada, builder: (column) => column);
 
   Expression<T> lancamentoTagsRefs<T extends Object>(
     Expression<T> Function($LancamentoTagsAnnotationComposer a) f,
@@ -6591,11 +6663,13 @@ class $TagsTableManager
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> nome = const Value.absent(),
-          }) => TagsCompanion(id: id, nome: nome),
+            Value<int> arquivada = const Value.absent(),
+          }) => TagsCompanion(id: id, nome: nome, arquivada: arquivada),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String nome,
-          }) => TagsCompanion.insert(id: id, nome: nome),
+            Value<int> arquivada = const Value.absent(),
+          }) => TagsCompanion.insert(id: id, nome: nome, arquivada: arquivada),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (

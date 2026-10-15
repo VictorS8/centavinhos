@@ -1,4 +1,5 @@
--- As doze tabelas do Centavinhos, iguais à seção "Modelo de dados" do escopo.
+-- As doze tabelas do Centavinhos, iguais à seção "Modelo de dados" do escopo,
+-- mais a coluna `arquivada` em tags (versão 2 do banco, etapa 2).
 -- O "AS Nome" no fim de cada tabela só dá nome à classe gerada pelo Drift.
 
 -- Carteira e bancos, com saldo inicial
@@ -42,7 +43,8 @@ CREATE TABLE categorias (
 -- Tags e hashtags num campo só
 CREATE TABLE tags (
   id INTEGER PRIMARY KEY,
-  nome TEXT NOT NULL UNIQUE
+  nome TEXT NOT NULL UNIQUE,
+  arquivada INTEGER NOT NULL DEFAULT 0
 ) AS Tag;
 
 CREATE TABLE recorrencias (

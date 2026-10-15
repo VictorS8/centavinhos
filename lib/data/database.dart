@@ -3,6 +3,10 @@ import 'package:drift/drift.dart';
 import '../domain/datas.dart';
 import 'categorias_padrao.dart';
 import 'configuracoes.dart';
+import 'daos/cartoes_dao.dart';
+import 'daos/categorias_dao.dart';
+import 'daos/contas_dao.dart';
+import 'daos/tags_dao.dart';
 
 part 'database.g.dart';
 
@@ -41,8 +45,15 @@ class NovoCartao {
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
+  late final contasDao = ContasDao(this);
+  late final cartoesDao = CartoesDao(this);
+  late final categoriasDao = CategoriasDao(this);
+  late final tagsDao = TagsDao(this);
+
+  /// 1: as doze tabelas do escopo (etapa 1).
+  /// 2: coluna `arquivada` em tags (etapa 2).
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -51,8 +62,8 @@ class AppDatabase extends _$AppDatabase {
       await _criarDadosIniciais();
     },
     onUpgrade: (m, de, para) async {
-      // Cada nova versão do banco ganha aqui o seu passo de migração,
-      // por exemplo: if (de < 2) { await m.addColumn(...); }
+      // Cada nova versão do banco ganha aqui o seu passo de migração.
+      if (de < 2) await m.addColumn(tags, tags.arquivada);
     },
     beforeOpen: (detalhes) async {
       await customStatement('PRAGMA foreign_keys = ON');
