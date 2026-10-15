@@ -14,6 +14,7 @@ class CampoValor extends StatefulWidget {
     this.permiteNegativo = false,
     this.textoApoio,
     this.onChanged,
+    this.onSubmitted,
   });
 
   final String rotulo;
@@ -25,6 +26,9 @@ class CampoValor extends StatefulWidget {
 
   /// Recebe o valor em centavos, com sinal.
   final ValueChanged<int>? onChanged;
+
+  /// Enter no campo.
+  final VoidCallback? onSubmitted;
 
   @override
   State<CampoValor> createState() => _CampoValorState();
@@ -60,6 +64,7 @@ class _CampoValorState extends State<CampoValor> {
         border: const OutlineInputBorder(),
       ),
       onChanged: (texto) => widget.onChanged?.call(_formatador.ler(texto).centavos),
+      onSubmitted: widget.onSubmitted == null ? null : (_) => widget.onSubmitted!(),
     );
   }
 }

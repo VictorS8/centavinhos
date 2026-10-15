@@ -1,14 +1,16 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../data/database.dart';
 import '../../data/dev/dados_exemplo.dart';
 import '../../data/providers.dart';
+import '../../domain/cadastros.dart';
 import '../brand/centavinhos_logo.dart';
 import '../hoje_provider.dart';
+import '../widgets/campo_dia.dart';
 import '../widgets/campo_valor.dart';
+import '../widgets/seletor_tipo_conta.dart';
 
 /// Primeira abertura: cadastra as contas com o saldo de hoje (ao menos uma)
 /// e, se a pessoa quiser, os cartões.
@@ -40,13 +42,8 @@ class _CartaoRascunho {
   final vencimento = TextEditingController();
   int? chaveConta;
 
-  int? get diaFechamento => _dia(fechamento.text);
-  int? get diaVencimento => _dia(vencimento.text);
-
-  static int? _dia(String texto) {
-    final dia = int.tryParse(texto);
-    return dia != null && dia >= 1 && dia <= 31 ? dia : null;
-  }
+  int? get diaFechamento => lerDiaDoMes(fechamento.text);
+  int? get diaVencimento => lerDiaDoMes(vencimento.text);
 }
 
 class _TelaBoasVindasState extends ConsumerState<TelaBoasVindas> {
@@ -292,15 +289,10 @@ class _LinhaConta extends StatelessWidget {
         const SizedBox(width: 12),
         Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'carteira', label: Text('Carteira')),
-              ButtonSegment(value: 'banco', label: Text('Banco')),
-            ],
-            selected: {conta.tipo},
-            showSelectedIcon: false,
-            onSelectionChanged: (selecao) {
-              conta.tipo = selecao.single;
+          child: SeletorTipoConta(
+            tipo: conta.tipo,
+            onChanged: (tipo) {
+              conta.tipo = tipo;
               aoMudar();
             },
           ),
@@ -349,23 +341,6 @@ class _LinhaCartao extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget campoDia(TextEditingController controle, String rotulo) => SizedBox(
-      width: 120,
-      child: TextField(
-        controller: controle,
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(2),
-        ],
-        decoration: InputDecoration(
-          labelText: rotulo,
-          hintText: '1 a 31',
-          border: const OutlineInputBorder(),
-        ),
-      ),
-    );
-
     final contaEscolhida = contas.any((c) => c.chave == cartao.chaveConta)
         ? cartao.chaveConta
         : null;
@@ -384,9 +359,9 @@ class _LinhaCartao extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        campoDia(cartao.fechamento, 'Fechamento'),
+        CampoDia(controle: cartao.fechamento, rotulo: 'Fechamento'),
         const SizedBox(width: 12),
-        campoDia(cartao.vencimento, 'Vencimento'),
+        CampoDia(controle: cartao.vencimento, rotulo: 'Vencimento'),
         const SizedBox(width: 12),
         Expanded(
           flex: 3,
