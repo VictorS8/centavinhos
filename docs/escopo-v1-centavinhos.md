@@ -228,7 +228,7 @@ A versão 1 tem sete telas, com um menu lateral simples e o botão + sempre vis�
 | Configurações | Tema e backup | Cor do tema, modo claro ou escuro, exportar e importar o arquivo do banco |
 | Boas-vindas | Primeira abertura | Só aparece com o banco vazio: cadastrar as contas com o saldo de hoje (ao menos uma) e, se quiser, os cartões. Depois vai para a tela do mês |
 
-Nenhum cadastro é apagado de vez: contas, cartões e categorias usados em lançamentos são arquivados, para não quebrar relatórios antigos.
+Nenhum cadastro usado é apagado de vez: contas, cartões, categorias e tags usados em lançamentos são arquivados, para não quebrar relatórios antigos. Os que nunca foram usados podem ser excluídos.
 
 **Categorias padrão**, criadas junto com o banco e editáveis em Cadastros:
 
@@ -368,7 +368,8 @@ CREATE TABLE categorias (
 -- Tags e hashtags num campo só
 CREATE TABLE tags (
   id INTEGER PRIMARY KEY,
-  nome TEXT NOT NULL UNIQUE
+  nome TEXT NOT NULL UNIQUE,
+  arquivada INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE recorrencias (

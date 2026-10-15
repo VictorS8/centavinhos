@@ -48,9 +48,7 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
 
 ### Etapa 2
 
-- **Tags com `arquivada` (banco na versão 2):** a tabela `tags` ganhou `arquivada INTEGER NOT NULL DEFAULT 0`, para seguir a mesma regra das contas, cartões e categorias. `schemaVersion = 2`, com `addColumn` no `onUpgrade`; o banco da etapa 1 é migrado sozinho ao abrir. Texto sugerido para o escopo (`docs/`, João altera):
-  - tabela `tags` no "Modelo de dados": acrescentar a linha `arquivada INTEGER NOT NULL DEFAULT 0`;
-  - seção "Telas": "Nenhum cadastro usado é apagado de vez: contas, cartões, categorias e tags usados em lançamentos são arquivados, para não quebrar relatórios antigos. Os que nunca foram usados podem ser excluídos."
+- **Tags com `arquivada` (banco na versão 2):** a tabela `tags` ganhou `arquivada INTEGER NOT NULL DEFAULT 0`, para seguir a mesma regra das contas, cartões e categorias. `schemaVersion = 2`, com `addColumn` no `onUpgrade`; o banco da etapa 1 é migrado sozinho ao abrir. O escopo já foi atualizado (a pedido de João, em 15/10/2026): a coluna nova na tabela `tags` do "Modelo de dados" e a frase sobre cadastros arquivados ou excluídos na seção "Telas".
 - **Excluir ou arquivar:** item nunca usado é excluído de vez, com confirmação; item usado só é arquivado. O ícone da linha mostra qual dos dois vai acontecer (lixeira ou caixa). "Usado" é:
   - conta: lançamento, transferência, cartão (mesmo arquivado) ou ajuste de fatura;
   - cartão: lançamento ou ajuste de fatura;
