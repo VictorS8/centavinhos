@@ -9,9 +9,12 @@ import 'package:centavinhos/data/dev/dados_exemplo.dart';
 import 'package:centavinhos/data/providers.dart';
 import 'package:centavinhos/ui/app.dart';
 import 'package:centavinhos/ui/hoje_provider.dart';
+import 'package:centavinhos/ui/lancamento/seletor_categorias.dart';
+import 'package:centavinhos/ui/widgets/campo_valor.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_ui/material_ui.dart';
@@ -276,6 +279,156 @@ void main() {
         dadosExemplo: true,
         destino: 'Cartões',
         depois: (tester) => tocar(tester, 'Editar cartão'),
+      );
+    });
+  });
+
+  group('lançamento', () {
+    Finder campo(String rotulo) => find.widgetWithText(TextField, rotulo);
+
+    Future<void> novoLancamento(WidgetTester tester) async {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      // A janela só pede os dados ao aparecer; a segunda espera deixa o
+      // banco responder.
+      await esperarBanco(tester);
+      await esperarBanco(tester);
+    }
+
+    /// Digita número a número, como o valor estilo caixa eletrônico pede.
+    Future<void> digitarValor(WidgetTester tester, Finder alvo, String digitos) async {
+      await tester.ensureVisible(alvo);
+      await tester.tap(alvo);
+      await tester.pump();
+      final editavel = find.descendant(of: alvo, matching: find.byType(EditableText));
+      for (final digito in digitos.split('')) {
+        final atual = tester.widget<EditableText>(editavel).controller.text;
+        tester.testTextInput.updateEditingValue(
+          TextEditingValue(
+            text: '$atual$digito',
+            selection: TextSelection.collapsed(offset: atual.length + 1),
+          ),
+        );
+        await tester.pump();
+      }
+    }
+
+    Future<void> escolherNoMenu(WidgetTester tester, String rotulo, String opcao) async {
+      await tocar(tester, rotulo);
+      await tester.tap(find.widgetWithText(MenuItemButton, opcao).last);
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> escolherCategoria(WidgetTester tester, String busca) async {
+      final alvo = find.descendant(
+        of: find.byKey(const ValueKey('busca')),
+        matching: find.byType(TextField),
+      );
+      await tester.enterText(alvo, busca);
+      await tester.pumpAndSettle();
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+    }
+
+    /// Escolhe a sugestão de nome conhecido, que preenche o resto.
+    Future<void> escolherNome(WidgetTester tester, String busca, String nome) async {
+      // Os nomes usados do tipo escolhido chegam do banco depois da troca.
+      await esperarBanco(tester);
+      await tester.enterText(campo('Nome'), busca);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(nome).last);
+      await esperarBanco(tester);
+    }
+
+    testWidgets('despesa com uma categoria, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_despesa_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await tester.enterText(campo('Nome'), 'Padaria do bairro');
+          await digitarValor(tester, campo('Valor'), '1850');
+          await escolherCategoria(tester, 'lanch');
+          await escolherNoMenu(tester, 'Conta ou cartão', 'Carteira');
+        },
+      );
+    });
+
+    // Como a imagem de referência docs/telas/03-novo-lancamento.png.
+    for (final modo in ['claro', 'escuro']) {
+      testWidgets('despesa no cartão com duas categorias, verde $modo', (tester) async {
+        await capturar(
+          tester,
+          'lancamento_cartao_multicategoria_verde_$modo',
+          windows: true,
+          modo: modo,
+          dadosExemplo: true,
+          depois: (tester) async {
+            await novoLancamento(tester);
+            await escolherNome(tester, 'atac', 'Mercado Atacadão');
+            await digitarValor(tester, campo('Valor'), '10000');
+            final valores = find.descendant(
+              of: find.byType(SeletorCategorias),
+              matching: find.byType(CampoValor),
+            );
+            await digitarValor(tester, valores.at(0), '8000');
+            await digitarValor(tester, valores.at(1), '2000');
+            await tester.enterText(campo('Data'), '06/10/2026');
+            await tester.pumpAndSettle();
+            await tester.tap(campo('Nome'));
+            await tester.pumpAndSettle();
+          },
+        );
+      });
+    }
+
+    testWidgets('ganho, roxo claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_ganho_roxo_claro',
+        windows: true,
+        cor: 'roxo',
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await tester.tap(find.text('Ganho'));
+          await esperarBanco(tester);
+          await escolherNome(tester, 'sal', 'Salário');
+          await digitarValor(tester, campo('Valor'), '400000');
+        },
+      );
+    });
+
+    testWidgets('sugestões de nome abertas, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_sugestoes_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await tester.enterText(campo('Nome'), 'a');
+          await tester.pumpAndSettle();
+        },
+      );
+    });
+
+    testWidgets('"Mais detalhes" aberto, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_mais_detalhes_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await escolherNome(tester, 'corrida', 'Corrida de aplicativo');
+          await digitarValor(tester, campo('Valor'), '2340');
+          await tester.enterText(campo('Observação'), 'Ida ao cliente');
+          await tester.pumpAndSettle();
+        },
       );
     });
   });
