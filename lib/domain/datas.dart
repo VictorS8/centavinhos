@@ -22,3 +22,28 @@ DateTime lerDataIso(String texto) {
   final [ano, mes, dia] = texto.split('-').map(int.parse).toList();
   return DateTime(ano, mes, dia);
 }
+
+/// Lê um mês no formato AAAA-MM. Devolve o primeiro dia dele.
+DateTime lerMesIso(String texto) {
+  final [ano, mes] = texto.split('-').map(int.parse).toList();
+  return DateTime(ano, mes);
+}
+
+const _nomesDosMeses = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
+/// Mês e ano como aparecem no campo Fatura, como "Novembro/2026".
+String mesAnoBr(DateTime mes) => '${_nomesDosMeses[mes.month - 1]}/${mes.year}';
+
+/// Último dia do [mes] de [ano] (28, 29, 30 ou 31).
+int ultimoDiaDoMes(int ano, int mes) => DateTime(ano, mes + 1, 0).day;
+
+/// O [dia] no [mes] de [ano] ou, se ele não existir naquele mês (31 em abril,
+/// 30 em fevereiro), o último dia do mês. [mes] pode passar de 12.
+DateTime diaNoMes(int ano, int mes, int dia) {
+  final primeiro = DateTime(ano, mes);
+  final ultimo = ultimoDiaDoMes(primeiro.year, primeiro.month);
+  return DateTime(primeiro.year, primeiro.month, dia > ultimo ? ultimo : dia);
+}
