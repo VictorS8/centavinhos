@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'brand/centavinhos_logo.dart';
+import 'lancamento/janela_lancamento.dart';
 import 'telas/tela_ajustes.dart';
 import 'telas/cadastros/tela_cadastros.dart';
 import 'telas/cartoes/tela_cartoes.dart';
@@ -26,19 +27,7 @@ class _CascaPrincipalState extends State<CascaPrincipal> {
     TelaAjustes(),
   ];
 
-  Future<void> _novoLancamento() => showDialog<void>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Novo lançamento'),
-      content: const Text('O lançamento rápido chega na etapa 3.'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Fechar'),
-        ),
-      ],
-    ),
-  );
+  Future<void> _novoLancamento() => abrirJanelaLancamento(context);
 
   @override
   Widget build(BuildContext context) {

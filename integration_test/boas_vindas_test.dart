@@ -1,4 +1,5 @@
 import 'package:centavinhos/data/configuracoes.dart';
+import 'package:centavinhos/ui/lancamento/janela_lancamento.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -71,12 +72,12 @@ void main() {
     final configuracoes = await banco.observarConfiguracoes().first;
     expect(configuracoes[ChaveConfiguracao.boasVindasConcluida], '1');
 
-    // 7. Ctrl+N abre o aviso de novo lançamento e Esc fecha.
+    // 7. Ctrl+N abre a janela de novo lançamento e Esc fecha.
     await apertarCtrl(tester, LogicalKeyboardKey.keyN);
-    expect(find.text('O lançamento rápido chega na etapa 3.'), findsOneWidget);
+    expect(find.byType(JanelaLancamento), findsOneWidget);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
-    expect(find.text('O lançamento rápido chega na etapa 3.'), findsNothing);
+    expect(find.byType(JanelaLancamento), findsNothing);
   });
 
   testWidgets('barra lateral troca de tela e mantém o botão +', (tester) async {
@@ -99,7 +100,7 @@ void main() {
     await tester.tap(find.byTooltip('Novo lançamento (Ctrl+N)'));
     await tester.pumpAndSettle();
     expect(find.text('Novo lançamento'), findsOneWidget);
-    await tester.tap(find.text('Fechar'));
+    await tester.tap(find.byTooltip('Fechar'));
     await tester.pumpAndSettle();
   });
 }
