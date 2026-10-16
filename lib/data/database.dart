@@ -6,6 +6,7 @@ import 'configuracoes.dart';
 import 'daos/cartoes_dao.dart';
 import 'daos/categorias_dao.dart';
 import 'daos/contas_dao.dart';
+import 'daos/lancamentos_dao.dart';
 import 'daos/tags_dao.dart';
 
 part 'database.g.dart';
@@ -49,6 +50,7 @@ class AppDatabase extends _$AppDatabase {
   late final cartoesDao = CartoesDao(this);
   late final categoriasDao = CategoriasDao(this);
   late final tagsDao = TagsDao(this);
+  late final lancamentosDao = LancamentosDao(this);
 
   /// 1: as doze tabelas do escopo (etapa 1).
   /// 2: coluna `arquivada` em tags (etapa 2).

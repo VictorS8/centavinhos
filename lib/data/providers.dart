@@ -46,3 +46,9 @@ final categoriasProvider = StreamProvider<List<CategoriaComUso>>(
 final tagsProvider = StreamProvider<List<TagComUso>>(
   (ref) => ref.watch(bancoProvider).tagsDao.observar(),
 );
+
+/// Nomes já usados em lançamentos de um tipo ('ganho' ou 'despesa'), do mais
+/// recente para o mais antigo.
+final nomesUsadosProvider = StreamProvider.family<List<String>, String>(
+  (ref, tipo) => ref.watch(bancoProvider).lancamentosDao.observarNomes(tipo),
+);

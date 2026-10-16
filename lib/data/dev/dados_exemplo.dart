@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../domain/datas.dart';
+import '../../domain/fatura.dart';
 import '../configuracoes.dart';
 import '../database.dart';
 
@@ -16,9 +17,10 @@ Future<void> gerarDadosExemplo(AppDatabase db, {DateTime? hoje}) async {
 }
 
 class _CartaoExemplo {
-  const _CartaoExemplo(this.id, this.diaFechamento);
+  const _CartaoExemplo(this.id, this.diaFechamento, this.diaVencimento);
   final int id;
   final int diaFechamento;
+  final int diaVencimento;
 }
 
 class _Gerador {
@@ -54,8 +56,6 @@ class _Gerador {
     final nubank = await conta('Nubank', 'banco', 164000);
     final inter = await conta('Inter', 'banco', 10000);
 
-    // Cartões. Nos dois o vencimento é depois do fechamento, então a fatura
-    // é a do mês em que ela fecha.
     Future<_CartaoExemplo> cartao(String nome, int fecha, int vence, int contaId) async =>
         _CartaoExemplo(
           await db.into(db.cartoes).insert(
@@ -67,6 +67,7 @@ class _Gerador {
             ),
           ),
           fecha,
+          vence,
         );
     final cartaoNubank = await cartao('Nubank', 5, 12, nubank);
     final cartaoInter = await cartao('Inter', 8, 15, inter);
@@ -95,18 +96,18 @@ class _Gerador {
       String? grupo,
       int? recorrenciaId,
     }) async {
-      // Mês da fatura simplificado, só para os exemplos. A regra completa
-      // chega na etapa 5. Cada parcela vai para a fatura seguinte à anterior.
-      final mesFatura = noCartao == null
+      // Cada parcela vai para a fatura seguinte à anterior.
+      final primeiraFatura = noCartao == null
+          ? null
+          : mesDaFatura(
+              data,
+              diaFechamento: noCartao.diaFechamento,
+              diaVencimento: noCartao.diaVencimento,
+            );
+      final mesFatura = primeiraFatura == null
           ? null
           : mesIso(
-              DateTime(
-                data.year,
-                data.month +
-                    (data.day < noCartao.diaFechamento ? 0 : 1) +
-                    (parcelaAtual ?? 1) -
-                    1,
-              ),
+              DateTime(primeiraFatura.year, primeiraFatura.month + (parcelaAtual ?? 1) - 1),
             );
       final id = await db.into(db.lancamentos).insert(
         LancamentosCompanion.insert(
