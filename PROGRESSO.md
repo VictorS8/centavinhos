@@ -6,7 +6,7 @@ Diário das etapas da "Ordem de construção" do escopo. Atualizado ao fim de ca
 
 - [x] 1. Base do app (14/10/2026)
 - [x] 2. Cadastros (15/10/2026)
-- [ ] 3. Lançamento rápido
+- [x] 3. Lançamento rápido (16/10/2026)
 - [ ] 4. Tela do mês
 - [ ] 5. Cartão
 - [ ] 6. Recorrência mensal e total do próximo mês
@@ -66,17 +66,78 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
 - **Relatório roda um arquivo de integração por vez:** no Windows, `flutter test integration_test -d windows` com vários arquivos não consegue abrir o app do segundo em diante ("The log reader stopped unexpectedly"). O `tool/relatorio.dart` agora chama cada `integration_test/*_test.dart` separado.
 - **Testes de tela com o banco:** nos testes de `test/`, mudanças no banco com a tela aberta, dentro de `runAsync`, travam (as consultas da tela seguram o banco no relógio falso do teste). Prepare o banco antes de abrir o app (parâmetro `antes` das capturas) e sempre desmonte o app no fim, mesmo quando o teste falha (`testarTela` em `test/ui/cadastros_test.dart`).
 
+### Etapa 3
+
+- **Mês da fatura adiantado da etapa 5** (decidido em 16/10/2026): a regra está em `lib/domain/fatura.dart` (`mesDaFatura` e `vencimentoDaFatura`), com os testes do escopo. O campo Fatura já aparece calculado e editável. Trocado à mão, ele grava `fatura_manual = 1` e não muda mais com a data nem com o cartão; escolher de novo o mês calculado volta ao cálculo automático. O menu oferece do segundo mês antes ao terceiro depois do calculado. O gerador de exemplos passou a usar a regra.
+- **Categoria principal pode ser escolhida direto** (decidido em 16/10/2026): a busca mostra "Casa" e "Casa, Mercado". O lançamento numa principal aparece só com o nome dela.
+- **Enter salva de qualquer campo** quando o Salvar está liberado, e não só do último (decidido em 16/10/2026):
+  - nos campos com sugestões (Nome, Categoria e Tags), o Enter com a lista aberta escolhe a sugestão marcada;
+  - nos menus (Recorrência, Conta ou cartão e Fatura), o Enter com o menu aberto escolhe a opção;
+  - em Tags, o Enter com um texto adiciona a tag e só salva com o campo vazio;
+  - com o Salvar travado, o Enter não faz nada e o cursor fica no campo.
+- **Esc fecha a janela de qualquer campo.** Com uma lista de sugestões ou um menu aberto, o primeiro Esc fecha só a lista. Foi preciso tratar o Esc à parte nos menus (o `DropdownMenu` engolia o Esc mesmo fechado) e nos campos com sugestões.
+- **Fora do Tab:**
+  - a setinha dos menus;
+  - o ícone do calendário do `CampoData`, também nos Cadastros: o roteiro da etapa 2 citava o calendário na ordem do Tab, e isso mudou;
+  - o X das etiquetas de categoria e de tag (só com o mouse);
+  - o X do título da janela.
+
+  Assim a ordem é a do escopo: nome, valor, recorrência, categoria (e os valores de cada uma), conta ou cartão, data, fatura e "Mais detalhes".
+- **Recorrência e transferência ainda desativadas:**
+  - o campo Recorrência só tem "Única" ativa, e "Mensal" e "Parcelada" mostram "chega na etapa 6" e "chega na etapa 5";
+  - o segmento Transferência mostra "Chega na etapa 7";
+  - um nome conhecido que era recorrente preenche "Única" por enquanto (o `Preenchimento.recorrente` já diz se era).
+- **Tags pelo formulário:**
+  - a tag nova é criada ao salvar, pelo `TagsDao.criar`;
+  - uma tag arquivada digitada é reaproveitada e desarquivada sozinha, sem criar outra;
+  - uma tag digitada com outra grafia ("Trabalho") usa a grafia já cadastrada ("trabalho").
+- **Sugestões de nome:**
+  - vêm dos lançamentos do mesmo tipo (ganho ou despesa; estornos ficam fora);
+  - o nome precisa conter o texto digitado, sem diferenciar maiúsculas nem acentos;
+  - os mais recentes vêm primeiro, até 8;
+  - um nome escrito de jeitos diferentes aparece uma vez;
+  - ao voltar ao campo com o nome já escolhido (ou já preenchido numa edição), a lista não reabre.
+- **"Última vez" do nome conhecido:** é o lançamento mais recente com o mesmo nome e tipo (maior `id`). Conta, cartão, categorias e tags arquivados ficam de fora do preenchimento. Escolher o nome troca tudo isso, mesmo que já estivesse preenchido.
+- **Trocar entre Ganho e Despesa** tira as categorias do outro tipo e, no Ganho, o cartão.
+- **Contador da multicategoria:**
+  - fica verde (cor principal) quando a soma bate e cinza enquanto não bate;
+  - mostra "sobram R$ X" quando passa do total;
+  - uma categoria com o valor vazio também trava o Salvar ("Distribua o valor entre as categorias.").
+- **Data do lançamento** aceita qualquer data válida: futura, passada ou antes do saldo inicial.
+- **Observação** tem uma linha só, para o Enter salvar.
+- **Mensagem ao salvar:** "Lançamento "Nome" salvo." no rodapé, sem "Desfazer". O "Desfazer" do escopo fica para o excluir, na etapa 4.
+- **Edição pronta, sem clique ainda:**
+  - `abrirJanelaLancamento(context, lancamento: await dao.carregar(id))` abre "Editar lançamento" preenchida;
+  - o `LancamentosDao.salvar(dados, id: id)` troca dados, categorias e tags, e mantém parcelas, recorrência e `criado_em`;
+  - numa edição, a conta ou o cartão atual aparece no menu mesmo arquivado.
+- **`criado_em`** usa o relógio real (`DateTime.now()`), e não o `hojeProvider`, porque é a hora em que o registro foi gravado.
+- **Mudanças nos widgets da etapa 1 e 2:**
+  - o `CampoValor` ganhou rótulo opcional (os valores das categorias não têm rótulo, como na imagem) e foco de fora;
+  - no `CampoValor` e no `CampoData`, o Enter não tira mais o foco do campo, o que vale também nos Cadastros.
+- **Lista de sugestões com contorno, sem sombra:** nas capturas dos testes, as sombras saem como uma borda preta; com o contorno, o app e as capturas ficam iguais.
+- **Testes de tela com a janela de lançamento:** a janela só pede os dados ao banco quando aparece, então os testes esperam o banco duas vezes depois do Ctrl+N (e depois de trocar para Ganho). Com uma espera só, as sugestões de nome às vezes ainda não chegaram.
+
 ## Pendências para etapas seguintes
 
 Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembrar.
 
-- **Etapa 3:** o botão + e o Ctrl+N abrem um aviso provisório (`_novoLancamento` em `lib/ui/casca_principal.dart`). O `CampoValor` e o `CampoData` já estão prontos. Os seletores de conta, cartão, categoria e tag do formulário devem mostrar só os itens não arquivados (os providers `contasProvider`, `cartoesProvider`, `categoriasProvider` e `tagsProvider` trazem todos, com a marca de arquivado). Criar tag pelo formulário deve passar pelo `TagsDao.criar`, que tira o "#".
-- **Etapa 3:** decidir se uma categoria principal que tem subcategorias pode ser escolhida direto num lançamento ou só as subcategorias.
+- **Etapa 4:** ligar o clique num lançamento da lista à edição: `abrirJanelaLancamento(context, lancamento: await banco.lancamentosDao.carregar(id))`. Também ficam aqui:
+  - o excluir com confirmação e "Desfazer";
+  - as perguntas "só este / este e os próximos / todos" em parcelas e recorrências.
+
+  A janela não sabe editar estornos (o `LancamentosDao.salvar` só aceita ganho e despesa).
 - **Etapa 4:** `TelaMes` (`lib/ui/telas/telas_vazias.dart`) ainda é provisória e só mostra o mês atual. O `hojeProvider` guarda a data de quando o app abriu: se o app ficar aberto na virada do dia, ele não muda sozinho. Resolver aqui ou, no máximo, na etapa 7 (saldo de hoje).
 - **Etapa 2 em diante:** as boas-vindas rolam a tela quando há várias contas e cartões, e o botão "Começar" pode ficar abaixo da dobra em 1280 × 800. Nos testes de integração, use `tester.ensureVisible` antes de tocar em botões no fim de telas longas.
-- **Etapa 5:** mudar o fechamento ou o vencimento de um cartão em "Editar cartão" deve recalcular o `mes_fatura` (e o `mes_referencia`) dos lançamentos desse cartão que não têm `fatura_manual = 1`. Hoje a edição só grava o cartão, porque ainda não há lançamentos no cartão fora dos exemplos. A seção "Faturas" da tela de Cartões (`lib/ui/telas/cartoes/tela_cartoes.dart`) é um aviso provisório.
-- **Etapa 5:** o gerador de exemplo (`lib/data/dev/dados_exemplo.dart`) calcula o mês da fatura de forma simplificada, que só funciona com vencimento depois do fechamento. Trocar pela regra de `lib/domain/` quando ela existir. Nos exemplos, a `descricao` das parcelas é guardada sem o "(1/3)", que fica em `parcela_atual`/`total_parcelas`; a etapa 5 confirma esse formato.
+- **Etapa 5:** mudar o fechamento ou o vencimento de um cartão em "Editar cartão" deve recalcular o `mes_fatura` (e o `mes_referencia`) dos lançamentos desse cartão que não têm `fatura_manual = 1`. Hoje a edição só grava o cartão, e já há lançamentos no cartão feitos pela janela de lançamento. A seção "Faturas" da tela de Cartões (`lib/ui/telas/cartoes/tela_cartoes.dart`) é um aviso provisório.
+- **Etapa 5:** o mês da fatura (`lib/domain/fatura.dart`) e o campo Fatura já existem. Faltam:
+  - ligar "Parcelada" no campo Recorrência (`_unica` e as opções em `lib/ui/lancamento/janela_lancamento.dart`);
+  - a chave "Estorno" ao lado de "Conta ou cartão".
+
+  Numa compra parcelada, a fatura trocada à mão vale para a primeira parcela. Nos exemplos, a `descricao` das parcelas é guardada sem o "(1/3)", que fica em `parcela_atual`/`total_parcelas`; a etapa 5 confirma esse formato.
+- **Etapa 6:** ligar "Mensal" no campo Recorrência. O nome conhecido deve repetir a recorrência (`Preenchimento.recorrente`, em `lib/data/daos/lancamentos_dao.dart`). Hoje, editar um lançamento recorrente mostra "Única" no campo.
+- **Etapa 7:** ligar o segmento Transferência da janela de lançamento e o aviso ao salvar ("Com este lançamento, Nubank fica em −R$ 200,00 em 20/10").
 - **Etapa 7:** mudar o saldo inicial ou a data dele numa conta muda todo o saldo calculado dela; o cálculo deve sempre ler esses campos na hora, nunca guardar saldo.
+- **Etapa 8:** como a categoria principal pode ser escolhida direto num lançamento, um filtro por "Casa" deve pegar o que foi lançado em "Casa" e em todas as subcategorias dela; um filtro por "Casa, Mercado" pega só o Mercado. No PDF, a coluna "Categoria + subcategoria" mostra só "Casa" nesses lançamentos.
 - **Etapa 8:** o "está em uso?" dos cadastros (`emUso` em `lib/data/daos/`) não olha os filtros salvos. Quando os filtros existirem, uma conta, um cartão, uma categoria ou uma tag usados num filtro também devem contar como usados, para não serem excluídos e deixarem o filtro com um critério que não existe.
 - **Etapa 10:** o tema já lê `tema_cor` e `tema_modo` do banco e muda na hora; falta só a tela. A cor de destaque do Windows é lida uma vez ao abrir o app.
 
