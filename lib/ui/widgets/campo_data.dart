@@ -92,13 +92,18 @@ class _CampoDataState extends State<CampoData> {
         hintText: 'dd/mm/aaaa',
         helperText: widget.textoApoio,
         border: const OutlineInputBorder(),
-        suffixIcon: IconButton(
-          onPressed: _abrirCalendario,
-          tooltip: 'Abrir calendário',
-          icon: const Icon(Icons.calendar_today_outlined),
+        // Fora do Tab, que vai direto ao próximo campo; abre com o mouse.
+        suffixIcon: ExcludeFocusTraversal(
+          child: IconButton(
+            onPressed: _abrirCalendario,
+            tooltip: 'Abrir calendário',
+            icon: const Icon(Icons.calendar_today_outlined),
+          ),
         ),
       ),
       onChanged: (_) => widget.onChanged?.call(_ler()),
+      // Sem isto, o Enter tiraria o foco do campo mesmo sem salvar.
+      onEditingComplete: widget.onSubmitted == null ? null : () {},
       onSubmitted: widget.onSubmitted == null ? null : (_) => widget.onSubmitted!(),
     );
   }

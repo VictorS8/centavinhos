@@ -9,15 +9,18 @@ import '../../domain/valor_caixa_eletronico.dart';
 class CampoValor extends StatefulWidget {
   const CampoValor({
     super.key,
-    required this.rotulo,
+    this.rotulo,
     this.valorInicial = 0,
     this.permiteNegativo = false,
     this.textoApoio,
+    this.foco,
     this.onChanged,
     this.onSubmitted,
   });
 
-  final String rotulo;
+  /// Sem rótulo, como nos valores de cada categoria do lançamento.
+  final String? rotulo;
+  final FocusNode? foco;
 
   /// Em centavos.
   final int valorInicial;
@@ -55,6 +58,7 @@ class _CampoValorState extends State<CampoValor> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controle,
+      focusNode: widget.foco,
       inputFormatters: [_formatador],
       keyboardType: TextInputType.number,
       textAlign: TextAlign.end,
@@ -64,6 +68,8 @@ class _CampoValorState extends State<CampoValor> {
         border: const OutlineInputBorder(),
       ),
       onChanged: (texto) => widget.onChanged?.call(_formatador.ler(texto).centavos),
+      // Sem isto, o Enter tiraria o foco do campo mesmo sem salvar.
+      onEditingComplete: widget.onSubmitted == null ? null : () {},
       onSubmitted: widget.onSubmitted == null ? null : (_) => widget.onSubmitted!(),
     );
   }
