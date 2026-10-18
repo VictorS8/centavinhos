@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/mes.dart';
 import 'conexao.dart';
 import 'configuracoes.dart';
 import 'daos/cartoes_dao.dart';
@@ -51,4 +52,9 @@ final tagsProvider = StreamProvider<List<TagComUso>>(
 /// recente para o mais antigo.
 final nomesUsadosProvider = StreamProvider.family<List<String>, String>(
   (ref, tipo) => ref.watch(bancoProvider).lancamentosDao.observarNomes(tipo),
+);
+
+/// Lançamentos e transferências de um mês (AAAA-MM), na ordem da lista.
+final itensDoMesProvider = StreamProvider.family<List<ItemDoMes>, String>(
+  (ref, mes) => ref.watch(bancoProvider).mesDao.observar(mes),
 );
