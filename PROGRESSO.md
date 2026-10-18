@@ -7,7 +7,7 @@ Diário das etapas da "Ordem de construção" do escopo. Atualizado ao fim de ca
 - [x] 1. Base do app (14/10/2026)
 - [x] 2. Cadastros (15/10/2026)
 - [x] 3. Lançamento rápido (16/10/2026)
-- [ ] 4. Tela do mês
+- [x] 4. Tela do mês (16/10/2026)
 - [ ] 5. Cartão
 - [ ] 6. Recorrência mensal e total do próximo mês
 - [ ] 7. Saldo, transferências, ajuste de fatura e aviso de saldo negativo
@@ -117,28 +117,63 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
 - **Lista de sugestões com contorno, sem sombra:** nas capturas dos testes, as sombras saem como uma borda preta; com o contorno, o app e as capturas ficam iguais.
 - **Testes de tela com a janela de lançamento:** a janela só pede os dados ao banco quando aparece, então os testes esperam o banco duas vezes depois do Ctrl+N (e depois de trocar para Ganho). Com uma espera só, as sugestões de nome às vezes ainda não chegaram.
 
+### Etapa 4
+
+- **Partes de outras etapas fora da tela** (decidido em 16/10/2026): o seletor de filtro, os dois outros cartões de gastos, a linha de Saldo e o "Gerar PDF" não aparecem, nem desativados. O cartão "Total do mês, sem filtro" ocupa um terço da largura, no lugar que tem na imagem.
+- **Total sem filtro:** despesas − estornos do mês, pelo `mes_referencia` (regra `totalDeGastos` em `lib/domain/mes.dart`). Ganhos e transferências ficam fora. Só estornos dariam um total negativo ("−R$").
+- **Lista:**
+  - entram ganhos, despesas, estornos (pelo `mes_referencia`) e transferências (pela data);
+  - ordem: data mais recente primeiro; no mesmo dia, lançamentos antes de transferências e o último criado primeiro;
+  - o círculo tem a inicial da categoria principal da primeira categoria. Na imagem, o Fone mostrava "E" (Eletrônicos); aqui mostra "C" (Compras), como as outras linhas da imagem;
+  - embaixo, a primeira categoria e a conta, ou o cartão com o vencimento da fatura ("Casa, Mercado · Nubank, vence 12/10");
+  - valores: ganho "+R$" na cor principal, estorno "−R$" com a etiqueta "estorno", transferência em cor neutra;
+  - transferência: o nome gerado do escopo ("Transferência Nubank para Inter"), o ícone de setas no círculo e "Nubank → Inter" embaixo.
+- **Divisão:** a etiqueta "+N categoria" (preenchida com a cor terciária) abre uma caixa com o valor de cada categoria e o total. Ela fica fora do Tab, porque a divisão também aparece na janela de edição.
+- **Esc fecha a divisão** (correção pedida em 18/10/2026, nos testes manuais): o `MenuAnchor` só fecha com Esc quando o foco está dentro dele, e a divisão não tem nada que receba foco. Agora a caixa pega o foco ao abrir, fecha com um Esc próprio e devolve o foco para onde estava (por exemplo, a linha). Clicar fora continua fechando, sem abrir a edição.
+- **Teclado na lista:** o Tab passa pelas linhas, Enter abre a edição e Delete exclui.
+- **Anel de foco nas linhas** (correção pedida em 18/10/2026, nos testes manuais): o clareado do Material 3 quase não aparecia na linha com foco. A linha ganha o mesmo anel dos botões (`anelDeFoco`, 3 px de `onSurface`), por dentro dela e com cantos arredondados, para as bordas da lista não cortarem. Como nos botões, ele só aparece com o foco vindo do teclado; um clique com o mouse não acende o anel.
+- **Estorno e transferência ainda não abrem a edição** (decidido em 16/10/2026): o clique mostra "Editar estornos chega na etapa 5." ou "Editar transferências chega na etapa 7.". O Delete já exclui os dois, com o "Desfazer".
+- **Excluir:**
+  - pelo botão vermelho "Excluir", à esquerda na janela de edição (a confirmação abre sobre a janela, e as duas fecham juntas), ou pela tecla Delete na lista;
+  - lançamento sozinho: "Excluir "Padaria"?", com "Cancelar" e "Excluir", e o foco já no "Excluir";
+  - parcela ou recorrente: "Só este", "Este e os próximos" e "Todos", cada um com quantos saem ("2 parcelas", "3 meses"), e o foco em "Só este". Transferência recorrente usa "Só esta", "Esta e as próximas" e "Todas";
+  - num lançamento com parcelas e recorrência ao mesmo tempo, valem as parcelas;
+  - "Este e os próximos" segue a parcela nas compras parceladas e a data nas recorrências.
+- **Recorrência ao excluir** (para a etapa 6 não recriar o que foi apagado):
+  - "este e os próximos" grava `data_fim` = dia anterior ao lançamento, se o fim não for antes disso;
+  - "todos" grava `ativa = 0`;
+  - "só este" não mexe na recorrência.
+- **"Desfazer":** a mensagem fica 6 segundos e devolve tudo com os mesmos ids, a mesma data de criação, as categorias e tags na mesma ordem e a recorrência como estava. As linhas de categoria e tag voltam com outro `rowid`, mas na mesma ordem dentro do lançamento, que é a que a janela usa.
+- **Mensagens com botão somem sozinhas:** no `material_ui`, um `SnackBar` com botão fica na tela até alguém fechar (`persist` vem ligado). O "Desfazer" e o "Ver" usam `persist: false`.
+- **"Ver" na mensagem de salvo** (decidido em 16/10/2026, além do escopo): aparece quando o lançamento salvo não está na tela agora (cai em outro mês ou a tela aberta não é a do mês). Ele leva para a tela do mês, no mês do lançamento.
+- **Mês e tela em providers:** `telaAtualProvider` e `mesSelecionadoProvider` ficam em `lib/ui/navegacao.dart` (o plano dizia `mes_provider.dart`). O mês não muda ao trocar de tela.
+- **Trocar de mês volta a lista para o topo**, com os totais à vista (além do plano).
+- **Virada do dia:** o `hojeProvider` se lê de novo um segundo depois da meia-noite. Se a tela estava no mês atual, ela passa para o mês novo na virada do mês; se você tinha navegado para outro mês, ela fica onde está.
+- **Testes:** os testes da janela de lançamento (`test/ui/lancamento_test.dart` e o segundo de `integration_test/lancamento_test.dart`) abrem a janela sobre a tela de Filtros, ainda vazia: na tela do mês, a lista atrás da janela repete os nomes das sugestões. As capturas `lancamento_*` foram geradas de novo, porque o fundo agora é a lista do mês.
+
 ## Pendências para etapas seguintes
 
 Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembrar.
 
-- **Etapa 4:** ligar o clique num lançamento da lista à edição: `abrirJanelaLancamento(context, lancamento: await banco.lancamentosDao.carregar(id))`. Também ficam aqui:
-  - o excluir com confirmação e "Desfazer";
-  - as perguntas "só este / este e os próximos / todos" em parcelas e recorrências.
-
-  A janela não sabe editar estornos (o `LancamentosDao.salvar` só aceita ganho e despesa).
-- **Etapa 4:** `TelaMes` (`lib/ui/telas/telas_vazias.dart`) ainda é provisória e só mostra o mês atual. O `hojeProvider` guarda a data de quando o app abriu: se o app ficar aberto na virada do dia, ele não muda sozinho. Resolver aqui ou, no máximo, na etapa 7 (saldo de hoje).
 - **Etapa 2 em diante:** as boas-vindas rolam a tela quando há várias contas e cartões, e o botão "Começar" pode ficar abaixo da dobra em 1280 × 800. Nos testes de integração, use `tester.ensureVisible` antes de tocar em botões no fim de telas longas.
 - **Etapa 5:** mudar o fechamento ou o vencimento de um cartão em "Editar cartão" deve recalcular o `mes_fatura` (e o `mes_referencia`) dos lançamentos desse cartão que não têm `fatura_manual = 1`. Hoje a edição só grava o cartão, e já há lançamentos no cartão feitos pela janela de lançamento. A seção "Faturas" da tela de Cartões (`lib/ui/telas/cartoes/tela_cartoes.dart`) é um aviso provisório.
 - **Etapa 5:** o mês da fatura (`lib/domain/fatura.dart`) e o campo Fatura já existem. Faltam:
   - ligar "Parcelada" no campo Recorrência (`_unica` e as opções em `lib/ui/lancamento/janela_lancamento.dart`);
   - a chave "Estorno" ao lado de "Conta ou cartão".
 
-  Numa compra parcelada, a fatura trocada à mão vale para a primeira parcela. Nos exemplos, a `descricao` das parcelas é guardada sem o "(1/3)", que fica em `parcela_atual`/`total_parcelas`; a etapa 5 confirma esse formato.
+  Numa compra parcelada, a fatura trocada à mão vale para a primeira parcela. Nos exemplos, a `descricao` das parcelas é guardada sem o "(1/3)", que fica em `parcela_atual`/`total_parcelas`; a etapa 5 confirma esse formato (a lista do mês já monta o "(1/3)" com `nomeComParcela`).
+- **Etapa 5:** editar estornos. A janela não sabe abrir um (o `LancamentosDao.salvar` só aceita ganho e despesa), e o clique no estorno da lista mostra "chega na etapa 5" (`_abrir` em `lib/ui/telas/mes/tela_mes.dart`).
+- **Etapa 5:** ao editar uma parcela, perguntar "só este / este e os próximos / todos" (decidido em 16/10/2026). Hoje a edição mexe só na parcela aberta. A pergunta do excluir (`DialogoExcluir`, em `lib/ui/lancamento/excluir_lancamento.dart`) e a regra `idsAExcluir` (`lib/domain/exclusao.dart`) podem ser reaproveitadas.
 - **Etapa 6:** ligar "Mensal" no campo Recorrência. O nome conhecido deve repetir a recorrência (`Preenchimento.recorrente`, em `lib/data/daos/lancamentos_dao.dart`). Hoje, editar um lançamento recorrente mostra "Única" no campo.
-- **Etapa 7:** ligar o segmento Transferência da janela de lançamento e o aviso ao salvar ("Com este lançamento, Nubank fica em −R$ 200,00 em 20/10").
+- **Etapa 6:** ao editar um recorrente, perguntar "só este" ou "este e os próximos". Hoje a edição mexe só no lançamento aberto.
+- **Etapa 6:** o gerador de recorrências deve respeitar `data_fim` e `ativa = 0`, que o excluir já grava. Ele também não pode preencher meses vazios no meio: um mês excluído com "só este" não deixa marca na recorrência, então o gerador deve criar só os meses depois do último lançamento dela.
+- **Etapa 7:** ligar o segmento Transferência da janela de lançamento e o aviso ao salvar ("Com este lançamento, Nubank fica em −R$ 200,00 em 20/10"). Editar transferências também chega aqui; o clique na transferência da lista mostra "chega na etapa 7". Excluir já funciona (`ExclusaoDao`, em `lib/data/daos/exclusao_dao.dart`).
+- **Etapa 7:** a linha de Saldo da tela do mês (`lib/ui/telas/mes/tela_mes.dart`) entra entre "Gastos" e "Lançamentos", como na imagem.
 - **Etapa 7:** mudar o saldo inicial ou a data dele numa conta muda todo o saldo calculado dela; o cálculo deve sempre ler esses campos na hora, nunca guardar saldo.
 - **Etapa 8:** como a categoria principal pode ser escolhida direto num lançamento, um filtro por "Casa" deve pegar o que foi lançado em "Casa" e em todas as subcategorias dela; um filtro por "Casa, Mercado" pega só o Mercado. No PDF, a coluna "Categoria + subcategoria" mostra só "Casa" nesses lançamentos.
 - **Etapa 8:** o "está em uso?" dos cadastros (`emUso` em `lib/data/daos/`) não olha os filtros salvos. Quando os filtros existirem, uma conta, um cartão, uma categoria ou uma tag usados num filtro também devem contar como usados, para não serem excluídos e deixarem o filtro com um critério que não existe.
+- **Etapa 8:** na tela do mês, o seletor de filtro no topo, os cartões "Filtro: …" (cor principal) e "<Próximo mês>, mesmo filtro" ao lado do total sem filtro (`Row` com dois `Spacer` em `tela_mes.dart`), e o título "Lançamentos · <filtro>" com a lista filtrada.
+- **Etapa 9:** o botão "Gerar PDF" ao lado do título "Lançamentos".
 - **Etapa 10:** o tema já lê `tema_cor` e `tema_modo` do banco e muda na hora; falta só a tela. A cor de destaque do Windows é lida uma vez ao abrir o app.
 
 ## Como rodar
