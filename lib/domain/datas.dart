@@ -47,3 +47,19 @@ DateTime diaNoMes(int ano, int mes, int dia) {
   final ultimo = ultimoDiaDoMes(primeiro.year, primeiro.month);
   return DateTime(primeiro.year, primeiro.month, dia > ultimo ? ultimo : dia);
 }
+
+/// Nome do mês, como "Outubro".
+String nomeDoMes(DateTime mes) => _nomesDosMeses[mes.month - 1];
+
+/// Mês e ano no topo da tela do mês, como "Outubro 2026".
+String mesEAno(DateTime mes) => '${nomeDoMes(mes)} ${mes.year}';
+
+/// Dia e mês, como "28/09", na lista de lançamentos.
+String diaMesBr(DateTime data) => '${_doisDigitos(data.day)}/${_doisDigitos(data.month)}';
+
+/// Primeiro dia do mês de [data].
+DateTime inicioDoMes(DateTime data) => DateTime(data.year, data.month);
+
+/// Quanto falta de [agora] até a meia-noite seguinte, quando "hoje" muda.
+Duration ateAMeiaNoite(DateTime agora) =>
+    DateTime(agora.year, agora.month, agora.day + 1).difference(agora);
