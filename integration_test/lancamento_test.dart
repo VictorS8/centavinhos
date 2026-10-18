@@ -110,6 +110,9 @@ void main() {
     final banco = await abrirApp(tester);
     await gerarDadosExemplo(banco, hoje: hojeDosTestes);
     await tester.pumpAndSettle();
+    // Sobre a tela de Filtros, ainda vazia: na do mês, a lista atrás da
+    // janela repetiria o nome da sugestão.
+    await tocar(tester, find.text('Filtros'));
     await apertarCtrl(tester, LogicalKeyboardKey.keyN);
 
     // 1. O nome conhecido preenche categorias, cartão e fatura; o valor não.

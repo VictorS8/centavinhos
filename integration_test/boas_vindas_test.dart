@@ -90,7 +90,7 @@ void main() {
       ('Cartões', 'Nenhum cartão cadastrado'),
       ('Cadastros', 'Nova conta'),
       ('Ajustes', 'Esta tela chega na etapa 10.'),
-      ('Mês', 'Esta tela chega na etapa 4.'),
+      ('Mês', 'Total do mês, sem filtro'),
     ]) {
       await tester.tap(find.text(destino).last);
       await tester.pumpAndSettle();

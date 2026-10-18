@@ -130,8 +130,86 @@ void main() {
     await capturar(tester, 'boas_vindas_foco_verde_escuro', modo: 'escuro', foco: 'Começar');
   });
 
-  testWidgets('tela do mês, verde claro', (tester) async {
-    await capturar(tester, 'mes_verde_claro', boasVindasConcluida: true);
+  Future<void> tocar(WidgetTester tester, String texto) async {
+    await tester.tap(find.text(texto).last);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tocarDica(WidgetTester tester, String dica) async {
+    await tester.tap(find.byTooltip(dica).first);
+    await tester.pumpAndSettle();
+  }
+
+  group('tela do mês', () {
+    // Como a imagem de referência docs/telas/01-mes-claro.png, sem as partes
+    // das etapas 7 a 9 (filtro, saldo e PDF).
+    testWidgets('outubro, verde claro', (tester) async {
+      await capturar(tester, 'mes_verde_claro', dadosExemplo: true);
+    });
+
+    testWidgets('outubro, verde escuro', (tester) async {
+      await capturar(tester, 'mes_verde_escuro', modo: 'escuro', dadosExemplo: true);
+    });
+
+    testWidgets('outubro, azul claro', (tester) async {
+      await capturar(tester, 'mes_azul_claro', cor: 'azul', dadosExemplo: true);
+    });
+
+    testWidgets('foco do teclado numa linha, verde claro', (tester) async {
+      await capturar(tester, 'mes_foco_linha_verde_claro', dadosExemplo: true, foco: 'Padaria');
+    });
+
+    testWidgets('foco do teclado numa linha, verde escuro', (tester) async {
+      await capturar(
+        tester,
+        'mes_foco_linha_verde_escuro',
+        modo: 'escuro',
+        dadosExemplo: true,
+        foco: 'Padaria',
+      );
+    });
+
+    testWidgets('mês sem lançamentos, verde claro', (tester) async {
+      await capturar(tester, 'mes_vazio_verde_claro', boasVindasConcluida: true);
+    });
+
+    testWidgets('divisão do "+1 categoria" aberta, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'mes_divisao_verde_claro',
+        dadosExemplo: true,
+        depois: (tester) => tocar(tester, '+1 categoria'),
+      );
+    });
+
+    testWidgets('janela de editar, com o "Excluir", verde claro', (tester) async {
+      await capturar(
+        tester,
+        'mes_editar_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await tocar(tester, 'Mercado Atacadão');
+          // A janela pede os dados ao banco ao aparecer.
+          await esperarBanco(tester);
+          await esperarBanco(tester);
+        },
+      );
+    });
+
+    testWidgets('confirmação de excluir uma parcela, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'mes_excluir_parcela_verde_claro',
+        dadosExemplo: true,
+        depois: (tester) async {
+          Focus.of(tester.element(find.text('Fone Bluetooth (1/3)'))).requestFocus();
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.delete);
+          await esperarBanco(tester);
+        },
+      );
+    });
   });
 
   testWidgets('ajustes, verde claro', (tester) async {
@@ -142,16 +220,6 @@ void main() {
       destino: 'Ajustes',
     );
   });
-
-  Future<void> tocar(WidgetTester tester, String texto) async {
-    await tester.tap(find.text(texto).last);
-    await tester.pumpAndSettle();
-  }
-
-  Future<void> tocarDica(WidgetTester tester, String dica) async {
-    await tester.tap(find.byTooltip(dica).first);
-    await tester.pumpAndSettle();
-  }
 
   group('cadastros', () {
     testWidgets('contas, verde claro', (tester) async {
