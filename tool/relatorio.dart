@@ -49,6 +49,11 @@ Future<void> main(List<String> argumentos) async {
   final analise = await _rodar(['analyze']);
 
   stdout.writeln('2/3 flutter test (regras, banco, interface e capturas)...');
+  // O Flutter grava as diferenças quando uma captura falha, mas não as
+  // apaga quando ela volta a passar. Sem limpar antes, o relatório mostraria
+  // falhas de rodadas antigas.
+  final diferencasAntigas = Directory('test/golden/failures');
+  if (diferencasAntigas.existsSync()) diferencasAntigas.deleteSync(recursive: true);
   final rapidos = await _rodar(['test', '--reporter', 'json']);
   final testes = _lerTestes(rapidos.stdout);
 
