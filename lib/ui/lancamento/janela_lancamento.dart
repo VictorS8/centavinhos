@@ -12,31 +12,59 @@ import '../../domain/cadastros.dart';
 import '../../domain/datas.dart';
 import '../../domain/fatura.dart';
 import '../../domain/lancamento.dart';
+import '../../domain/mes.dart';
 import '../../domain/sugestoes.dart';
 import '../hoje_provider.dart';
+import '../navegacao.dart';
 import '../widgets/campo_data.dart';
 import '../widgets/campo_valor.dart';
 import '../widgets/janela_formulario.dart';
 import 'campo_com_sugestoes.dart';
 import 'campo_tags.dart';
+import 'excluir_lancamento.dart';
 import 'menu_do_formulario.dart';
 import 'seletor_categorias.dart';
 
+/// O que a janela devolve ao salvar: o nome e o mês (AAAA-MM) em que o
+/// lançamento conta.
+typedef LancamentoSalvo = ({String nome, String mes});
+
 /// Abre a janela de novo lançamento ou, com [lancamento], a de editar. Ao
-/// salvar, mostra a confirmação no rodapé.
+/// salvar, mostra a confirmação no rodapé. Se o lançamento não aparece na
+/// tela agora (outro mês ou outra tela), a mensagem tem "Ver", que leva à
+/// tela do mês dele.
 Future<void> abrirJanelaLancamento(
   BuildContext context, {
   LancamentoCompleto? lancamento,
 }) async {
   final mensageiro = ScaffoldMessenger.of(context);
-  final nome = await showDialog<String>(
+  final container = ProviderScope.containerOf(context, listen: false);
+  final salvo = await showDialog<LancamentoSalvo>(
     context: context,
     builder: (_) => JanelaLancamento(lancamento: lancamento),
   );
-  if (nome == null) return;
+  if (salvo == null) return;
+  final mes = lerMesIso(salvo.mes);
+  final naTela = container.read(telaAtualProvider) == TelaPrincipal.mes &&
+      container.read(mesSelecionadoProvider) == mes;
   mensageiro
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text('Lançamento "$nome" salvo.')));
+    ..showSnackBar(
+      SnackBar(
+        content: Text('Lançamento "${salvo.nome}" salvo.'),
+        // Com um botão, a mensagem ficaria até ser fechada.
+        persist: false,
+        action: naTela
+            ? null
+            : SnackBarAction(
+                label: 'Ver',
+                onPressed: () {
+                  container.read(mesSelecionadoProvider.notifier).ir(mes);
+                  container.read(telaAtualProvider.notifier).ir(TelaPrincipal.mes);
+                },
+              ),
+      ),
+    );
 }
 
 /// Lançamento rápido de ganho ou despesa. Na ordem do Tab: nome, valor,
@@ -274,6 +302,22 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
 
   void _cancelar() => Navigator.pop(context);
 
+  /// Exclui o lançamento em edição, com confirmação, e fecha a janela.
+  Future<void> _excluir() async {
+    final existente = _existente!;
+    final excluiu = await excluirComConfirmacao(
+      context,
+      ref.read(bancoProvider),
+      (transferencia: false, id: existente.id),
+      nome: nomeComParcela(
+        existente.descricao,
+        parcelaAtual: existente.parcelaAtual,
+        totalParcelas: existente.totalParcelas,
+      ),
+    );
+    if (excluiu && mounted) Navigator.pop(context);
+  }
+
   Future<void> _salvar() async {
     if (_motivo() != null || _salvando) return;
     setState(() => _salvando = true);
@@ -295,7 +339,11 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
     );
     try {
       await ref.read(bancoProvider).lancamentosDao.salvar(dados, id: _existente?.id);
-      if (mounted) Navigator.pop(context, limparNome(_nome.text));
+      if (!mounted) return;
+      Navigator.pop<LancamentoSalvo>(context, (
+        nome: limparNome(_nome.text),
+        mes: mesReferencia(data: dados.data, mesFatura: dados.mesFatura),
+      ));
     } catch (erro) {
       if (!mounted) return;
       setState(() => _salvando = false);
@@ -502,10 +550,22 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
         ),
       ),
       actions: [
-        TextButton(onPressed: _cancelar, child: const Text('Cancelar')),
-        FilledButton(
-          onPressed: motivo == null && !_salvando ? _salvar : null,
-          child: const Text('Salvar'),
+        Row(
+          children: [
+            if (_existente != null)
+              TextButton(
+                onPressed: _salvando ? null : _excluir,
+                style: TextButton.styleFrom(foregroundColor: tema.colorScheme.error),
+                child: const Text('Excluir'),
+              ),
+            const Spacer(),
+            TextButton(onPressed: _cancelar, child: const Text('Cancelar')),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: motivo == null && !_salvando ? _salvar : null,
+              child: const Text('Salvar'),
+            ),
+          ],
         ),
       ],
     );

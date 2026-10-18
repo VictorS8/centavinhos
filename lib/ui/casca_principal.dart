@@ -1,37 +1,39 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'brand/centavinhos_logo.dart';
 import 'lancamento/janela_lancamento.dart';
+import 'navegacao.dart';
 import 'telas/tela_ajustes.dart';
 import 'telas/cadastros/tela_cadastros.dart';
 import 'telas/cartoes/tela_cartoes.dart';
+import 'telas/mes/tela_mes.dart';
 import 'telas/telas_vazias.dart';
 
 /// Estrutura principal: barra lateral com o logo, o botão + e as telas.
-class CascaPrincipal extends StatefulWidget {
+class CascaPrincipal extends ConsumerStatefulWidget {
   const CascaPrincipal({super.key});
 
   @override
-  State<CascaPrincipal> createState() => _CascaPrincipalState();
+  ConsumerState<CascaPrincipal> createState() => _CascaPrincipalState();
 }
 
-class _CascaPrincipalState extends State<CascaPrincipal> {
-  var _indice = 0;
-
-  static const _telas = <Widget>[
-    TelaMes(),
-    TelaFiltros(),
-    TelaCartoes(),
-    TelaCadastros(),
-    TelaAjustes(),
-  ];
+class _CascaPrincipalState extends ConsumerState<CascaPrincipal> {
+  static const _telas = {
+    TelaPrincipal.mes: TelaMes(),
+    TelaPrincipal.filtros: TelaFiltros(),
+    TelaPrincipal.cartoes: TelaCartoes(),
+    TelaPrincipal.cadastros: TelaCadastros(),
+    TelaPrincipal.ajustes: TelaAjustes(),
+  };
 
   Future<void> _novoLancamento() => abrirJanelaLancamento(context);
 
   @override
   Widget build(BuildContext context) {
     final cores = Theme.of(context).colorScheme;
+    final tela = ref.watch(telaAtualProvider);
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.keyN, control: true): _novoLancamento,
@@ -42,8 +44,9 @@ class _CascaPrincipalState extends State<CascaPrincipal> {
           body: Row(
             children: [
               NavigationRail(
-                selectedIndex: _indice,
-                onDestinationSelected: (i) => setState(() => _indice = i),
+                selectedIndex: tela.index,
+                onDestinationSelected: (i) =>
+                    ref.read(telaAtualProvider.notifier).ir(TelaPrincipal.values[i]),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -95,7 +98,7 @@ class _CascaPrincipalState extends State<CascaPrincipal> {
                       color: cores.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(24),
                     ),
-                    child: _telas[_indice],
+                    child: _telas[tela],
                   ),
                 ),
               ),

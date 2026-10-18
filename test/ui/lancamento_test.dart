@@ -29,6 +29,9 @@ void main() {
 
   /// Abre o app com os dados de exemplo de 12/10/2026 e a janela de novo
   /// lançamento, pelo Ctrl+N. [antes] muda o banco antes de abrir o app.
+  ///
+  /// A janela abre sobre a tela de Filtros, ainda vazia: na tela do mês, a
+  /// lista atrás da janela repetiria os nomes das sugestões.
   Future<void> abrir(WidgetTester tester, {Future<void> Function()? antes}) async {
     await tester.runAsync(() async {
       await gerarDadosExemplo(db, hoje: DateTime(2026, 10, 12));
@@ -47,6 +50,8 @@ void main() {
       ),
     );
     await esperarBanco(tester);
+    await tester.tap(find.text('Filtros'));
+    await tester.pumpAndSettle();
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
     await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
