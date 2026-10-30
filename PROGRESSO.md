@@ -8,7 +8,7 @@ Diário das etapas da "Ordem de construção" do escopo. Atualizado ao fim de ca
 - [x] 2. Cadastros (15/10/2026)
 - [x] 3. Lançamento rápido (16/10/2026)
 - [x] 4. Tela do mês (16/10/2026)
-- [ ] 5. Cartão
+- [x] 5. Cartão (24/10/2026)
 - [ ] 6. Recorrência mensal e total do próximo mês
 - [ ] 7. Saldo, transferências, ajuste de fatura e aviso de saldo negativo
 - [ ] 8. Filtros salvos e totais da tela do mês
@@ -75,6 +75,7 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
   - nos menus (Recorrência, Conta ou cartão e Fatura), o Enter com o menu aberto escolhe a opção;
   - em Tags, o Enter com um texto adiciona a tag e só salva com o campo vazio;
   - com o Salvar travado, o Enter não faz nada e o cursor fica no campo.
+  - exceção: na chave Estorno (etapa 5), o Enter liga e desliga, como o espaço (mudado em 30/10/2026).
 - **Esc fecha a janela de qualquer campo.** Com uma lista de sugestões ou um menu aberto, o primeiro Esc fecha só a lista. Foi preciso tratar o Esc à parte nos menus (o `DropdownMenu` engolia o Esc mesmo fechado) e nos campos com sugestões.
 - **Fora do Tab:**
   - a setinha dos menus;
@@ -151,23 +152,52 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
 - **Virada do dia:** o `hojeProvider` se lê de novo um segundo depois da meia-noite. Se a tela estava no mês atual, ela passa para o mês novo na virada do mês; se você tinha navegado para outro mês, ela fica onde está.
 - **Testes:** os testes da janela de lançamento (`test/ui/lancamento_test.dart` e o segundo de `integration_test/lancamento_test.dart`) abrem a janela sobre a tela de Filtros, ainda vazia: na tela do mês, a lista atrás da janela repete os nomes das sugestões. As capturas `lancamento_*` foram geradas de novo, porque o fundo agora é a lista do mês.
 
+### Etapa 5
+
+- **Faturas na tela de Cartões sem "Ajustar pagamento"** (decidido em 24/10/2026): a lista de faturas entra agora; o botão fica para a etapa 7 e não aparece, nem desativado.
+  - Aparecem os meses com algum lançamento do cartão e a fatura aberta, mesmo vazia. A lista começa pela mais recente.
+  - Etiquetas: "Futura", "Aberta" (em destaque, com o mês e o total em negrito), "Fechada" e "Paga". A "Fechada" não está na imagem: é a fatura entre o fechamento (inclusive) e o vencimento.
+  - "Paga" quando o vencimento é hoje ou já passou, como o escopo diz que ela sai do saldo "no dia do vencimento". Uma paga sem valor diz "Nada a pagar em dd/mm".
+  - Textos: "Fecha 05/12 · vence 12/12 · sai da conta Nubank" antes de vencer (a imagem mostrava o nome da compra na futura) e "Paga em 12/10 pela conta Nubank, automaticamente" depois. Com crédito, uma linha a mais: "Crédito de R$ 15,10 para a próxima fatura" ou "Inclui crédito de R$ 15,10 da anterior".
+  - O crédito passa para a fatura seguinte que aparece na lista e continua passando até acabar (`faturasDoCartao` em `lib/domain/fatura.dart`). A classe é `FaturaDoCartao`, porque o Drift já gera `Fatura` para a tabela `faturas`.
+  - As regras de fechamento, situação e total ficam em `lib/domain/fatura.dart`; o `FaturasDao` (`lib/data/daos/faturas_dao.dart`) só soma compras e estornos por mês.
+- **Parcelas de 2 a 48, só no cartão** (decidido em 24/10/2026), num campo "Parcelas" que aparece abaixo de Valor e Recorrência quando "Parcelada" é escolhida, com a divisão ao lado ("1x de R$ 100,02 e 2x de R$ 100,00"). O Valor é o total da compra.
+  - Com Parcelada (e com o estorno), o menu "Conta ou cartão" passa a se chamar "Cartão" e só tem os cartões; uma conta já escolhida sai. No ganho, a opção fica desativada.
+  - O texto de apoio da Fatura numa compra parcelada é "1ª parcela; as outras vêm depois".
+  - Mensagem ao salvar: "Lançamento "Fone" salvo em 3 parcelas.", e o "Ver" leva ao mês da 1ª parcela.
+- **Formato das parcelas no banco:** uma linha por parcela, todas com a data da compra e o nome sem o "(1/3)" (que vem de `parcela_atual`/`total_parcelas`). O `grupo_parcelamento` é o id da primeira parcela, em texto. Os dados de exemplo usam o mesmo formato.
+- **Divisão das categorias entre as parcelas** (`dividirCategoriasEmParcelas` em `lib/domain/parcelas.dart`): da última parcela para a segunda, cada uma divide o seu valor na proporção do que falta de cada categoria (sobras para as maiores frações); a primeira fica com o resto. As somas sempre batem. Uma categoria que daria R$ 0,00 numa parcela fica fora dela (o banco não aceita zero); só acontece com valores de poucos centavos.
+- **Fatura trocada à mão numa compra parcelada:** vale para a primeira parcela, e todas as parcelas ficam com `fatura_manual = 1`, para continuarem seguindo a primeira quando o cartão mudar.
+- **Editar uma parcela** (decidido em 24/10/2026): ao salvar, a janela pergunta "Alterar "Fone (2/3)"?", com "Só este", "Este e os próximos" e "Todos" (o mesmo diálogo do excluir, `DialogoExcluir` com `alterando: true`). Nome, valor (o da parcela), categorias, cartão, data, tags e observação valem para todas as escolhidas; cada uma mantém a sua distância da aberta na sequência das faturas, então trocar a fatura da aberta leva as outras junto. "Cancelar" volta à janela.
+  - A regra `idsAExcluir` virou `idsNoAlcance` (`lib/domain/exclusao.dart`), porque serve para os dois casos.
+- **Recorrência travada na edição** (decidido em 24/10/2026): numa edição, o campo Recorrência fica desativado (fora do Tab), mostrando "Única" ou "Parcelada · 3x". Não dá para transformar uma compra única em parcelada nem mudar o número de parcelas; para isso, exclui e lança de novo. Numa parcela, o segmento "Ganho" e a chave Estorno também ficam de fora. O `MenuDoFormulario` ganhou o parâmetro `ativo`.
+- **Correção de um erro das etapas 3 e 4:** editar a parcela 2/3 e salvar levava a parcela para a fatura da 1ª, porque a janela calculava a fatura só pela data. Agora o cálculo soma a posição da parcela (`mesDaFaturaDaParcela`).
+- **Chave Estorno:**
+  - aparece ao lado de "Conta ou cartão" só numa despesa com cartão; no Tab, vem logo depois do cartão;
+  - a barra de espaço e o Enter ligam e desligam (mudado em 30/10/2026, nos testes manuais: antes o Enter salvava, como nos outros campos). Para salvar dali, Tab até a Data e Enter;
+  - ligada, a Recorrência fica em "Única" e travada;
+  - na janela, o estorno é uma despesa com a chave ligada; no banco, `tipo = 'estorno'`. Editar pode desligar a chave, e ele vira despesa.
+- **Nome conhecido:**
+  - repete "Parcelada" e o número de parcelas da última vez (`Preenchimento.parcelas`);
+  - no estorno, as sugestões e o preenchimento vêm das despesas (decidido em 24/10/2026). Com a chave ligada (ou com Parcelada), uma conta da última vez não troca o cartão escolhido.
+- **Editar o cartão recalcula as faturas** (era pendência da etapa 5): `CartoesDao.editar` grava o cartão e recalcula `mes_fatura` e `mes_referencia` dos lançamentos dele sem `fatura_manual = 1`, de uma vez, respeitando a parcela (`faturaRecalculada`). Vale também para cartões arquivados. Ele devolve quantos mudaram, e a janela mostra "N lançamentos mudaram de fatura.".
+- **Estorno na lista do mês abre a edição**, com a chave ligada.
+- **Dados de exemplo:** ganharam uma "Mochila" de R$ 60,00 comprada no Inter no dia 5 do mês anterior (fatura daquele mês) e devolvida no dia 9 deste mês (estorno na fatura seguinte), para a tela de Cartões mostrar o crédito. Por isso o total de M+1 na tela do mês passou de R$ 1.344,90 para R$ 1.284,90, e os testes que conferiam esse número mudaram.
+- **Capturas geradas de novo:** as de Cartões (agora com as faturas), a `janela_cartao` (o fundo mostra as faturas), as `lancamento_cartao_multicategoria` (a chave Estorno ao lado do cartão), a `lancamento_sugestoes` (a "Mochila" também tem "a") e a `mes_editar` (Recorrência travada).
+- **Capturas que ainda não existem travam o `flutter test test/golden`:** o teste falha antes de desmontar o app, e fechar o banco fica esperando. Ao criar uma captura nova, gere com `--update-goldens` antes de rodar sem ele.
+
 ## Pendências para etapas seguintes
 
 Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembrar.
 
 - **Etapa 2 em diante:** as boas-vindas rolam a tela quando há várias contas e cartões, e o botão "Começar" pode ficar abaixo da dobra em 1280 × 800. Nos testes de integração, use `tester.ensureVisible` antes de tocar em botões no fim de telas longas.
-- **Etapa 5:** mudar o fechamento ou o vencimento de um cartão em "Editar cartão" deve recalcular o `mes_fatura` (e o `mes_referencia`) dos lançamentos desse cartão que não têm `fatura_manual = 1`. Hoje a edição só grava o cartão, e já há lançamentos no cartão feitos pela janela de lançamento. A seção "Faturas" da tela de Cartões (`lib/ui/telas/cartoes/tela_cartoes.dart`) é um aviso provisório.
-- **Etapa 5:** o mês da fatura (`lib/domain/fatura.dart`) e o campo Fatura já existem. Faltam:
-  - ligar "Parcelada" no campo Recorrência (`_unica` e as opções em `lib/ui/lancamento/janela_lancamento.dart`);
-  - a chave "Estorno" ao lado de "Conta ou cartão".
-
-  Numa compra parcelada, a fatura trocada à mão vale para a primeira parcela. Nos exemplos, a `descricao` das parcelas é guardada sem o "(1/3)", que fica em `parcela_atual`/`total_parcelas`; a etapa 5 confirma esse formato (a lista do mês já monta o "(1/3)" com `nomeComParcela`).
-- **Etapa 5:** editar estornos. A janela não sabe abrir um (o `LancamentosDao.salvar` só aceita ganho e despesa), e o clique no estorno da lista mostra "chega na etapa 5" (`_abrir` em `lib/ui/telas/mes/tela_mes.dart`).
-- **Etapa 5:** ao editar uma parcela, perguntar "só este / este e os próximos / todos" (decidido em 16/10/2026). Hoje a edição mexe só na parcela aberta. A pergunta do excluir (`DialogoExcluir`, em `lib/ui/lancamento/excluir_lancamento.dart`) e a regra `idsAExcluir` (`lib/domain/exclusao.dart`) podem ser reaproveitadas.
+- **Etapa 6: financiamento como "Mensal com fim"** (decidido em 24/10/2026). Parcelas fixas fora do cartão (financiamento, consórcio), que podem passar de 48, não usam "Parcelada" (só no cartão, de 2 a 48). Na etapa 6, a recorrência mensal ganha um campo opcional "Por quantos meses", que grava `recorrencias.data_fim`; o banco não muda. Como toda recorrência, ela cria os meses aos poucos, até o fim do mês seguinte. Se fizer falta o "(12/60)" no nome, ele pode sair da data de início e da de fim. Isso muda o escopo: sugerir o texto para o `docs/` na etapa 6.
+- **Etapa 6:** o campo Recorrência fica travado na edição (decisão da etapa 5); a opção "Mensal" deve seguir a mesma regra, mostrando "Mensal" num recorrente.
 - **Etapa 6:** ligar "Mensal" no campo Recorrência. O nome conhecido deve repetir a recorrência (`Preenchimento.recorrente`, em `lib/data/daos/lancamentos_dao.dart`). Hoje, editar um lançamento recorrente mostra "Única" no campo.
 - **Etapa 6:** ao editar um recorrente, perguntar "só este" ou "este e os próximos". Hoje a edição mexe só no lançamento aberto.
 - **Etapa 6:** o gerador de recorrências deve respeitar `data_fim` e `ativa = 0`, que o excluir já grava. Ele também não pode preencher meses vazios no meio: um mês excluído com "só este" não deixa marca na recorrência, então o gerador deve criar só os meses depois do último lançamento dela.
 - **Etapa 7:** ligar o segmento Transferência da janela de lançamento e o aviso ao salvar ("Com este lançamento, Nubank fica em −R$ 200,00 em 20/10"). Editar transferências também chega aqui; o clique na transferência da lista mostra "chega na etapa 7". Excluir já funciona (`ExclusaoDao`, em `lib/data/daos/exclusao_dao.dart`).
+- **Etapa 7:** o "Ajustar pagamento" entra em cada fatura da tela de Cartões (`_LinhaFatura` em `lib/ui/telas/cartoes/tela_cartoes.dart`). A situação "Paga" e o texto "Paga em 12/10 pela conta Nubank, automaticamente" hoje usam sempre o vencimento e a conta padrão do cartão; com o ajuste, devem ler `faturas.pago_em` e `faturas.conta_pagamento_id` (e trocar o "automaticamente"). O total das faturas (`faturasDoCartao`, já com o crédito dos estornos) é o que sai do saldo.
 - **Etapa 7:** a linha de Saldo da tela do mês (`lib/ui/telas/mes/tela_mes.dart`) entra entre "Gastos" e "Lançamentos", como na imagem.
 - **Etapa 7:** mudar o saldo inicial ou a data dele numa conta muda todo o saldo calculado dela; o cálculo deve sempre ler esses campos na hora, nunca guardar saldo.
 - **Etapa 8:** como a categoria principal pode ser escolhida direto num lançamento, um filtro por "Casa" deve pegar o que foi lançado em "Casa" e em todas as subcategorias dela; um filtro por "Casa, Mercado" pega só o Mercado. No PDF, a coluna "Categoria + subcategoria" mostra só "Casa" nesses lançamentos.
@@ -179,6 +209,7 @@ Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembr
 ## Como rodar
 
 - Relatório da etapa: `dart run tool/relatorio.dart N`. Use `--sem-integracao` para pular o app real (mais rápido) e `--nao-abrir` para não abrir o navegador.
+  - O tempo total e o de cada fase (analyze, testes rápidos e capturas, integração e cada arquivo dela) aparecem no terminal e no relatório. Cada execução entra em `relatorios/etapa-N/tempos.json`, e o relatório mostra a média das execuções completas (com a integração) da etapa. Referência: a etapa 5 completa levou uns 4 minutos, quase tudo na integração (cada arquivo compila e abre o app).
 - Só os testes rápidos e as capturas: `flutter test`. Só a integração, um arquivo por vez (com vários de uma vez, o Windows não abre o app do segundo em diante): `flutter test integration_test/cadastros_test.dart -d windows`. Durante a integração, não mexa no computador: se a janela do app perder o foco, os testes que usam Tab podem falhar.
 - Atualizar as capturas depois de uma mudança visual de propósito: `flutter test --update-goldens test/golden`. Elas valem para esta máquina e esta versão do Flutter; se o Flutter for atualizado, pode ser preciso gerar de novo.
 - Depois de mudar `lib/data/tabelas.drift` ou `lib/data/database.dart`: `dart run build_runner build`. O arquivo gerado `lib/data/database.g.dart` fica no repositório.
