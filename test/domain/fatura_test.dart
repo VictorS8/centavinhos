@@ -72,4 +72,186 @@ void main() {
       expect(diaNoMes(2026, 14, 31), DateTime(2027, 2, 28));
     });
   });
+
+  group('mês da fatura de cada parcela', () {
+    test(
+      'exemplo do escopo: 3x no dia 06/10 em novembro, dezembro e janeiro',
+      () {
+        DateTime parcela(int n) => mesDaFaturaDaParcela(
+          DateTime(2026, 10, 6),
+          parcela: n,
+          diaFechamento: 5,
+          diaVencimento: 12,
+        );
+        expect(
+          [parcela(1), parcela(2), parcela(3)],
+          [DateTime(2026, 11), DateTime(2026, 12), DateTime(2027, 1)],
+        );
+      },
+    );
+  });
+
+  group('recálculo ao mudar o cartão', () {
+    test('compra que muda de fatura com o novo fechamento', () {
+      // Compra em 06/10: fechando dia 5, vai para novembro; fechando dia 10,
+      // fica em outubro.
+      expect(
+        faturaRecalculada(
+          data: '2026-10-06',
+          mesAtual: '2026-11',
+          manual: false,
+          diaFechamento: 10,
+          diaVencimento: 17,
+        ),
+        '2026-10',
+      );
+    });
+
+    test('fatura trocada à mão ou já no mês certo não muda', () {
+      expect(
+        faturaRecalculada(
+          data: '2026-10-06',
+          mesAtual: '2026-12',
+          manual: true,
+          diaFechamento: 10,
+          diaVencimento: 17,
+        ),
+        isNull,
+      );
+      expect(
+        faturaRecalculada(
+          data: '2026-10-06',
+          mesAtual: '2026-11',
+          manual: false,
+          diaFechamento: 5,
+          diaVencimento: 12,
+        ),
+        isNull,
+      );
+    });
+
+    test('parcela mantém a distância da primeira', () {
+      expect(
+        faturaRecalculada(
+          data: '2026-10-06',
+          mesAtual: '2027-01',
+          manual: false,
+          parcela: 3,
+          diaFechamento: 10,
+          diaVencimento: 17,
+        ),
+        '2026-12',
+      );
+    });
+  });
+
+  group('fechamento e situação da fatura', () {
+    test('fechamento no mês do vencimento ou no anterior', () {
+      expect(
+        fechamentoDaFatura(
+          DateTime(2026, 12),
+          diaFechamento: 5,
+          diaVencimento: 12,
+        ),
+        DateTime(2026, 12, 5),
+      );
+      // Fecha 28, vence 5: a fatura de novembro fecha em 28/10.
+      expect(
+        fechamentoDaFatura(
+          DateTime(2026, 11),
+          diaFechamento: 28,
+          diaVencimento: 5,
+        ),
+        DateTime(2026, 10, 28),
+      );
+      expect(
+        fechamentoDaFatura(
+          DateTime(2027, 3),
+          diaFechamento: 31,
+          diaVencimento: 5,
+        ),
+        DateTime(2027, 2, 28),
+      );
+    });
+
+    test('situação em 12/10, com um cartão que fecha 5 e vence 12', () {
+      SituacaoFatura situacao(DateTime mes, DateTime hoje) => situacaoDaFatura(
+        mes,
+        hoje: hoje,
+        diaFechamento: 5,
+        diaVencimento: 12,
+      );
+      final hoje = DateTime(2026, 10, 12);
+      // Vence hoje: já saiu do saldo.
+      expect(situacao(DateTime(2026, 10), hoje), SituacaoFatura.paga);
+      expect(situacao(DateTime(2026, 9), hoje), SituacaoFatura.paga);
+      expect(situacao(DateTime(2026, 11), hoje), SituacaoFatura.aberta);
+      expect(situacao(DateTime(2026, 12), hoje), SituacaoFatura.futura);
+      // Entre o fechamento (05/10) e o vencimento (12/10), fechada.
+      expect(
+        situacao(DateTime(2026, 10), DateTime(2026, 10, 5)),
+        SituacaoFatura.fechada,
+      );
+      expect(
+        situacao(DateTime(2026, 10), DateTime(2026, 10, 11)),
+        SituacaoFatura.fechada,
+      );
+      expect(
+        situacao(DateTime(2026, 10), DateTime(2026, 10, 4)),
+        SituacaoFatura.aberta,
+      );
+    });
+  });
+
+  group('total da fatura com estornos e crédito', () {
+    List<FaturaDoCartao> faturas(List<MovimentoDaFatura> movimentos) =>
+        faturasDoCartao(
+          movimentos,
+          hoje: DateTime(2026, 10, 12),
+          diaFechamento: 5,
+          diaVencimento: 12,
+        );
+
+    test('total = compras − estornos', () {
+      final [novembro, outubro] = faturas([
+        (mes: '2026-10', compras: 50000, estornos: 3000, lancamentos: 4),
+        (mes: '2026-11', compras: 10000, estornos: 0, lancamentos: 1),
+      ]);
+      expect(mesIso(outubro.mes), '2026-10');
+      expect((outubro.total, outubro.creditoSeguinte), (47000, 0));
+      expect((novembro.creditoAnterior, novembro.total), (0, 10000));
+      expect(outubro.vencimento, DateTime(2026, 10, 12));
+      expect(outubro.fechamento, DateTime(2026, 10, 5));
+    });
+
+    test('estornos acima das compras: zero e crédito para a seguinte', () {
+      final [dezembro, novembro, outubro] = faturas([
+        (mes: '2026-10', compras: 4000, estornos: 10000, lancamentos: 2),
+        (mes: '2026-11', compras: 2500, estornos: 0, lancamentos: 1),
+        (mes: '2026-12', compras: 9000, estornos: 0, lancamentos: 1),
+      ]);
+      expect((outubro.total, outubro.creditoSeguinte), (0, 6000));
+      // O crédito passa de fatura em fatura até acabar.
+      expect(
+        (novembro.creditoAnterior, novembro.total, novembro.creditoSeguinte),
+        (6000, 0, 3500),
+      );
+      expect(
+        (dezembro.creditoAnterior, dezembro.total, dezembro.creditoSeguinte),
+        (3500, 5500, 0),
+      );
+    });
+
+    test(
+      'a fatura aberta aparece mesmo vazia, e a lista vem da mais recente',
+      () {
+        final lista = faturas([
+          (mes: '2026-09', compras: 1000, estornos: 0, lancamentos: 1),
+        ]);
+        expect([for (final f in lista) mesIso(f.mes)], ['2026-11', '2026-09']);
+        expect(lista.first.situacao, SituacaoFatura.aberta);
+        expect((lista.first.total, lista.first.lancamentos), (0, 0));
+      },
+    );
+  });
 }

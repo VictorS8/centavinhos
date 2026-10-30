@@ -47,6 +47,7 @@ void main() {
       bool temOrigem = true,
       DateTime? data,
       bool semData = false,
+      int? parcelas,
     }) => motivoLancamentoInvalido(
       tipo: tipo,
       nome: nome,
@@ -54,6 +55,7 @@ void main() {
       valoresCategorias: categorias,
       temOrigem: temOrigem,
       data: semData ? null : (data ?? DateTime(2026, 10, 12)),
+      parcelas: parcelas,
     );
 
     test('tudo certo', () {
@@ -75,6 +77,23 @@ void main() {
 
     test('com uma categoria só, o valor dela é o total', () {
       expect(motivo(categorias: [0]), isNull);
+    });
+
+    test('compra parcelada: de 2 a 48 parcelas, ao menos R\$ 0,01 em cada', () {
+      expect(motivo(parcelas: 3), isNull);
+      expect(motivo(parcelas: 48), isNull);
+      expect(motivo(parcelas: 0), 'Parcelas vão de 2 a 48.');
+      expect(motivo(parcelas: 1), 'Parcelas vão de 2 a 48.');
+      expect(motivo(parcelas: 49), 'Parcelas vão de 2 a 48.');
+      expect(motivo(valor: 3, parcelas: 4), 'O valor não dá R\$ 0,01 por parcela.');
+      expect(motivo(valor: 4, parcelas: 4), isNull);
+      // O número de parcelas vem logo depois do valor, como no formulário.
+      expect(motivo(parcelas: 0, categorias: []), 'Parcelas vão de 2 a 48.');
+    });
+
+    test('estorno e compra parcelada pedem o cartão', () {
+      expect(motivo(tipo: 'estorno', temOrigem: false), 'Escolha o cartão.');
+      expect(motivo(parcelas: 3, temOrigem: false), 'Escolha o cartão.');
     });
 
     test('data no futuro e no passado distante são aceitas', () {
