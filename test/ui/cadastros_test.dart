@@ -247,6 +247,37 @@ void main() {
       expect(find.text('Arquivar'), findsOneWidget);
     });
 
+    testarTela('faturas do Inter com situação, datas, total e crédito', (tester) async {
+      await abrir(tester, 'Cartões');
+      // Em 12/10, no Inter (fecha 8, vence 15): setembro paga, outubro
+      // fechada, novembro aberta e dezembro futura.
+      expect(find.text('Dezembro 2026'), findsOneWidget);
+      expect(find.text('Futura'), findsOneWidget);
+      expect(find.text('Aberta'), findsOneWidget);
+      expect(find.text('Fechada'), findsOneWidget);
+      expect(find.text('Paga'), findsOneWidget);
+      expect(find.text('Fecha 08/10 · vence 15/10 · sai da conta Inter'), findsOneWidget);
+      expect(find.text('R\$ 132,50'), findsOneWidget);
+      expect(find.text('Paga em 15/09 pela conta Inter, automaticamente'), findsOneWidget);
+      // O estorno da Mochila passa das compras de novembro.
+      expect(find.text('Crédito de R\$ 15,10 para a próxima fatura'), findsOneWidget);
+      expect(find.text('Inclui crédito de R\$ 15,10 da anterior'), findsOneWidget);
+      expect(find.text('R\$ 29,80'), findsOneWidget);
+      expect(find.text('R\$ 0,00'), findsOneWidget);
+    });
+
+    testarTela('editar o fechamento avisa quantos lançamentos mudaram de fatura', (tester) async {
+      await abrir(tester, 'Cartões');
+      await tocar(tester, find.text('Fecha dia 5 · vence dia 12'));
+      await tocar(tester, find.text('Editar cartão'));
+      await tester.enterText(campo('Fechamento'), '20');
+      await tester.enterText(campo('Vencimento'), '27');
+      await tester.pump();
+      await tocar(tester, find.text('Salvar'));
+      expect(find.text('2 lançamentos mudaram de fatura.'), findsOneWidget);
+      expect(find.text('Setembro 2026'), findsOneWidget);
+    });
+
     testarTela('novo cartão: travas do Salvar e cartão escolhido depois', (tester) async {
       await abrir(tester, 'Cartões');
       await tocar(tester, find.text('Novo cartão'));

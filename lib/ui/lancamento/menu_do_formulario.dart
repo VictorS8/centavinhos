@@ -18,6 +18,7 @@ class MenuDoFormulario<T> extends StatefulWidget {
     this.textoApoio,
     this.aoEnviar,
     this.aoCancelar,
+    this.ativo = true,
   });
 
   final String rotulo;
@@ -27,6 +28,9 @@ class MenuDoFormulario<T> extends StatefulWidget {
   final String? textoApoio;
   final VoidCallback? aoEnviar;
   final VoidCallback? aoCancelar;
+
+  /// Desativado, o menu mostra a escolhida, não abre e fica fora do Tab.
+  final bool ativo;
 
   @override
   State<MenuDoFormulario<T>> createState() => _MenuDoFormularioState<T>();
@@ -95,6 +99,7 @@ class _MenuDoFormularioState<T> extends State<MenuDoFormulario<T>> {
   Widget build(BuildContext context) {
     return DropdownMenu<T>(
       controller: _texto,
+      enabled: widget.ativo,
       focusNode: _foco,
       trailingIconFocusNode: _focoSeta,
       menuController: _menu,

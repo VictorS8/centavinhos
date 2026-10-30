@@ -40,8 +40,6 @@ class _TelaMesState extends ConsumerState<TelaMes> {
 
   Future<void> _abrir(ItemDoMes item) async {
     switch (item.tipo) {
-      case 'estorno':
-        _avisar('Editar estornos chega na etapa 5.');
       case 'transferencia':
         _avisar('Editar transferências chega na etapa 7.');
       default:

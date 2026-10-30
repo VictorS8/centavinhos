@@ -545,6 +545,189 @@ void main() {
     });
   });
 
+  group('parcelada', () {
+    testarTela('campo Parcelas com a divisão, só cartões e salva em 3 parcelas', (tester) async {
+      await abrir(tester);
+      await teclar(tester, campo('Nome'), 'Fone novo');
+      await digitar(tester, campo('Valor'), '30002');
+      expect(campo('Parcelas'), findsNothing);
+
+      await escolherNoMenu(tester, 'Recorrência', 'Parcelada');
+      expect(campo('Parcelas'), findsOneWidget);
+      expect(find.text('Parcelas vão de 2 a 48.'), findsOneWidget);
+      await digitar(tester, campo('Parcelas'), '3');
+      expect(find.text('1x de R\$ 100,02 e 2x de R\$ 100,00'), findsOneWidget);
+      await escolherCategoria(tester, 'eletr');
+
+      // Na compra parcelada, o menu se chama "Cartão" e não tem contas.
+      expect(find.text('Escolha o cartão.'), findsOneWidget);
+      await tocar(tester, campo('Cartão'));
+      expect(find.widgetWithText(MenuItemButton, 'Carteira'), findsNothing);
+      await tocar(tester, find.widgetWithText(MenuItemButton, 'Cartão Nubank').last);
+      expect(texto(tester, campo('Fatura')), 'Novembro/2026');
+      expect(find.text('1ª parcela; as outras vêm depois'), findsOneWidget);
+      // Compra parcelada não é estorno.
+      expect(find.byType(Switch), findsOneWidget);
+
+      await tocar(tester, find.text('Salvar'));
+      await esperarBanco(tester);
+      expect(find.text('Lançamento "Fone novo" salvo em 3 parcelas.'), findsOneWidget);
+      final parcelas = await lancamentosCom(tester, 'Fone novo');
+      expect(parcelas.map((l) => l.valorCentavos), [10002, 10000, 10000]);
+      expect(parcelas.map((l) => l.mesFatura), ['2026-11', '2026-12', '2027-01']);
+    });
+
+    testarTela('escolher Parcelada tira a conta; no ganho, Parcelada não vale', (tester) async {
+      await abrir(tester);
+      await escolherNoMenu(tester, 'Conta ou cartão', 'Carteira');
+      await escolherNoMenu(tester, 'Recorrência', 'Parcelada');
+      expect(texto(tester, campo('Cartão')), '');
+
+      await escolherNoMenu(tester, 'Recorrência', 'Única');
+      expect(campo('Parcelas'), findsNothing);
+      await tocar(tester, find.text('Ganho'));
+      await tocar(tester, campo('Recorrência'));
+      final parcelada = tester.widget<MenuItemButton>(
+        find.widgetWithText(MenuItemButton, 'Parcelada').last,
+      );
+      expect(parcelada.onPressed, isNull);
+    });
+
+    testarTela('nome conhecido repete a compra parcelada e o número de parcelas', (tester) async {
+      await abrir(tester);
+      await teclar(tester, campo('Nome'), 'fone blue');
+      await tester.pumpAndSettle();
+      await enter(tester);
+      expect(texto(tester, campo('Recorrência')), 'Parcelada');
+      expect(texto(tester, campo('Parcelas')), '3');
+      expect(texto(tester, campo('Cartão')), 'Cartão Nubank');
+    });
+  });
+
+  group('estorno', () {
+    testarTela('a chave só aparece no cartão; ligada, trava a recorrência e salva', (tester) async {
+      await abrir(tester);
+      await teclar(tester, campo('Nome'), 'Jantar cancelado');
+      await digitar(tester, campo('Valor'), '5000');
+      await escolherCategoria(tester, 'restaur');
+      expect(find.byType(Switch), findsNothing);
+      await escolherNoMenu(tester, 'Conta ou cartão', 'Carteira');
+      expect(find.byType(Switch), findsNothing);
+
+      await escolherNoMenu(tester, 'Conta ou cartão', 'Cartão Nubank');
+      expect(find.text('Estorno'), findsOneWidget);
+      await tocar(tester, find.byType(Switch));
+      expect(tester.widget<TextField>(campo('Recorrência')).enabled, isFalse);
+      expect(texto(tester, campo('Recorrência')), 'Única');
+      // Estorno só no cartão: o menu deixa de ter as contas.
+      expect(texto(tester, campo('Cartão')), 'Cartão Nubank');
+
+      await tocar(tester, find.text('Salvar'));
+      await esperarBanco(tester);
+      final salvo = (await lancamentosCom(tester, 'Jantar cancelado')).single;
+      expect((salvo.tipo, salvo.mesFatura), ('estorno', '2026-11'));
+    });
+
+    testarTela('Enter e espaço na chave ligam e desligam, sem salvar', (tester) async {
+      await abrir(tester);
+      await teclar(tester, campo('Nome'), 'Jantar cancelado');
+      await digitar(tester, campo('Valor'), '5000');
+      await escolherCategoria(tester, 'restaur');
+      await escolherNoMenu(tester, 'Conta ou cartão', 'Cartão Nubank');
+      bool ligada() => tester.widget<Switch>(find.byType(Switch)).value;
+      tester.widget<Switch>(find.byType(Switch)).focusNode!.requestFocus();
+      await tester.pumpAndSettle();
+
+      for (final (tecla, esperado) in [
+        (LogicalKeyboardKey.enter, true),
+        (LogicalKeyboardKey.enter, false),
+        (LogicalKeyboardKey.space, true),
+        (LogicalKeyboardKey.numpadEnter, false),
+      ]) {
+        await tester.sendKeyEvent(tecla);
+        await tester.pumpAndSettle();
+        expect(ligada(), esperado, reason: '$tecla');
+      }
+      // O Salvar estava liberado, mas o Enter na chave não salva.
+      expect(find.byType(JanelaLancamento), findsOneWidget);
+    });
+
+    testarTela('ligar o estorno volta a recorrência para Única', (tester) async {
+      await abrir(tester);
+      await escolherNoMenu(tester, 'Recorrência', 'Parcelada');
+      await escolherNoMenu(tester, 'Cartão', 'Cartão Nubank');
+      await tocar(tester, find.byType(Switch));
+      expect(texto(tester, campo('Recorrência')), 'Única');
+      expect(campo('Parcelas'), findsNothing);
+    });
+
+    testarTela('nome de despesa numa conta não tira o cartão do estorno', (tester) async {
+      await abrir(tester);
+      await escolherNoMenu(tester, 'Conta ou cartão', 'Cartão Inter');
+      await tocar(tester, find.byType(Switch));
+      await tocar(tester, campo('Nome'));
+      await teclar(tester, campo('Nome'), 'padar');
+      await tester.pumpAndSettle();
+      await enter(tester);
+      expect(find.text('Alimentação, Lanches'), findsOneWidget);
+      expect(texto(tester, campo('Cartão')), 'Cartão Inter');
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+    });
+  });
+
+  group('editar parcela', () {
+    Future<void> abrirParcela(WidgetTester tester, int parcela) async {
+      await abrir(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      final fone = await lancamentosCom(tester, 'Fone Bluetooth');
+      final alvo = fone.firstWhere((l) => l.parcelaAtual == parcela);
+      final completo = (await tester.runAsync(() => db.lancamentosDao.carregar(alvo.id)))!;
+      abrirJanelaLancamento(tester.element(find.byType(CascaPrincipal)), lancamento: completo);
+      await esperarBanco(tester);
+    }
+
+    testarTela('abre com a fatura da parcela e a recorrência travada', (tester) async {
+      await abrirParcela(tester, 2);
+      expect(texto(tester, campo('Recorrência')), 'Parcelada · 3x');
+      expect(tester.widget<TextField>(campo('Recorrência')).enabled, isFalse);
+      expect(campo('Parcelas'), findsNothing);
+      // A parcela 2 continua em novembro (antes, a janela a levava para a
+      // fatura da 1ª).
+      expect(texto(tester, campo('Fatura')), 'Novembro/2026');
+      expect(find.text('Calculada pela data; pode trocar'), findsOneWidget);
+      expect(find.byType(Switch), findsNothing);
+    });
+
+    testarTela('Salvar pergunta o alcance; "Todos" muda as três', (tester) async {
+      await abrirParcela(tester, 2);
+      await tester.enterText(campo('Nome'), 'Fone de ouvido');
+      await tester.pump();
+      await tocar(tester, find.text('Salvar'));
+      await esperarBanco(tester);
+      expect(find.text('Alterar "Fone Bluetooth (2/3)"?'), findsOneWidget);
+      expect(find.text('3 parcelas'), findsOneWidget);
+
+      await tocar(tester, find.text('Todos'));
+      await esperarBanco(tester);
+      expect(find.byType(JanelaLancamento), findsNothing);
+      final editados = await lancamentosCom(tester, 'Fone de ouvido');
+      expect(editados.map((l) => l.mesFatura), ['2026-10', '2026-11', '2026-12']);
+    });
+
+    testarTela('cancelar a pergunta volta à janela sem salvar', (tester) async {
+      await abrirParcela(tester, 2);
+      await tester.enterText(campo('Nome'), 'Fone de ouvido');
+      await tester.pump();
+      await tocar(tester, find.text('Salvar'));
+      await esperarBanco(tester);
+      await tocar(tester, find.text('Cancelar').last);
+      expect(find.byType(JanelaLancamento), findsOneWidget);
+      expect(salvar(tester).onPressed, isNotNull);
+      expect(await lancamentosCom(tester, 'Fone de ouvido'), isEmpty);
+    });
+  });
+
   group('editar', () {
     testarTela('abre preenchida, com o título de edição, e grava no mesmo lançamento',
         (tester) async {

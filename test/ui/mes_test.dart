@@ -136,8 +136,9 @@ void main() {
       expect(find.text('Novembro 2026'), findsOneWidget);
       expect(find.text('Fone Bluetooth (2/3)'), findsOneWidget);
       expect(find.text('Fone Bluetooth (1/3)'), findsNothing);
-      // Novembro: Fone (2/3), Netflix de outubro e Aluguel de novembro.
-      expect(find.text('R\$ 1.344,90'), findsOneWidget);
+      // Novembro: Fone (2/3), Netflix de outubro, Aluguel de novembro e o
+      // estorno da Mochila.
+      expect(find.text('R\$ 1.284,90'), findsOneWidget);
 
       await tester.tap(find.text('Cadastros'));
       await esperarBanco(tester);
@@ -330,12 +331,18 @@ void main() {
       expect(find.text('Sorvete'), findsOneWidget);
     });
 
-    testarTela('estorno e transferência ainda não abrem a edição', (tester) async {
+    testarTela('estorno abre a edição com a chave ligada; transferência ainda não', (tester) async {
       await abrir(tester);
       // O estorno (02/10) vem antes da compra (15/09) na lista.
       await tocar(tester, find.text('Restaurante').first);
-      expect(find.text('Editar estornos chega na etapa 5.'), findsOneWidget);
+      expect(find.text('Editar lançamento'), findsOneWidget);
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+      final cartao = find.descendant(of: campo('Cartão'), matching: find.byType(EditableText));
+      expect(tester.widget<EditableText>(cartao).controller.text, 'Cartão Nubank');
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
       expect(find.byType(JanelaLancamento), findsNothing);
+
       await tocar(tester, find.text('Transferência Nubank para Inter'));
       expect(find.text('Editar transferências chega na etapa 7.'), findsOneWidget);
       expect(find.byType(JanelaLancamento), findsNothing);

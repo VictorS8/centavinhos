@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -10,9 +11,11 @@ import '../../data/database.dart';
 import '../../data/providers.dart';
 import '../../domain/cadastros.dart';
 import '../../domain/datas.dart';
+import '../../domain/exclusao.dart';
 import '../../domain/fatura.dart';
 import '../../domain/lancamento.dart';
 import '../../domain/mes.dart';
+import '../../domain/parcelas.dart';
 import '../../domain/sugestoes.dart';
 import '../hoje_provider.dart';
 import '../navegacao.dart';
@@ -25,9 +28,10 @@ import 'excluir_lancamento.dart';
 import 'menu_do_formulario.dart';
 import 'seletor_categorias.dart';
 
-/// O que a janela devolve ao salvar: o nome e o mês (AAAA-MM) em que o
-/// lançamento conta.
-typedef LancamentoSalvo = ({String nome, String mes});
+/// O que a janela devolve ao salvar: o nome, o mês (AAAA-MM) em que o
+/// lançamento conta (numa compra parcelada, o da 1ª parcela) e em quantas
+/// parcelas uma compra nova foi dividida.
+typedef LancamentoSalvo = ({String nome, String mes, int? parcelas});
 
 /// Abre a janela de novo lançamento ou, com [lancamento], a de editar. Ao
 /// salvar, mostra a confirmação no rodapé. Se o lançamento não aparece na
@@ -51,7 +55,11 @@ Future<void> abrirJanelaLancamento(
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        content: Text('Lançamento "${salvo.nome}" salvo.'),
+        content: Text(
+          salvo.parcelas == null
+              ? 'Lançamento "${salvo.nome}" salvo.'
+              : 'Lançamento "${salvo.nome}" salvo em ${salvo.parcelas} parcelas.',
+        ),
         // Com um botão, a mensagem ficaria até ser fechada.
         persist: false,
         action: naTela
@@ -68,7 +76,8 @@ Future<void> abrirJanelaLancamento(
 }
 
 /// Lançamento rápido de ganho ou despesa. Na ordem do Tab: nome, valor,
-/// recorrência, categorias, conta ou cartão, data e fatura (só no cartão);
+/// recorrência, parcelas (só na compra parcelada), categorias, conta ou
+/// cartão, a chave Estorno (só no cartão), data e fatura (só no cartão);
 /// tags e observação ficam recolhidas em "Mais detalhes".
 class JanelaLancamento extends ConsumerStatefulWidget {
   const JanelaLancamento({super.key, this.lancamento});
@@ -89,8 +98,10 @@ class _Parte {
   int valor;
 }
 
-/// Recorrência única, a única opção ativa por enquanto.
+/// Recorrência: única ou parcelada (só no cartão). A mensal chega na
+/// etapa 6.
 const _unica = 'unica';
+const _parcelada = 'parcelada';
 
 class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
   late final DateTime _hoje = () {
@@ -100,7 +111,17 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
 
   Lancamento? get _existente => widget.lancamento?.lancamento;
 
-  late var _tipo = _existente?.tipo ?? 'despesa';
+  /// Numa edição, a recorrência e o número de parcelas não mudam.
+  bool get _editando => _existente != null;
+  bool get _editandoParcela => _existente?.totalParcelas != null;
+
+  /// 'ganho' ou 'despesa'. O estorno é uma despesa com a chave ligada.
+  late var _tipo = _existente == null || _existente!.tipo == 'estorno'
+      ? 'despesa'
+      : _existente!.tipo;
+  late var _estorno = _existente?.tipo == 'estorno';
+  late var _recorrencia = _editandoParcela ? _parcelada : _unica;
+  late final _parcelas = TextEditingController()..addListener(() => setState(() {}));
   late final _nome = TextEditingController(text: _existente?.descricao ?? '')
     ..addListener(() => setState(() {}));
   final _focoNome = FocusNode();
@@ -127,9 +148,21 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
   void dispose() {
     _nome.dispose();
     _focoNome.dispose();
+    _parcelas.dispose();
     _observacao.dispose();
     super.dispose();
   }
+
+  /// O estorno e a compra parcelada só podem ser no cartão.
+  bool get _soCartao => _estorno || _recorrencia == _parcelada;
+
+  /// Número de parcelas de uma compra parcelada nova (zero com o campo
+  /// vazio), ou nulo se ela não é parcelada ou se é uma edição.
+  int? get _parcelasNovas =>
+      !_editando && _recorrencia == _parcelada ? int.tryParse(_parcelas.text) ?? 0 : null;
+
+  /// O tipo gravado: o estorno é uma despesa com a chave ligada.
+  String get _tipoGravado => _estorno ? 'estorno' : _tipo;
 
   // Leituras dos cadastros
 
@@ -183,14 +216,17 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
     setState(() {
       _contaId = tipo == 'conta' ? int.parse(id) : null;
       _cartaoId = tipo == 'cartao' ? int.parse(id) : null;
+      // Estorno só no cartão.
+      if (_contaId != null) _estorno = false;
     });
   }
 
   /// Contas ativas e, numa despesa, cartões ativos. Numa edição, a conta ou
-  /// o cartão atual aparece mesmo arquivado.
+  /// o cartão atual aparece mesmo arquivado. No estorno e na compra
+  /// parcelada, só os cartões.
   List<DropdownMenuEntry<String>> _opcoesOrigem() => [
     for (final conta in _contas)
-      if (conta.arquivada == 0 || conta.id == _existente?.contaId)
+      if (!_soCartao && (conta.arquivada == 0 || conta.id == _existente?.contaId))
         DropdownMenuEntry(
           value: 'conta:${conta.id}',
           label: conta.nome,
@@ -212,12 +248,14 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
 
   // Fatura
 
-  /// Mês da fatura pela data e pelo cartão, no formato AAAA-MM.
+  /// Mês da fatura pela data e pelo cartão, no formato AAAA-MM. Na edição de
+  /// uma parcela, o da parcela: o da compra mais os meses das anteriores.
   String? _mesCalculado(Cartao cartao) => _data == null
       ? null
       : mesIso(
-          mesDaFatura(
+          mesDaFaturaDaParcela(
             _data!,
+            parcela: _existente?.parcelaAtual ?? 1,
             diaFechamento: cartao.diaFechamento,
             diaVencimento: cartao.diaVencimento,
           ),
@@ -257,12 +295,30 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
     setState(() {
       _tipo = tipo;
       _partes = [for (final parte in _partes) if (doTipo.contains(parte.id)) parte];
-      if (tipo == 'ganho') _cartaoId = null;
+      if (tipo == 'ganho') {
+        _cartaoId = null;
+        _estorno = false;
+        _recorrencia = _unica;
+      }
     });
   }
 
+  /// A compra parcelada só pode ser no cartão: uma conta escolhida sai.
+  void _escolherRecorrencia(String recorrencia) => setState(() {
+    _recorrencia = recorrencia;
+    if (recorrencia == _parcelada) _contaId = null;
+  });
+
+  /// O estorno é sempre único.
+  void _mudarEstorno(bool estorno) => setState(() {
+    _estorno = estorno;
+    if (estorno) _recorrencia = _unica;
+  });
+
   /// Nome conhecido: repete da última vez as categorias (com os valores
-  /// vazios), a conta ou o cartão e as tags. O valor não é copiado.
+  /// vazios), a conta ou o cartão, a recorrência (com o número de parcelas)
+  /// e as tags. O valor não é copiado. No estorno, os nomes vêm das
+  /// despesas, e uma conta da última vez não troca o cartão.
   Future<void> _escolherNome(String nome) async {
     final dao = ref.read(bancoProvider).lancamentosDao;
     final preenchimento = await dao.ultimoComNome(nome, _tipo);
@@ -270,8 +326,19 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
     setState(() {
       _partes = [for (final id in preenchimento.categoriaIds) _Parte(id)];
       _geracao++;
-      _contaId = preenchimento.contaId;
-      _cartaoId = _tipo == 'despesa' ? preenchimento.cartaoId : null;
+      if (!_editando && !_estorno) {
+        final parcelas = preenchimento.parcelas;
+        _recorrencia = parcelas == null ? _unica : _parcelada;
+        if (parcelas != null) _parcelas.text = '$parcelas';
+      }
+      final cartaoId = _tipo == 'despesa' ? preenchimento.cartaoId : null;
+      if (!_soCartao) {
+        _contaId = preenchimento.contaId;
+        _cartaoId = cartaoId;
+      } else if (cartaoId != null) {
+        _contaId = null;
+        _cartaoId = cartaoId;
+      }
       _faturaManual = false;
       _mesFaturaManual = null;
       _tags = [...preenchimento.tags];
@@ -292,12 +359,13 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
       setState(() => _partes.firstWhere((parte) => parte.id == id).valor = valor);
 
   String? _motivo() => motivoLancamentoInvalido(
-    tipo: _tipo,
+    tipo: _tipoGravado,
     nome: _nome.text,
     valorCentavos: _valor,
     valoresCategorias: [for (final parte in _partes) parte.valor],
     temOrigem: _origem != null,
     data: _data,
+    parcelas: _parcelasNovas,
   );
 
   void _cancelar() => Navigator.pop(context);
@@ -318,12 +386,36 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
     if (excluiu && mounted) Navigator.pop(context);
   }
 
+  /// Salva o lançamento. Na edição de uma parcela, pergunta antes se a
+  /// mudança vale só para ela, para ela e as próximas ou para todas.
   Future<void> _salvar() async {
     if (_motivo() != null || _salvando) return;
+    final banco = ref.read(bancoProvider);
+    var alcance = AlcanceExclusao.soEste;
+    final existente = _existente;
+    if (existente != null && _editandoParcela) {
+      setState(() => _salvando = true);
+      final escolhido = await perguntarAlcanceDaEdicao(
+        context,
+        banco,
+        existente.id,
+        nome: nomeComParcela(
+          existente.descricao,
+          parcelaAtual: existente.parcelaAtual,
+          totalParcelas: existente.totalParcelas,
+        ),
+      );
+      if (!mounted) return;
+      if (escolhido == null) {
+        setState(() => _salvando = false);
+        return;
+      }
+      alcance = escolhido;
+    }
     setState(() => _salvando = true);
     final cartao = _cartao;
     final dados = DadosLancamento(
-      tipo: _tipo,
+      tipo: _tipoGravado,
       descricao: _nome.text,
       valorCentavos: _valor,
       data: _data!,
@@ -331,6 +423,7 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
       cartaoId: _cartaoId,
       mesFatura: _mesFatura(cartao),
       faturaManual: cartao != null && _faturaManual,
+      parcelas: _parcelasNovas,
       categorias: _partes.length == 1
           ? [(categoriaId: _partes.single.id, valorCentavos: _valor)]
           : [for (final parte in _partes) (categoriaId: parte.id, valorCentavos: parte.valor)],
@@ -338,11 +431,12 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
       observacao: _observacao.text,
     );
     try {
-      await ref.read(bancoProvider).lancamentosDao.salvar(dados, id: _existente?.id);
+      await banco.lancamentosDao.salvar(dados, id: existente?.id, alcance: alcance);
       if (!mounted) return;
       Navigator.pop<LancamentoSalvo>(context, (
         nome: limparNome(_nome.text),
         mes: mesReferencia(data: dados.data, mesFatura: dados.mesFatura),
+        parcelas: dados.parcelas,
       ));
     } catch (erro) {
       if (!mounted) return;
@@ -389,10 +483,15 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
           children: [
             const SizedBox(height: 4),
             SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'ganho', label: Text('Ganho')),
-                ButtonSegment(value: 'despesa', label: Text('Despesa')),
+              segments: [
                 ButtonSegment(
+                  value: 'ganho',
+                  label: const Text('Ganho'),
+                  tooltip: _editandoParcela ? 'Compra parcelada é sempre despesa' : null,
+                  enabled: !_editandoParcela,
+                ),
+                const ButtonSegment(value: 'despesa', label: Text('Despesa')),
+                const ButtonSegment(
                   value: 'transferencia',
                   label: Text('Transferência'),
                   tooltip: 'Chega na etapa 7',
@@ -430,27 +529,44 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
                 Expanded(
                   child: MenuDoFormulario<String>(
                     rotulo: 'Recorrência',
-                    escolhida: _unica,
-                    opcoes: const [
-                      DropdownMenuEntry(value: _unica, label: 'Única'),
-                      DropdownMenuEntry(
+                    escolhida: _recorrencia,
+                    // Numa edição, a recorrência não muda; o estorno é
+                    // sempre único.
+                    ativo: !_editando && !_estorno,
+                    opcoes: [
+                      const DropdownMenuEntry(value: _unica, label: 'Única'),
+                      const DropdownMenuEntry(
                         value: 'mensal',
                         label: 'Mensal (chega na etapa 6)',
                         enabled: false,
                       ),
                       DropdownMenuEntry(
-                        value: 'parcelada',
-                        label: 'Parcelada (chega na etapa 5)',
-                        enabled: false,
+                        value: _parcelada,
+                        label: _editandoParcela
+                            ? 'Parcelada · ${_existente!.totalParcelas}x'
+                            : 'Parcelada',
+                        enabled: _tipo == 'despesa',
                       ),
                     ],
-                    aoEscolher: (_) {},
+                    aoEscolher: _escolherRecorrencia,
                     aoEnviar: _salvar,
                     aoCancelar: _cancelar,
                   ),
                 ),
               ],
             ),
+            if (_parcelasNovas != null) ...[
+              const SizedBox(height: 16),
+              _CampoParcelas(
+                controle: _parcelas,
+                divisao: _parcelasNovas! >= minimoDeParcelas &&
+                        _parcelasNovas! <= maximoDeParcelas &&
+                        _valor >= _parcelasNovas!
+                    ? textoDasParcelas(_valor, _parcelasNovas!)
+                    : '',
+                aoEnviar: _salvar,
+              ),
+            ],
             const SizedBox(height: 16),
             SeletorCategorias(
               opcoes: _opcoesCategoria(categorias, rotulos),
@@ -466,13 +582,28 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
               aoEnviar: _salvar,
             ),
             const SizedBox(height: 16),
-            MenuDoFormulario<String>(
-              rotulo: _tipo == 'ganho' ? 'Conta' : 'Conta ou cartão',
-              escolhida: _origem,
-              opcoes: _opcoesOrigem(),
-              aoEscolher: _escolherOrigem,
-              aoEnviar: _salvar,
-              aoCancelar: _cancelar,
+            Row(
+              children: [
+                Expanded(
+                  child: MenuDoFormulario<String>(
+                    rotulo: _tipo == 'ganho'
+                        ? 'Conta'
+                        : _soCartao
+                        ? 'Cartão'
+                        : 'Conta ou cartão',
+                    escolhida: _origem,
+                    opcoes: _opcoesOrigem(),
+                    aoEscolher: _escolherOrigem,
+                    aoEnviar: _salvar,
+                    aoCancelar: _cancelar,
+                  ),
+                ),
+                // Estorno só numa despesa no cartão, e nunca numa parcela.
+                if (_tipo == 'despesa' && _cartaoId != null && !_editandoParcela) ...[
+                  const SizedBox(width: 16),
+                  _ChaveEstorno(valor: _estorno, aoMudar: _mudarEstorno),
+                ],
+              ],
             ),
             const SizedBox(height: 16),
             Row(
@@ -497,6 +628,8 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
                           opcoes: _opcoesFatura(mesCalculado, mesFatura),
                           textoApoio: _faturaManual
                               ? 'Trocada à mão; não muda com a data'
+                              : _parcelasNovas != null
+                              ? '1ª parcela; as outras vêm depois'
                               : 'Calculada pela data; pode trocar',
                           aoEscolher: (mes) => _escolherFatura(mes, mesCalculado),
                           aoEnviar: _salvar,
@@ -568,6 +701,103 @@ class _JanelaLancamentoState extends ConsumerState<JanelaLancamento> {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Número de parcelas de uma compra parcelada nova, de 2 a 48, com a
+/// divisão ao lado ("3x de R$ 100,00").
+class _CampoParcelas extends StatelessWidget {
+  const _CampoParcelas({required this.controle, required this.divisao, required this.aoEnviar});
+
+  final TextEditingController controle;
+
+  /// Vazia enquanto o número ou o valor não dão uma divisão válida.
+  final String divisao;
+  final VoidCallback aoEnviar;
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    return Row(
+      children: [
+        SizedBox(
+          width: 140,
+          child: TextField(
+            controller: controle,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(2),
+            ],
+            decoration: const InputDecoration(
+              labelText: 'Parcelas',
+              hintText: '2 a 48',
+              border: OutlineInputBorder(),
+            ),
+            // O Enter salva sem tirar o foco do campo.
+            onEditingComplete: () {},
+            onSubmitted: (_) => aoEnviar(),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            divisao,
+            style: tema.textTheme.bodyMedium?.copyWith(color: tema.colorScheme.onSurfaceVariant),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Chave "Estorno", ao lado de "Conta ou cartão": marca uma compra
+/// cancelada ou devolvida, que abate da fatura. Espaço e Enter ligam e
+/// desligam: é o único campo em que o Enter não salva o lançamento.
+class _ChaveEstorno extends StatefulWidget {
+  const _ChaveEstorno({required this.valor, required this.aoMudar});
+
+  final bool valor;
+  final ValueChanged<bool> aoMudar;
+
+  @override
+  State<_ChaveEstorno> createState() => _ChaveEstornoState();
+}
+
+class _ChaveEstornoState extends State<_ChaveEstorno> {
+  late final _foco = FocusNode(
+    onKeyEvent: (_, evento) {
+      if (evento is KeyDownEvent &&
+          (evento.logicalKey == LogicalKeyboardKey.enter ||
+              evento.logicalKey == LogicalKeyboardKey.numpadEnter)) {
+        widget.aoMudar(!widget.valor);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    },
+  );
+
+  @override
+  void dispose() {
+    _foco.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MergeSemantics(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => widget.aoMudar(!widget.valor),
+            child: Text('Estorno', style: Theme.of(context).textTheme.bodyLarge),
+          ),
+          const SizedBox(width: 8),
+          Switch(value: widget.valor, focusNode: _foco, onChanged: widget.aoMudar),
+        ],
+      ),
     );
   }
 }

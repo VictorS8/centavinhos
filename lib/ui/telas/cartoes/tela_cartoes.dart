@@ -5,12 +5,16 @@ import '../../../data/daos/cartoes_dao.dart';
 import '../../../data/database.dart';
 import '../../../data/providers.dart';
 import '../../../domain/cadastros.dart';
+import '../../../domain/datas.dart';
+import '../../../domain/dinheiro.dart';
+import '../../../domain/fatura.dart';
+import '../../hoje_provider.dart';
 import '../../widgets/acoes_cadastro.dart';
 import '../../widgets/lista_cadastro.dart';
 import 'janela_cartao.dart';
 
 /// Cartões à esquerda e o cartão escolhido à direita, com fechamento,
-/// vencimento, conta de pagamento e, a partir da etapa 5, as faturas.
+/// vencimento, conta de pagamento e as faturas de cada mês.
 class TelaCartoes extends ConsumerStatefulWidget {
   const TelaCartoes({super.key});
 
@@ -259,11 +263,7 @@ class _DetalheCartao extends ConsumerWidget {
             style: tema.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
-          ListaCadastro(
-            linhas: const [],
-            textoVazio: 'As faturas de cada mês, com o total e o "Ajustar pagamento", '
-                'chegam na etapa 5.',
-          ),
+          _ListaFaturas(cartao: cartao, contaPagamento: contaPagamento?.nome ?? '—'),
           if (arquivado) ...[
             const SizedBox(height: 16),
             Text(
@@ -273,6 +273,167 @@ class _DetalheCartao extends ConsumerWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// As faturas do cartão, da mais recente para a mais antiga, com a
+/// situação, as datas, a conta que paga e o total (já com o crédito dos
+/// estornos). A aberta fica em destaque.
+class _ListaFaturas extends ConsumerWidget {
+  const _ListaFaturas({required this.cartao, required this.contaPagamento});
+
+  final Cartao cartao;
+  final String contaPagamento;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final movimentos = ref.watch(movimentosDasFaturasProvider(cartao.id)).value;
+    final hoje = ref.watch(hojeProvider);
+    if (movimentos == null) return const SizedBox.shrink();
+    final faturas = faturasDoCartao(
+      movimentos,
+      hoje: hoje,
+      diaFechamento: cartao.diaFechamento,
+      diaVencimento: cartao.diaVencimento,
+    );
+    return ListaCadastro(
+      linhas: [
+        for (final fatura in faturas)
+          _LinhaFatura(
+            key: ValueKey('fatura-${mesIso(fatura.mes)}'),
+            fatura: fatura,
+            contaPagamento: contaPagamento,
+          ),
+      ],
+    );
+  }
+}
+
+/// Uma fatura: o mês com a etiqueta da situação, as datas e a conta no
+/// meio, e o total à direita.
+class _LinhaFatura extends StatelessWidget {
+  const _LinhaFatura({super.key, required this.fatura, required this.contaPagamento});
+
+  final FaturaDoCartao fatura;
+  final String contaPagamento;
+
+  /// "Fecha 05/12 · vence 12/12 · sai da conta Nubank" ou, depois do
+  /// vencimento, "Paga em 12/10 pela conta Nubank, automaticamente".
+  String get _datas {
+    final vencimento = diaMesBr(fatura.vencimento);
+    if (fatura.situacao == SituacaoFatura.paga) {
+      return fatura.total == 0
+          ? 'Nada a pagar em $vencimento'
+          : 'Paga em $vencimento pela conta $contaPagamento, automaticamente';
+    }
+    return 'Fecha ${diaMesBr(fatura.fechamento)} · vence $vencimento · '
+        'sai da conta $contaPagamento';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+    final aberta = fatura.situacao == SituacaoFatura.aberta;
+    final peso = aberta ? FontWeight.w700 : null;
+    final apoio = tema.textTheme.bodyMedium?.copyWith(color: cores.onSurfaceVariant);
+    // O destaque da aberta deixa 1 px dos lados, para não cobrir o contorno
+    // da lista.
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+      color: aberta ? cores.primaryContainer.withValues(alpha: 0.35) : null,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 180,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  mesEAno(fatura.mes),
+                  style: tema.textTheme.titleMedium?.copyWith(fontWeight: peso),
+                ),
+                const SizedBox(height: 6),
+                _EtiquetaSituacao(fatura.situacao),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_datas, style: apoio),
+                if (fatura.creditoAnterior > 0)
+                  Text(
+                    'Inclui crédito de ${formatarCentavos(fatura.creditoAnterior)} da anterior',
+                    style: apoio,
+                  ),
+                if (fatura.creditoSeguinte > 0)
+                  Text(
+                    'Crédito de ${formatarCentavos(fatura.creditoSeguinte)} para a próxima '
+                    'fatura',
+                    style: apoio,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            formatarCentavos(fatura.total),
+            style: tema.textTheme.titleLarge?.copyWith(fontWeight: peso),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Futura" com contorno; "Aberta", "Fechada" e "Paga" (com o ícone de
+/// marcado) preenchidas.
+class _EtiquetaSituacao extends StatelessWidget {
+  const _EtiquetaSituacao(this.situacao);
+
+  final SituacaoFatura situacao;
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+    final (texto, fundo, frente) = switch (situacao) {
+      SituacaoFatura.futura => ('Futura', null, cores.onSurface),
+      SituacaoFatura.aberta => ('Aberta', cores.tertiaryContainer, cores.onTertiaryContainer),
+      SituacaoFatura.fechada => ('Fechada', cores.secondaryContainer, cores.onSecondaryContainer),
+      SituacaoFatura.paga => ('Paga', cores.primaryContainer, cores.onPrimaryContainer),
+    };
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: fundo,
+        border: fundo == null ? Border.all(color: cores.outline) : null,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // A Libron não tem o ✓: vira ícone.
+            if (situacao == SituacaoFatura.paga) ...[
+              Icon(Icons.check, size: 14, color: frente),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              texto,
+              style: tema.textTheme.labelMedium?.copyWith(
+                color: frente,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -68,6 +68,7 @@ class _JanelaCartaoState extends ConsumerState<JanelaCartao> {
     if (_motivo(_contas()) != null || _salvando) return;
     setState(() => _salvando = true);
     final dao = ref.read(bancoProvider).cartoesDao;
+    final mensageiro = ScaffoldMessenger.of(context);
     final fechamento = lerDiaDoMes(_fechamento.text)!;
     final vencimento = lerDiaDoMes(_vencimento.text)!;
     try {
@@ -82,13 +83,26 @@ class _JanelaCartaoState extends ConsumerState<JanelaCartao> {
         );
       } else {
         id = cartao.id;
-        await dao.editar(
+        final mudaram = await dao.editar(
           id,
           nome: _nome.text,
           diaFechamento: fechamento,
           diaVencimento: vencimento,
           contaPagamentoId: _contaId!,
         );
+        if (mudaram > 0) {
+          mensageiro
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  mudaram == 1
+                      ? '1 lançamento mudou de fatura.'
+                      : '$mudaram lançamentos mudaram de fatura.',
+                ),
+              ),
+            );
+        }
       }
       if (mounted) Navigator.pop(context, id);
     } catch (erro) {
