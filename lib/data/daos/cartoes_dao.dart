@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../domain/cadastros.dart';
+import '../../domain/fatura.dart';
 import '../database.dart';
 import 'cadastro_bloqueado.dart';
 
@@ -55,20 +56,46 @@ class CartoesDao extends DatabaseAccessor<AppDatabase> {
     ),
   );
 
-  Future<void> editar(
+  /// Grava o cartão e, se o fechamento ou o vencimento mudou, recalcula o
+  /// mês da fatura dos lançamentos dele que não foram trocados à mão.
+  /// Devolve quantos lançamentos mudaram de fatura.
+  Future<int> editar(
     int id, {
     required String nome,
     required int diaFechamento,
     required int diaVencimento,
     required int contaPagamentoId,
-  }) => (update(_cartoes)..where((c) => c.id.equals(id))).write(
-    CartoesCompanion(
-      nome: Value(limparNome(nome)),
-      diaFechamento: Value(diaFechamento),
-      diaVencimento: Value(diaVencimento),
-      contaPagamentoId: Value(contaPagamentoId),
-    ),
-  );
+  }) => transaction(() async {
+    await (update(_cartoes)..where((c) => c.id.equals(id))).write(
+      CartoesCompanion(
+        nome: Value(limparNome(nome)),
+        diaFechamento: Value(diaFechamento),
+        diaVencimento: Value(diaVencimento),
+        contaPagamentoId: Value(contaPagamentoId),
+      ),
+    );
+
+    final lancamentos = attachedDatabase.lancamentos;
+    final doCartao = await (select(lancamentos)..where((l) => l.cartaoId.equals(id))).get();
+    var mudaram = 0;
+    for (final lancamento in doCartao) {
+      final novo = faturaRecalculada(
+        data: lancamento.dataLancamento,
+        mesAtual: lancamento.mesFatura ?? '',
+        manual: lancamento.faturaManual == 1,
+        parcela: lancamento.parcelaAtual,
+        diaFechamento: diaFechamento,
+        diaVencimento: diaVencimento,
+      );
+      if (novo == null) continue;
+      await (update(lancamentos)..where((l) => l.id.equals(lancamento.id))).write(
+        // No cartão, o mês de referência é o da fatura.
+        LancamentosCompanion(mesFatura: Value(novo), mesReferencia: Value(novo)),
+      );
+      mudaram++;
+    }
+    return mudaram;
+  });
 
   Future<void> arquivar(int id) => _marcarArquivado(id, 1);
 

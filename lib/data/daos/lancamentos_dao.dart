@@ -2,13 +2,16 @@ import 'package:drift/drift.dart';
 
 import '../../domain/cadastros.dart';
 import '../../domain/datas.dart';
+import '../../domain/exclusao.dart';
 import '../../domain/lancamento.dart';
+import '../../domain/parcelas.dart';
 import '../database.dart';
 
 /// A parte do valor de um lançamento que vai para uma categoria.
 typedef ParteCategoria = ({int categoriaId, int valorCentavos});
 
-/// Um ganho ou uma despesa como sai do formulário, pronto para gravar.
+/// Um ganho, uma despesa ou um estorno como sai do formulário, pronto para
+/// gravar.
 class DadosLancamento {
   const DadosLancamento({
     required this.tipo,
@@ -19,14 +22,18 @@ class DadosLancamento {
     this.cartaoId,
     this.mesFatura,
     this.faturaManual = false,
+    this.parcelas,
     required this.categorias,
     this.tags = const [],
     this.observacao,
   });
 
-  /// 'ganho' ou 'despesa'.
+  /// 'ganho', 'despesa' ou 'estorno' (só no cartão).
   final String tipo;
   final String descricao;
+
+  /// Numa compra parcelada nova, o total da compra; na edição de uma
+  /// parcela, o valor da parcela.
   final int valorCentavos;
   final DateTime data;
 
@@ -34,11 +41,16 @@ class DadosLancamento {
   final int? contaId;
   final int? cartaoId;
 
-  /// AAAA-MM, só no cartão.
+  /// AAAA-MM, só no cartão. Numa compra parcelada nova, o da primeira
+  /// parcela; na edição de uma parcela, o da parcela aberta.
   final String? mesFatura;
 
   /// Se o mês da fatura foi trocado à mão.
   final bool faturaManual;
+
+  /// Em quantas vezes a compra nova é parcelada, ou nulo se não é. Só numa
+  /// despesa no cartão, e só ao criar.
+  final int? parcelas;
 
   /// Com uma categoria só, o valor dela é o total.
   final List<ParteCategoria> categorias;
@@ -66,6 +78,7 @@ class Preenchimento {
     required this.categoriaIds,
     required this.tags,
     required this.recorrente,
+    this.parcelas,
   });
 
   final int? contaId;
@@ -75,6 +88,9 @@ class Preenchimento {
 
   /// Se a última vez foi um lançamento recorrente.
   final bool recorrente;
+
+  /// Em quantas vezes foi parcelada a última vez, ou nulo se não foi.
+  final int? parcelas;
 }
 
 /// Lançamentos: gravar, carregar e os nomes já usados.
@@ -134,6 +150,7 @@ class LancamentosDao extends DatabaseAccessor<AppDatabase> {
       categoriaIds: categoriaIds,
       tags: await _nomesDasTags(ultimo.id, soAtivas: true),
       recorrente: ultimo.recorrenciaId != null,
+      parcelas: ultimo.totalParcelas,
     );
   }
 
@@ -156,62 +173,176 @@ class LancamentosDao extends DatabaseAccessor<AppDatabase> {
   ).map((linha) => linha.read<String>('nome')).get();
 
   /// Grava um lançamento novo ou, com [id], troca os dados de um existente.
-  /// Tudo vai de uma vez: o lançamento, as categorias e as tags. Devolve o id.
+  /// Tudo vai de uma vez: o lançamento, as categorias e as tags. Devolve o id
+  /// (numa compra parcelada nova, o da primeira parcela).
+  ///
+  /// Uma compra parcelada nova vira uma linha por parcela, ligadas pelo
+  /// mesmo grupo de parcelamento (o id da primeira, em texto). Cada parcela
+  /// cai no mês seguinte ao da anterior, e os centavos que sobram da divisão
+  /// vão para a primeira.
   ///
   /// Na edição, parcelas, recorrência e a data de criação ficam como estão.
-  Future<int> salvar(DadosLancamento dados, {int? id}) {
-    _conferir(dados);
+  /// Numa parcela, o [alcance] diz se a mudança vale só para ela, para ela e
+  /// as seguintes ou para todas; cada parcela mantém a sua distância da
+  /// aberta na sequência das faturas.
+  Future<int> salvar(
+    DadosLancamento dados, {
+    int? id,
+    AlcanceExclusao alcance = AlcanceExclusao.soEste,
+  }) {
+    _conferir(dados, editando: id != null);
     return transaction(() async {
       final tagIds = await _idsDasTags(dados.tags);
-      final observacao = dados.observacao?.trim() ?? '';
-      final campos = LancamentosCompanion(
-        tipo: Value(dados.tipo),
-        descricao: Value(limparNome(dados.descricao)),
-        valorCentavos: Value(dados.valorCentavos),
-        dataLancamento: Value(dataIso(dados.data)),
-        contaId: Value(dados.contaId),
-        cartaoId: Value(dados.cartaoId),
-        mesFatura: Value(dados.mesFatura),
-        faturaManual: Value(dados.faturaManual ? 1 : 0),
-        mesReferencia: Value(mesReferencia(data: dados.data, mesFatura: dados.mesFatura)),
-        observacao: Value(observacao.isEmpty ? null : observacao),
-      );
-
-      final int lancamentoId;
-      if (id == null) {
-        lancamentoId = await into(_lancamentos).insert(
-          campos.copyWith(criadoEm: Value(DateTime.now().toIso8601String())),
-        );
-      } else {
-        lancamentoId = id;
-        await (update(_lancamentos)..where((l) => l.id.equals(id))).write(campos);
-        await (delete(_categorias)..where((c) => c.lancamentoId.equals(id))).go();
-        await (delete(_lancamentoTags)..where((t) => t.lancamentoId.equals(id))).go();
+      if (id != null) {
+        await _editar(dados, id, alcance, tagIds);
+        return id;
       }
 
-      for (final parte in dados.categorias) {
-        await into(_categorias).insert(
-          LancamentoCategoriasCompanion.insert(
-            lancamentoId: lancamentoId,
-            categoriaId: parte.categoriaId,
-            valorCentavos: parte.valorCentavos,
-          ),
-        );
+      final n = dados.parcelas;
+      if (n == null) {
+        final campos = _campos(dados, dados.valorCentavos, dados.mesFatura);
+        return _inserir(campos, dados.categorias, tagIds);
       }
-      for (final tagId in tagIds) {
-        await into(_lancamentoTags).insert(
-          LancamentoTagsCompanion.insert(lancamentoId: lancamentoId, tagId: tagId),
+
+      final valores = dividirEmParcelas(dados.valorCentavos, n);
+      final porParcela = dividirCategoriasEmParcelas([
+        for (final parte in dados.categorias) parte.valorCentavos,
+      ], n);
+      final primeiraFatura = lerMesIso(dados.mesFatura!);
+      late final int primeiraId;
+      for (var i = 0; i < n; i++) {
+        final mesFatura = mesIso(DateTime(primeiraFatura.year, primeiraFatura.month + i));
+        final campos = _campos(dados, valores[i], mesFatura).copyWith(
+          parcelaAtual: Value(i + 1),
+          totalParcelas: Value(n),
+          grupoParcelamento: Value(i == 0 ? null : '$primeiraId'),
         );
+        final partes = [
+          for (final (j, parte) in dados.categorias.indexed)
+            // O banco não aceita zero; só acontece com poucos centavos.
+            if (porParcela[i][j] > 0)
+              (categoriaId: parte.categoriaId, valorCentavos: porParcela[i][j]),
+        ];
+        final parcelaId = await _inserir(campos, partes, tagIds);
+        if (i == 0) {
+          primeiraId = parcelaId;
+          await (update(_lancamentos)..where((l) => l.id.equals(parcelaId))).write(
+            LancamentosCompanion(grupoParcelamento: Value('$parcelaId')),
+          );
+        }
       }
-      return lancamentoId;
+      return primeiraId;
     });
+  }
+
+  /// Troca os dados do lançamento [id] e, numa parcela, das outras que o
+  /// [alcance] pega.
+  Future<void> _editar(
+    DadosLancamento dados,
+    int id,
+    AlcanceExclusao alcance,
+    List<int> tagIds,
+  ) async {
+    final aberto = await (select(_lancamentos)..where((l) => l.id.equals(id))).getSingle();
+    var alvos = [aberto];
+    final grupo = aberto.grupoParcelamento;
+    if (grupo != null && alcance != AlcanceExclusao.soEste) {
+      final parcelas = await (select(
+        _lancamentos,
+      )..where((l) => l.grupoParcelamento.equals(grupo))).get();
+      final ids = idsNoAlcance(
+        id: id,
+        grupo: [
+          for (final p in parcelas) (id: p.id, data: p.dataLancamento, parcela: p.parcelaAtual),
+        ],
+        alcance: alcance,
+      );
+      alvos = [for (final p in parcelas) if (ids.contains(p.id)) p];
+    }
+
+    for (final alvo in alvos) {
+      final distancia = (alvo.parcelaAtual ?? 1) - (aberto.parcelaAtual ?? 1);
+      final mesAberto = dados.mesFatura == null ? null : lerMesIso(dados.mesFatura!);
+      final mesFatura = mesAberto == null
+          ? null
+          : mesIso(DateTime(mesAberto.year, mesAberto.month + distancia));
+      await (update(_lancamentos)..where((l) => l.id.equals(alvo.id))).write(
+        _campos(dados, dados.valorCentavos, mesFatura),
+      );
+      await (delete(_categorias)..where((c) => c.lancamentoId.equals(alvo.id))).go();
+      await (delete(_lancamentoTags)..where((t) => t.lancamentoId.equals(alvo.id))).go();
+      await _gravarPartes(alvo.id, dados.categorias, tagIds);
+    }
+  }
+
+  /// Campos de um lançamento com o [valor] e o [mesFatura] dados.
+  static LancamentosCompanion _campos(DadosLancamento dados, int valor, String? mesFatura) {
+    final observacao = dados.observacao?.trim() ?? '';
+    return LancamentosCompanion(
+      tipo: Value(dados.tipo),
+      descricao: Value(limparNome(dados.descricao)),
+      valorCentavos: Value(valor),
+      dataLancamento: Value(dataIso(dados.data)),
+      contaId: Value(dados.contaId),
+      cartaoId: Value(dados.cartaoId),
+      mesFatura: Value(mesFatura),
+      faturaManual: Value(dados.faturaManual ? 1 : 0),
+      mesReferencia: Value(mesReferencia(data: dados.data, mesFatura: mesFatura)),
+      observacao: Value(observacao.isEmpty ? null : observacao),
+    );
+  }
+
+  Future<int> _inserir(
+    LancamentosCompanion campos,
+    List<ParteCategoria> categorias,
+    List<int> tagIds,
+  ) async {
+    final id = await into(_lancamentos).insert(
+      campos.copyWith(criadoEm: Value(DateTime.now().toIso8601String())),
+    );
+    await _gravarPartes(id, categorias, tagIds);
+    return id;
+  }
+
+  Future<void> _gravarPartes(int lancamentoId, List<ParteCategoria> categorias, List<int> tagIds) async {
+    for (final parte in categorias) {
+      await into(_categorias).insert(
+        LancamentoCategoriasCompanion.insert(
+          lancamentoId: lancamentoId,
+          categoriaId: parte.categoriaId,
+          valorCentavos: parte.valorCentavos,
+        ),
+      );
+    }
+    for (final tagId in tagIds) {
+      await into(_lancamentoTags).insert(
+        LancamentoTagsCompanion.insert(lancamentoId: lancamentoId, tagId: tagId),
+      );
+    }
   }
 
   /// Confere de novo o que o formulário já trava, para nunca gravar um
   /// lançamento quebrado.
-  static void _conferir(DadosLancamento dados) {
-    if (dados.tipo != 'ganho' && dados.tipo != 'despesa') {
-      throw ArgumentError.value(dados.tipo, 'tipo', 'deve ser ganho ou despesa');
+  static void _conferir(DadosLancamento dados, {required bool editando}) {
+    if (!const ['ganho', 'despesa', 'estorno'].contains(dados.tipo)) {
+      throw ArgumentError.value(dados.tipo, 'tipo', 'deve ser ganho, despesa ou estorno');
+    }
+    if (dados.tipo == 'estorno' && dados.cartaoId == null) {
+      throw ArgumentError.value(dados.cartaoId, 'cartaoId', 'estorno só no cartão');
+    }
+    final parcelas = dados.parcelas;
+    if (parcelas != null) {
+      if (editando) {
+        throw ArgumentError.value(parcelas, 'parcelas', 'não muda na edição');
+      }
+      if (dados.tipo != 'despesa' || dados.cartaoId == null) {
+        throw ArgumentError.value(parcelas, 'parcelas', 'só em despesa no cartão');
+      }
+      if (parcelas < minimoDeParcelas ||
+          parcelas > maximoDeParcelas ||
+          dados.valorCentavos < parcelas) {
+        throw ArgumentError.value(parcelas, 'parcelas', 'fora do limite ou maior que o valor');
+      }
     }
     if (dados.categorias.isEmpty) {
       throw ArgumentError.value(dados.categorias, 'categorias', 'precisa de ao menos uma');

@@ -1,6 +1,8 @@
 import 'package:centavinhos/data/daos/lancamentos_dao.dart';
 import 'package:centavinhos/data/database.dart';
 import 'package:centavinhos/data/dev/dados_exemplo.dart';
+import 'package:centavinhos/domain/datas.dart';
+import 'package:centavinhos/domain/exclusao.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -280,6 +282,265 @@ void main() {
     });
   });
 
+  group('compra parcelada', () {
+    Future<List<Lancamento>> parcelasDe(int primeiraId) async {
+      final primeira = await (db.select(db.lancamentos)..where((l) => l.id.equals(primeiraId)))
+          .getSingle();
+      return (db.select(db.lancamentos)
+            ..where((l) => l.grupoParcelamento.equals(primeira.grupoParcelamento!))
+            ..orderBy([(l) => OrderingTerm(expression: l.parcelaAtual)]))
+          .get();
+    }
+
+    Future<List<ParteCategoria>> partesDe(int id) async => (await dao.carregar(id)).categorias;
+
+    test('exemplo do escopo: R\$ 300 em 3x no dia 06/10, de novembro a janeiro', () async {
+      final eletronicos = await idDaCategoria('Eletrônicos', principal: 'Compras');
+      final id = await dao.salvar(
+        DadosLancamento(
+          tipo: 'despesa',
+          descricao: 'Fone',
+          valorCentavos: 30000,
+          data: DateTime(2026, 10, 6),
+          cartaoId: await idDoCartao('Nubank'),
+          mesFatura: '2026-11',
+          parcelas: 3,
+          categorias: [(categoriaId: eletronicos, valorCentavos: 30000)],
+          tags: ['trabalho'],
+          observacao: 'presente',
+        ),
+      );
+
+      final parcelas = await parcelasDe(id);
+      expect(parcelas.first.id, id);
+      expect(parcelas.map((l) => l.descricao), everyElement('Fone'));
+      expect(parcelas.map((l) => (l.parcelaAtual, l.totalParcelas)), [(1, 3), (2, 3), (3, 3)]);
+      expect(parcelas.map((l) => l.valorCentavos), [10000, 10000, 10000]);
+      expect(parcelas.map((l) => l.mesFatura), ['2026-11', '2026-12', '2027-01']);
+      expect(parcelas.map((l) => l.mesReferencia), ['2026-11', '2026-12', '2027-01']);
+      // Todas guardam a data da compra; o grupo é o id da primeira.
+      expect(parcelas.map((l) => l.dataLancamento), everyElement('2026-10-06'));
+      expect(parcelas.map((l) => l.grupoParcelamento), everyElement('$id'));
+      expect(parcelas.map((l) => l.observacao), everyElement('presente'));
+      for (final parcela in parcelas) {
+        expect((await dao.carregar(parcela.id)).tags, ['trabalho']);
+      }
+    });
+
+    test('centavos que sobram e duas categorias: as somas batem em cada parcela', () async {
+      final mercado = await idDaCategoria('Mercado', principal: 'Casa');
+      final limpeza = await idDaCategoria('Limpeza', principal: 'Casa');
+      final id = await dao.salvar(
+        DadosLancamento(
+          tipo: 'despesa',
+          descricao: 'Compra grande',
+          valorCentavos: 10001,
+          data: DateTime(2026, 10, 1),
+          cartaoId: await idDoCartao('Nubank'),
+          mesFatura: '2026-10',
+          parcelas: 3,
+          categorias: [
+            (categoriaId: mercado, valorCentavos: 8000),
+            (categoriaId: limpeza, valorCentavos: 2001),
+          ],
+        ),
+      );
+      final parcelas = await parcelasDe(id);
+      expect(parcelas.map((l) => l.valorCentavos), [3335, 3333, 3333]);
+      var somaMercado = 0;
+      for (final parcela in parcelas) {
+        final partes = await partesDe(parcela.id);
+        expect(partes.fold(0, (t, p) => t + p.valorCentavos), parcela.valorCentavos);
+        somaMercado += partes.firstWhere((p) => p.categoriaId == mercado).valorCentavos;
+      }
+      expect(somaMercado, 8000);
+    });
+
+    test('fatura trocada à mão vale para a primeira, e todas ficam marcadas', () async {
+      final id = await dao.salvar(
+        DadosLancamento(
+          tipo: 'despesa',
+          descricao: 'Tênis',
+          valorCentavos: 20000,
+          data: DateTime(2026, 10, 6),
+          cartaoId: await idDoCartao('Nubank'),
+          mesFatura: '2026-12',
+          faturaManual: true,
+          parcelas: 2,
+          categorias: [(categoriaId: await idDaCategoria('Roupas', principal: 'Compras'), valorCentavos: 20000)],
+        ),
+      );
+      final parcelas = await parcelasDe(id);
+      expect(parcelas.map((l) => l.mesFatura), ['2026-12', '2027-01']);
+      expect(parcelas.map((l) => l.faturaManual), [1, 1]);
+    });
+
+    test('nome conhecido repete o número de parcelas', () async {
+      final p = (await dao.ultimoComNome('Fone Bluetooth', 'despesa'))!;
+      expect(p.parcelas, 3);
+      expect((await dao.ultimoComNome('Padaria', 'despesa'))!.parcelas, isNull);
+    });
+
+    test('só em despesa no cartão, de 2 a 48 e ao menos 1 centavo por parcela', () async {
+      final casa = await idDaCategoria('Casa');
+      DadosLancamento dados({
+        String tipo = 'despesa',
+        int valor = 10000,
+        int parcelas = 3,
+        bool noCartao = true,
+        required int? conta,
+        required int cartao,
+      }) => DadosLancamento(
+        tipo: tipo,
+        descricao: 'X',
+        valorCentavos: valor,
+        data: DateTime(2026, 10, 12),
+        contaId: noCartao ? null : conta,
+        cartaoId: noCartao ? cartao : null,
+        mesFatura: noCartao ? '2026-11' : null,
+        parcelas: parcelas,
+        categorias: [(categoriaId: casa, valorCentavos: valor)],
+      );
+      final conta = await idDaConta('Carteira');
+      final cartao = await idDoCartao('Nubank');
+      final antes = (await db.select(db.lancamentos).get()).length;
+      for (final quebrado in [
+        dados(noCartao: false, conta: conta, cartao: cartao),
+        dados(tipo: 'estorno', conta: conta, cartao: cartao),
+        dados(parcelas: 1, conta: conta, cartao: cartao),
+        dados(parcelas: 49, conta: conta, cartao: cartao),
+        dados(valor: 2, parcelas: 3, conta: conta, cartao: cartao),
+      ]) {
+        expect(() => dao.salvar(quebrado), throwsArgumentError);
+      }
+      // Na edição, o número de parcelas não muda.
+      final padaria = await (db.select(db.lancamentos)..where((l) => l.descricao.equals('Padaria')))
+          .getSingle();
+      expect(
+        () => dao.salvar(dados(conta: conta, cartao: cartao), id: padaria.id),
+        throwsArgumentError,
+      );
+      expect(await db.select(db.lancamentos).get(), hasLength(antes));
+    });
+  });
+
+  group('editar parcelas', () {
+    late List<Lancamento> fone;
+    late int eletronicos;
+
+    setUp(() async {
+      fone = await (db.select(db.lancamentos)
+            ..where((l) => l.descricao.equals('Fone Bluetooth'))
+            ..orderBy([(l) => OrderingTerm(expression: l.parcelaAtual)]))
+          .get();
+      eletronicos = await idDaCategoria('Eletrônicos', principal: 'Compras');
+    });
+
+    /// A parcela 2 do fone (fatura de novembro) editada: novo nome e novo
+    /// valor; com [mesFatura], a fatura trocada.
+    DadosLancamento edicao({String? mesFatura, bool manual = false}) => DadosLancamento(
+      tipo: 'despesa',
+      descricao: 'Fone de ouvido',
+      valorCentavos: 12000,
+      data: lerDataIso(fone[1].dataLancamento),
+      cartaoId: fone[1].cartaoId,
+      mesFatura: mesFatura ?? fone[1].mesFatura,
+      faturaManual: manual,
+      categorias: [(categoriaId: eletronicos, valorCentavos: 12000)],
+    );
+
+    Future<List<Lancamento>> depois() => (db.select(db.lancamentos)
+          ..where((l) => l.grupoParcelamento.equals(fone.first.grupoParcelamento!))
+          ..orderBy([(l) => OrderingTerm(expression: l.parcelaAtual)]))
+        .get();
+
+    test('"só este" muda só a parcela aberta', () async {
+      await dao.salvar(edicao(), id: fone[1].id);
+      final lista = await depois();
+      expect(lista.map((l) => l.descricao), ['Fone Bluetooth', 'Fone de ouvido', 'Fone Bluetooth']);
+      expect(lista.map((l) => l.valorCentavos), [10000, 12000, 10000]);
+      expect(lista.map((l) => l.mesFatura), ['2026-10', '2026-11', '2026-12']);
+      // Parcela, total e grupo ficam como estavam.
+      expect(lista.map((l) => l.parcelaAtual), [1, 2, 3]);
+    });
+
+    test('"este e os próximos" muda a 2 e a 3', () async {
+      await dao.salvar(edicao(), id: fone[1].id, alcance: AlcanceExclusao.esteEOsProximos);
+      final lista = await depois();
+      expect(lista.map((l) => l.descricao), ['Fone Bluetooth', 'Fone de ouvido', 'Fone de ouvido']);
+      expect(lista.map((l) => l.valorCentavos), [10000, 12000, 12000]);
+      expect((await dao.carregar(lista[2].id)).categorias, [
+        (categoriaId: eletronicos, valorCentavos: 12000),
+      ]);
+    });
+
+    test('"todos" muda as três, e a fatura trocada leva as outras junto', () async {
+      await dao.salvar(
+        edicao(mesFatura: '2027-01', manual: true),
+        id: fone[1].id,
+        alcance: AlcanceExclusao.todos,
+      );
+      final lista = await depois();
+      expect(lista.map((l) => l.descricao), everyElement('Fone de ouvido'));
+      // A 2 foi para janeiro; a 1 e a 3 mantêm a distância dela.
+      expect(lista.map((l) => l.mesFatura), ['2026-12', '2027-01', '2027-02']);
+      expect(lista.map((l) => l.mesReferencia), ['2026-12', '2027-01', '2027-02']);
+      expect(lista.map((l) => l.faturaManual), [1, 1, 1]);
+    });
+  });
+
+  group('estorno', () {
+    test('grava no cartão, com categoria, e abre para editar', () async {
+      final restaurantes = await idDaCategoria('Restaurantes', principal: 'Alimentação');
+      final id = await dao.salvar(
+        DadosLancamento(
+          tipo: 'estorno',
+          descricao: 'Jantar cancelado',
+          valorCentavos: 5000,
+          data: DateTime(2026, 10, 6),
+          cartaoId: await idDoCartao('Nubank'),
+          mesFatura: '2026-11',
+          categorias: [(categoriaId: restaurantes, valorCentavos: 5000)],
+        ),
+      );
+      final salvo = await dao.carregar(id);
+      expect(salvo.lancamento.tipo, 'estorno');
+      expect((salvo.lancamento.mesFatura, salvo.lancamento.mesReferencia), ('2026-11', '2026-11'));
+      expect(salvo.categorias, [(categoriaId: restaurantes, valorCentavos: 5000)]);
+
+      // Editar pode desligar o estorno: vira despesa.
+      await dao.salvar(
+        DadosLancamento(
+          tipo: 'despesa',
+          descricao: 'Jantar',
+          valorCentavos: 5000,
+          data: DateTime(2026, 10, 6),
+          cartaoId: await idDoCartao('Nubank'),
+          mesFatura: '2026-11',
+          categorias: [(categoriaId: restaurantes, valorCentavos: 5000)],
+        ),
+        id: id,
+      );
+      expect((await dao.carregar(id)).lancamento.tipo, 'despesa');
+    });
+
+    test('nunca numa conta', () async {
+      expect(
+        () => dao.salvar(
+          DadosLancamento(
+            tipo: 'estorno',
+            descricao: 'X',
+            valorCentavos: 5000,
+            data: DateTime(2026, 10, 6),
+            contaId: 1,
+            categorias: const [(categoriaId: 1, valorCentavos: 5000)],
+          ),
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+
   group('exemplos', () {
     test('o gerador usa a regra da fatura: compra no fechamento vai para a seguinte', () async {
       // Mercado em 28/09 no Nubank (fecha 5): fatura de outubro.
@@ -292,6 +553,8 @@ void main() {
             ..orderBy([(l) => OrderingTerm(expression: l.parcelaAtual)]))
           .get();
       expect(fone.map((l) => l.mesFatura), ['2026-10', '2026-11', '2026-12']);
+      // O grupo das parcelas é o id da primeira, como no app.
+      expect(fone.map((l) => l.grupoParcelamento), everyElement('${fone.first.id}'));
     });
   });
 }

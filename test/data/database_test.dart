@@ -196,7 +196,7 @@ void main() {
       expect(await db.select(db.cartoes).get(), hasLength(2));
       final lancamentos = await db.select(db.lancamentos).get();
       expect(lancamentos, isNotEmpty);
-      expect(lancamentos.where((l) => l.tipo == 'estorno'), hasLength(1));
+      expect(lancamentos.where((l) => l.tipo == 'estorno'), hasLength(2));
 
       // A soma das categorias bate com o valor de cada lançamento.
       final partes = await db.select(db.lancamentoCategorias).get();

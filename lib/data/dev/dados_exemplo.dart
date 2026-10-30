@@ -82,7 +82,7 @@ class _Gerador {
       ),
     );
 
-    Future<void> lancar({
+    Future<int> lancar({
       String tipo = 'despesa',
       required String descricao,
       required int valor,
@@ -140,6 +140,7 @@ class _Gerador {
           LancamentoTagsCompanion.insert(lancamentoId: id, tagId: tagId),
         );
       }
+      return id;
     }
 
     // Cartão Nubank
@@ -153,8 +154,10 @@ class _Gerador {
         (categoria('Casa', 'Limpeza'), 11230),
       ],
     );
+    // O grupo das parcelas é o id da primeira, em texto, como no app.
+    String? grupoFone;
     for (var parcela = 1; parcela <= 3; parcela++) {
-      await lancar(
+      final id = await lancar(
         descricao: 'Fone Bluetooth',
         valor: 10000,
         data: dia(-1, 25),
@@ -162,8 +165,14 @@ class _Gerador {
         categorias: [(categoria('Compras', 'Eletrônicos'), 10000)],
         parcelaAtual: parcela,
         totalParcelas: 3,
-        grupo: 'exemplo-fone-bluetooth',
+        grupo: grupoFone,
       );
+      if (grupoFone == null) {
+        grupoFone = '$id';
+        await (db.update(db.lancamentos)..where((l) => l.id.equals(id))).write(
+          LancamentosCompanion(grupoParcelamento: Value(grupoFone)),
+        );
+      }
     }
     await lancar(
       descricao: 'Combustível',
@@ -207,6 +216,23 @@ class _Gerador {
       data: dia(-1, 20),
       noCartao: cartaoInter,
       categorias: [(categoria('Saúde', 'Remédios'), 8760)],
+    );
+    // Comprada no início do mês anterior e devolvida neste: o estorno passa
+    // das compras da fatura dele e sobra crédito para a seguinte.
+    await lancar(
+      descricao: 'Mochila',
+      valor: 6000,
+      data: dia(-1, 5),
+      noCartao: cartaoInter,
+      categorias: [(categoria('Compras', 'Roupas'), 6000)],
+    );
+    await lancar(
+      tipo: 'estorno',
+      descricao: 'Mochila',
+      valor: 6000,
+      data: dia(0, 9),
+      noCartao: cartaoInter,
+      categorias: [(categoria('Compras', 'Roupas'), 6000)],
     );
 
     // Contas

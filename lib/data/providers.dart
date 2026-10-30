@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/fatura.dart';
 import '../domain/mes.dart';
 import 'conexao.dart';
 import 'configuracoes.dart';
@@ -52,6 +53,12 @@ final tagsProvider = StreamProvider<List<TagComUso>>(
 /// recente para o mais antigo.
 final nomesUsadosProvider = StreamProvider.family<List<String>, String>(
   (ref, tipo) => ref.watch(bancoProvider).lancamentosDao.observarNomes(tipo),
+);
+
+/// Compras, estornos e quantos lançamentos um cartão (pelo id) tem em cada
+/// mês da fatura.
+final movimentosDasFaturasProvider = StreamProvider.family<List<MovimentoDaFatura>, int>(
+  (ref, cartaoId) => ref.watch(bancoProvider).faturasDao.observar(cartaoId),
 );
 
 /// Lançamentos e transferências de um mês (AAAA-MM), na ordem da lista.
