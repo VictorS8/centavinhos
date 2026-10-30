@@ -339,6 +339,21 @@ void main() {
       await capturar(tester, 'cartoes_vazio_verde_claro', boasVindasConcluida: true, destino: 'Cartões');
     });
 
+    // Como a imagem de referência docs/telas/05-cartoes.png: futura, aberta
+    // e paga.
+    for (final modo in ['claro', 'escuro']) {
+      testWidgets('faturas do Nubank, verde $modo', (tester) async {
+        await capturar(
+          tester,
+          'cartoes_faturas_nubank_verde_$modo',
+          modo: modo,
+          dadosExemplo: true,
+          destino: 'Cartões',
+          depois: (tester) => tocar(tester, 'Fecha dia 5 · vence dia 12'),
+        );
+      });
+    }
+
     testWidgets('janela de editar cartão, verde claro', (tester) async {
       await capturar(
         tester,
@@ -452,6 +467,47 @@ void main() {
         );
       });
     }
+
+    testWidgets('compra parcelada, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_parcelada_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await tester.enterText(campo('Nome'), 'Fone novo');
+          await digitarValor(tester, campo('Valor'), '30002');
+          await escolherNoMenu(tester, 'Recorrência', 'Parcelada');
+          await tester.enterText(campo('Parcelas'), '3');
+          await tester.pumpAndSettle();
+          await escolherCategoria(tester, 'eletr');
+          await escolherNoMenu(tester, 'Cartão', 'Cartão Nubank');
+          await tester.enterText(campo('Data'), '06/10/2026');
+          await tester.pumpAndSettle();
+          await tester.tap(campo('Nome'));
+          await tester.pumpAndSettle();
+        },
+      );
+    });
+
+    testWidgets('estorno no cartão, verde claro', (tester) async {
+      await capturar(
+        tester,
+        'lancamento_estorno_verde_claro',
+        windows: true,
+        dadosExemplo: true,
+        depois: (tester) async {
+          await novoLancamento(tester);
+          await escolherNome(tester, 'restau', 'Restaurante');
+          await digitarValor(tester, campo('Valor'), '3000');
+          await tester.tap(find.byType(Switch));
+          await tester.pumpAndSettle();
+          await tester.tap(campo('Nome'));
+          await tester.pumpAndSettle();
+        },
+      );
+    });
 
     testWidgets('ganho, roxo claro', (tester) async {
       await capturar(

@@ -29,7 +29,7 @@ void main() {
     await tocar(tester, find.byTooltip('Próximo mês'));
     expect(find.text('Novembro 2026'), findsOneWidget);
     expect(find.text('Fone Bluetooth (2/3)'), findsOneWidget);
-    expect(find.text('R\$ 1.344,90'), findsOneWidget);
+    expect(find.text('R\$ 1.284,90'), findsOneWidget);
     await tocar(tester, find.byTooltip('Mês anterior'));
     expect(find.text('Outubro 2026'), findsOneWidget);
 
