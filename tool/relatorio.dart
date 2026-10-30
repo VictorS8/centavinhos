@@ -1,6 +1,8 @@
 // Relatório de uma etapa: roda o flutter analyze, os testes rápidos (com as
 // capturas de tela) e os testes de integração no Windows, e gera
 // relatorios/etapa-N/index.html com tudo, incluindo o roteiro manual.
+// O tempo de cada fase fica em relatorios/etapa-N/tempos.json, uma entrada
+// por execução, para o relatório mostrar a média.
 //
 // Uso:
 //   dart run tool/relatorio.dart <etapa> [--sem-integracao] [--nao-abrir]
@@ -44,9 +46,21 @@ Future<void> main(List<String> argumentos) async {
   final comIntegracao = !argumentos.contains('--sem-integracao');
   final abrir = !argumentos.contains('--nao-abrir');
   final pasta = Directory('relatorios/etapa-$etapa')..createSync(recursive: true);
+  final relogioTotal = Stopwatch()..start();
+  final fases = <String, int>{};
+  final arquivosDeIntegracao = <String, int>{};
+
+  /// Roda [fase], guarda o tempo em [fases] e mostra no terminal.
+  Future<T> medir<T>(String nome, Future<T> Function() fase) async {
+    final relogio = Stopwatch()..start();
+    final resultado = await fase();
+    fases[nome] = relogio.elapsedMilliseconds;
+    stdout.writeln('    pronto em ${_tempo(relogio.elapsedMilliseconds)}');
+    return resultado;
+  }
 
   stdout.writeln('1/3 flutter analyze...');
-  final analise = await _rodar(['analyze']);
+  final analise = await medir('analyze', () => _rodar(['analyze']));
 
   stdout.writeln('2/3 flutter test (regras, banco, interface e capturas)...');
   // O Flutter grava as diferenças quando uma captura falha, mas não as
@@ -54,7 +68,7 @@ Future<void> main(List<String> argumentos) async {
   // falhas de rodadas antigas.
   final diferencasAntigas = Directory('test/golden/failures');
   if (diferencasAntigas.existsSync()) diferencasAntigas.deleteSync(recursive: true);
-  final rapidos = await _rodar(['test', '--reporter', 'json']);
+  final rapidos = await medir('rapidos', () => _rodar(['test', '--reporter', 'json']));
   final testes = _lerTestes(rapidos.stdout);
 
   if (comIntegracao) {
@@ -68,11 +82,16 @@ Future<void> main(List<String> argumentos) async {
         .where((caminho) => caminho.endsWith('_test.dart'))
         .toList()
       ..sort();
-    for (final arquivo in arquivos) {
-      stdout.writeln('    $arquivo');
-      final integracao = await _rodar(['test', arquivo, '-d', 'windows', '--reporter', 'json']);
-      testes.addAll(_lerTestes(integracao.stdout));
-    }
+    await medir('integracao', () async {
+      for (final arquivo in arquivos) {
+        stdout.write('    $arquivo');
+        final relogio = Stopwatch()..start();
+        final integracao = await _rodar(['test', arquivo, '-d', 'windows', '--reporter', 'json']);
+        arquivosDeIntegracao[arquivo] = relogio.elapsedMilliseconds;
+        stdout.writeln(' (${_tempo(relogio.elapsedMilliseconds)})');
+        testes.addAll(_lerTestes(integracao.stdout));
+      }
+    });
   } else {
     stdout.writeln('3/3 testes de integração pulados (--sem-integracao).');
   }
@@ -92,6 +111,17 @@ Future<void> main(List<String> argumentos) async {
   final capturas = _copiarImagens('test/golden/capturas', '${pasta.path}/capturas');
   final falhasVisuais = _copiarImagens('test/golden/failures', '${pasta.path}/falhas');
 
+  final tempos = _guardarTempos(
+    File('${pasta.path}/tempos.json'),
+    _Execucao(
+      quando: DateTime.now(),
+      totalMs: relogioTotal.elapsedMilliseconds,
+      fases: fases,
+      arquivosDeIntegracao: arquivosDeIntegracao,
+      testes: testes.length,
+    ),
+  );
+
   final roteiro = File('${pasta.path}/roteiro-manual.md');
   final html = _montarHtml(
     etapa: etapa,
@@ -101,6 +131,7 @@ Future<void> main(List<String> argumentos) async {
     capturas: capturas,
     falhasVisuais: falhasVisuais,
     roteiro: roteiro.existsSync() ? roteiro.readAsStringSync() : null,
+    tempos: tempos,
   );
   final pagina = File('${pasta.path}/index.html')..writeAsStringSync(html);
 
@@ -112,6 +143,12 @@ Future<void> main(List<String> argumentos) async {
         ' (${testes.where((t) => t.novo).length} novos nesta etapa)');
   for (final teste in falharam) {
     stdout.writeln('  ✗ ${teste.arquivo}: ${teste.nome}');
+  }
+  stdout.writeln('Tempo: ${_tempo(tempos.atual.totalMs)} (${_fasesEmTexto(tempos.atual.fases)})');
+  final media = tempos.mediaCompletaMs;
+  if (media != null) {
+    stdout.writeln('Média das execuções completas desta etapa: ${_tempo(media)}'
+        ' (${tempos.completas} ${tempos.completas == 1 ? 'execução' : 'execuções'})');
   }
   stdout.writeln('Relatório: ${pagina.absolute.path}');
 
@@ -128,6 +165,101 @@ Future<ProcessResult> _rodar(List<String> argumentos) => Process.run(
   stdoutEncoding: utf8,
   stderrEncoding: utf8,
 );
+
+/// Tempos de uma execução do relatório, em milissegundos.
+class _Execucao {
+  _Execucao({
+    required this.quando,
+    required this.totalMs,
+    required this.fases,
+    required this.arquivosDeIntegracao,
+    required this.testes,
+  });
+
+  factory _Execucao.deJson(Map<String, dynamic> j) => _Execucao(
+    quando: DateTime.parse(j['quando'] as String),
+    totalMs: j['total_ms'] as int,
+    fases: (j['fases'] as Map<String, dynamic>).cast<String, int>(),
+    arquivosDeIntegracao: (j['arquivos_de_integracao'] as Map<String, dynamic>).cast<String, int>(),
+    testes: j['testes'] as int,
+  );
+
+  final DateTime quando;
+  final int totalMs;
+
+  /// 'analyze', 'rapidos' e, se rodou, 'integracao'.
+  final Map<String, int> fases;
+  final Map<String, int> arquivosDeIntegracao;
+  final int testes;
+
+  /// Com a integração: só essas entram na média.
+  bool get completa => fases.containsKey('integracao');
+
+  Map<String, Object> paraJson() => {
+    'quando': quando.toIso8601String(),
+    'total_ms': totalMs,
+    'fases': fases,
+    'arquivos_de_integracao': arquivosDeIntegracao,
+    'testes': testes,
+  };
+}
+
+/// Todas as execuções da etapa, da mais antiga para a atual (a última).
+class _Historico {
+  _Historico(this.execucoes);
+
+  final List<_Execucao> execucoes;
+
+  _Execucao get atual => execucoes.last;
+
+  int get completas => execucoes.where((e) => e.completa).length;
+
+  /// Média do tempo total das execuções com a integração; nula sem nenhuma.
+  int? get mediaCompletaMs {
+    final totais = [for (final e in execucoes) if (e.completa) e.totalMs];
+    return totais.isEmpty ? null : totais.reduce((a, b) => a + b) ~/ totais.length;
+  }
+}
+
+/// Acrescenta [execucao] ao histórico de [arquivo] e devolve o histórico.
+/// Um arquivo ilegível recomeça do zero, sem travar o relatório.
+_Historico _guardarTempos(File arquivo, _Execucao execucao) {
+  var anteriores = <_Execucao>[];
+  if (arquivo.existsSync()) {
+    try {
+      anteriores = [
+        for (final e in json.decode(arquivo.readAsStringSync()) as List)
+          _Execucao.deJson(e as Map<String, dynamic>),
+      ];
+    } on Object {
+      anteriores = [];
+    }
+  }
+  final historico = _Historico([...anteriores, execucao]);
+  arquivo.writeAsStringSync(
+    const JsonEncoder.withIndent('  ').convert([for (final e in historico.execucoes) e.paraJson()]),
+  );
+  return historico;
+}
+
+/// "4 min 08 s", "25 s" ou "0,8 s".
+String _tempo(int ms) {
+  if (ms < 1000) return '${(ms / 1000).toStringAsFixed(1).replaceAll('.', ',')} s';
+  final segundos = (ms / 1000).round();
+  if (segundos < 60) return '$segundos s';
+  return '${segundos ~/ 60} min ${(segundos % 60).toString().padLeft(2, '0')} s';
+}
+
+const _nomesDasFases = {
+  'analyze': 'analyze',
+  'rapidos': 'testes rápidos e capturas',
+  'integracao': 'integração',
+};
+
+/// "analyze 3 s · testes rápidos e capturas 30 s · integração 3 min 35 s".
+String _fasesEmTexto(Map<String, int> fases) => [
+  for (final MapEntry(:key, :value) in fases.entries) '${_nomesDasFases[key] ?? key} ${_tempo(value)}',
+].join(' · ');
 
 /// Lê a saída do `flutter test --reporter json`, um evento por linha.
 List<_Teste> _lerTestes(Object? saida) {
@@ -230,8 +362,19 @@ String _montarHtml({
   required List<String> capturas,
   required List<String> falhasVisuais,
   required String? roteiro,
+  required _Historico tempos,
 }) {
   final agora = DateTime.now();
+  final media = tempos.mediaCompletaMs;
+  final linhaDeTempos = [
+    _escapar(_fasesEmTexto(tempos.atual.fases)),
+    if (media != null)
+      'média das execuções completas desta etapa: ${_tempo(media)}'
+          ' (${tempos.completas} ${tempos.completas == 1 ? 'execução' : 'execuções'})',
+  ].join(' · ');
+  final porArquivo = tempos.atual.arquivosDeIntegracao.entries
+      .map((e) => '<code>${_escapar(e.key)}</code> ${_tempo(e.value)}')
+      .join(' · ');
   String dois(int n) => n.toString().padLeft(2, '0');
   final quando =
       '${dois(agora.day)}/${dois(agora.month)}/${agora.year} ${dois(agora.hour)}:${dois(agora.minute)}';
@@ -340,7 +483,10 @@ code { font-family:Consolas, monospace; font-size:13px; background:var(--fundo);
   <div class="bloco"><span class="apoio">Testes</span><b class="${falharam == 0 ? 'bom' : 'ruim'}">${testes.length - falharam} de ${testes.length}</b></div>
   <div class="bloco"><span class="apoio">Novos nesta etapa</span><b>$novos</b></div>
   <div class="bloco"><span class="apoio">Capturas de tela</span><b>${capturas.length}</b></div>
+  <div class="bloco"><span class="apoio">Tempo</span><b>${_tempo(tempos.atual.totalMs)}</b></div>
 </div>
+<p class="apoio">Tempo por fase: $linhaDeTempos</p>
+${porArquivo.isEmpty ? '' : '<p class="apoio">Integração por arquivo (cada um compila e abre o app): $porArquivo</p>'}
 
 ${analiseOk ? '' : '<h2>flutter analyze</h2><pre>${_escapar('${analise.stdout}${analise.stderr}')}</pre>'}
 
