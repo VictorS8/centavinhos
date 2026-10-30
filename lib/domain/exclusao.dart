@@ -1,9 +1,10 @@
-/// Regras de exclusão de lançamentos parcelados e recorrentes.
+/// Regras de exclusão (e de edição) de lançamentos parcelados e
+/// recorrentes.
 library;
 
 import 'datas.dart';
 
-/// O que excluir quando o lançamento faz parte de um grupo.
+/// O que excluir, ou alterar, quando o lançamento faz parte de um grupo.
 enum AlcanceExclusao { soEste, esteEOsProximos, todos }
 
 /// Que grupo um lançamento ou uma transferência forma com os outros.
@@ -23,12 +24,12 @@ int _compararMembros(MembroDoGrupo a, MembroDoGrupo b) {
   return porData != 0 ? porData : a.id.compareTo(b.id);
 }
 
-/// Ids a excluir do [grupo] (que inclui o próprio lançamento [id]), na
-/// ordem do grupo.
+/// Ids do [grupo] (que inclui o próprio lançamento [id]) que o [alcance]
+/// pega, para excluir ou alterar, na ordem do grupo.
 ///
 /// "Este e os próximos" pega o lançamento e os que vêm depois dele: as
 /// parcelas seguintes, ou os meses seguintes de uma recorrência.
-List<int> idsAExcluir({
+List<int> idsNoAlcance({
   required int id,
   required List<MembroDoGrupo> grupo,
   required AlcanceExclusao alcance,

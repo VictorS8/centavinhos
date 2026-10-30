@@ -14,37 +14,37 @@ void main() {
     (id: 4, data: '2026-10-05', parcela: null),
   ];
 
-  group('idsAExcluir', () {
+  group('idsNoAlcance', () {
     test('só este', () {
-      expect(idsAExcluir(id: 11, grupo: parcelas, alcance: AlcanceExclusao.soEste), [11]);
+      expect(idsNoAlcance(id: 11, grupo: parcelas, alcance: AlcanceExclusao.soEste), [11]);
     });
 
     test('este e os próximos, pela parcela', () {
-      expect(idsAExcluir(id: 11, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [
+      expect(idsNoAlcance(id: 11, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [
         11,
         12,
       ]);
-      expect(idsAExcluir(id: 10, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [
+      expect(idsNoAlcance(id: 10, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [
         10,
         11,
         12,
       ]);
-      expect(idsAExcluir(id: 12, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [12]);
+      expect(idsNoAlcance(id: 12, grupo: parcelas, alcance: AlcanceExclusao.esteEOsProximos), [12]);
     });
 
     test('este e os próximos, pela data na recorrência', () {
-      expect(idsAExcluir(id: 4, grupo: meses, alcance: AlcanceExclusao.esteEOsProximos), [4, 5]);
+      expect(idsNoAlcance(id: 4, grupo: meses, alcance: AlcanceExclusao.esteEOsProximos), [4, 5]);
     });
 
     test('todos, na ordem do grupo', () {
-      expect(idsAExcluir(id: 11, grupo: parcelas, alcance: AlcanceExclusao.todos), [10, 11, 12]);
-      expect(idsAExcluir(id: 4, grupo: meses, alcance: AlcanceExclusao.todos), [3, 4, 5]);
+      expect(idsNoAlcance(id: 11, grupo: parcelas, alcance: AlcanceExclusao.todos), [10, 11, 12]);
+      expect(idsNoAlcance(id: 4, grupo: meses, alcance: AlcanceExclusao.todos), [3, 4, 5]);
     });
 
     test('lançamento sozinho', () {
       final sozinho = <MembroDoGrupo>[(id: 7, data: '2026-10-03', parcela: null)];
       for (final alcance in AlcanceExclusao.values) {
-        expect(idsAExcluir(id: 7, grupo: sozinho, alcance: alcance), [7]);
+        expect(idsNoAlcance(id: 7, grupo: sozinho, alcance: alcance), [7]);
       }
     });
   });

@@ -71,19 +71,49 @@ String _mensagem(Excluidos excluidos, String nome) {
       : '$quantidade lançamentos "${excluidos.lancamentos.first.descricao}" excluídos.';
 }
 
+/// Antes de salvar a edição de uma parcela, pergunta se a mudança vale só
+/// para ela, para ela e as próximas ou para todas. Fora de uma compra
+/// parcelada (ou com uma parcela só sobrando), devolve "só este" sem
+/// perguntar. Devolve nulo se cancelou.
+Future<AlcanceExclusao?> perguntarAlcanceDaEdicao(
+  BuildContext context,
+  AppDatabase banco,
+  int id, {
+  required String nome,
+}) async {
+  final alvo = (transferencia: false, id: id);
+  final grupo = await banco.exclusaoDao.grupoDe(alvo);
+  if (grupo.tipo != TipoDeGrupo.parcelas || grupo.membros.length < 2) {
+    return AlcanceExclusao.soEste;
+  }
+  if (!context.mounted) return null;
+  return showDialog<AlcanceExclusao>(
+    context: context,
+    builder: (_) => DialogoExcluir(alvo: alvo, nome: nome, grupo: grupo, alterando: true),
+  );
+}
+
 /// Confirmação de exclusão. Sozinho, só "Excluir" ou "Cancelar"; numa
 /// parcela ou num recorrente, as três opções com quantos saem em cada uma.
-/// Devolve o alcance escolhido, ou nulo se cancelou.
+/// Com [alterando], a mesma pergunta antes de salvar a edição de uma
+/// parcela. Devolve o alcance escolhido, ou nulo se cancelou.
 class DialogoExcluir extends StatelessWidget {
-  const DialogoExcluir({super.key, required this.alvo, required this.nome, required this.grupo});
+  const DialogoExcluir({
+    super.key,
+    required this.alvo,
+    required this.nome,
+    required this.grupo,
+    this.alterando = false,
+  });
 
   final AlvoExclusao alvo;
   final String nome;
   final GrupoDoAlvo grupo;
+  final bool alterando;
 
   @override
   Widget build(BuildContext context) {
-    final titulo = Text('Excluir "$nome"?');
+    final titulo = Text(alterando ? 'Alterar "$nome"?' : 'Excluir "$nome"?');
     final cancelar = TextButton(
       onPressed: () => Navigator.pop(context),
       child: const Text('Cancelar'),
@@ -107,6 +137,7 @@ class DialogoExcluir extends StatelessWidget {
     final parcelas = grupo.tipo == TipoDeGrupo.parcelas;
     final explicacao = parcelas
         ? 'Esta compra foi parcelada em ${grupo.membros.length} vezes.'
+              '${alterando ? ' A mudança vale para quais parcelas?' : ''}'
         : alvo.transferencia
         ? 'Esta transferência se repete todo mês. Excluindo esta e as próximas, ou todas, '
               'ela deixa de se repetir.'
@@ -114,7 +145,7 @@ class DialogoExcluir extends StatelessWidget {
               'ele deixa de se repetir.';
 
     String quantos(AlcanceExclusao alcance) {
-      final n = idsAExcluir(id: alvo.id, grupo: grupo.membros, alcance: alcance).length;
+      final n = idsNoAlcance(id: alvo.id, grupo: grupo.membros, alcance: alcance).length;
       return parcelas ? (n == 1 ? '1 parcela' : '$n parcelas') : (n == 1 ? '1 mês' : '$n meses');
     }
 

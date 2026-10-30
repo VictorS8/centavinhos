@@ -83,7 +83,7 @@ class ExclusaoDao extends DatabaseAccessor<AppDatabase> {
   /// e "todos" a desliga, para os meses seguintes não serem criados de novo.
   Future<Excluidos> excluir(AlvoExclusao alvo, AlcanceExclusao alcance) => transaction(() async {
     final grupo = await grupoDe(alvo);
-    final ids = idsAExcluir(id: alvo.id, grupo: grupo.membros, alcance: alcance);
+    final ids = idsNoAlcance(id: alvo.id, grupo: grupo.membros, alcance: alcance);
     final data = grupo.membros.firstWhere((m) => m.id == alvo.id).data;
 
     if (alvo.transferencia) {
