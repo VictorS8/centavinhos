@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 5 · Centavinhos</title>
+<style>
+:root { --fundo:#F5FBF7; --cartao:#FFFFFF; --texto:#171D1A; --apoio:#3F4945; --borda:#BFC9C3;
+  --primaria:#1F6F5C; --bom:#1F6F5C; --bom-fundo:#A6F2DB; --ruim:#BA1A1A; --ruim-fundo:#FFDAD6; --novo-fundo:#C5E7FF; --novo-texto:#001E2D; }
+@media (prefers-color-scheme: dark) { :root { --fundo:#0F1512; --cartao:#171D1A; --texto:#DEE4DF; --apoio:#BFC9C3;
+  --borda:#3F4945; --primaria:#8AD6BF; --bom:#8AD6BF; --bom-fundo:#005142; --ruim:#FFB4AB; --ruim-fundo:#93000A; --novo-fundo:#284B5F; --novo-texto:#C5E7FF; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--fundo); color:var(--texto); font:15px/1.5 "Segoe UI", Roboto, sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:32px 16px 64px; }
+h1 { font-size:28px; margin:0 0 4px; } h2 { font-size:20px; margin:40px 0 12px; } h3 { font-size:16px; margin:24px 0 8px; }
+.apoio { color:var(--apoio); }
+.resumo { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0; }
+.bloco { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:16px 20px; min-width:180px; }
+.bloco b { display:block; font-size:24px; }
+.bom { color:var(--bom); } .ruim { color:var(--ruim); }
+details { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; margin:12px 0; padding:4px 16px; }
+summary { cursor:pointer; padding:10px 0; display:flex; justify-content:space-between; gap:12px; }
+summary .titulo { font-weight:600; }
+ul.testes { list-style:none; margin:0 0 12px; padding:0; }
+ul.testes li { padding:6px 0; border-top:1px solid var(--borda); display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; }
+ul.testes li.arquivo { color:var(--apoio); font:12px Consolas, monospace; border-top:none; padding-top:12px; }
+.icone { width:16px; font-weight:700; } .passou .icone { color:var(--bom); } .falhou .icone { color:var(--ruim); }
+.falhou { background:var(--ruim-fundo); border-radius:8px; padding:6px 8px !important; }
+.nome { flex:1; min-width:200px; } .tempo { color:var(--apoio); font-size:13px; }
+.novo { background:var(--novo-fundo); color:var(--novo-texto); border-radius:8px; padding:0 8px; font-size:12px; font-weight:600; }
+pre { width:100%; overflow-x:auto; background:var(--fundo); padding:12px; border-radius:8px; font-size:12px; white-space:pre-wrap; }
+.galeria { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; }
+figure { margin:0; background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px; }
+figure img { width:100%; border-radius:8px; display:block; } figcaption { padding:8px 4px 0; color:var(--apoio); font-size:13px; }
+.roteiro { background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:8px 24px 16px; }
+.roteiro li { margin:4px 0; } .roteiro ul.marcar { list-style:none; padding-left:4px; }
+.roteiro label { cursor:pointer; display:flex; gap:10px; align-items:baseline; }
+.roteiro input[type=checkbox] { accent-color:var(--primaria); width:16px; height:16px; flex:none; transform:translateY(2px); }
+.roteiro li.feito { color:var(--apoio); }
+#limpar-roteiro { margin-left:8px; font:inherit; font-size:13px; color:var(--primaria); background:none; border:1px solid var(--borda); border-radius:16px; padding:2px 12px; cursor:pointer; }
+code { font-family:Consolas, monospace; font-size:13px; background:var(--fundo); padding:1px 4px; border-radius:4px; }
+</style>
+</head>
+<body><main>
+<h1>Centavinhos · Etapa 5</h1>
+<p class="apoio">Gerado em 30/10/2026 19:38</p>
+
+<div class="resumo">
+  <div class="bloco"><span class="apoio">flutter analyze</span><b class="bom">Sem problemas</b></div>
+  <div class="bloco"><span class="apoio">Testes</span><b class="bom">320 de 320</b></div>
+  <div class="bloco"><span class="apoio">Novos nesta etapa</span><b>59</b></div>
+  <div class="bloco"><span class="apoio">Capturas de tela</span><b>37</b></div>
+</div>
+
+
+
+<h2>Testes</h2>
+<details open>
+<summary><span class="titulo">Regras (lib/domain)</span><span class="contagem bom">112 de 112</span></summary>
+<ul class="testes">
+<li class="arquivo">test/domain/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nomes limpa espaços nas pontas e repetidos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nomes tag perde o # do começo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nomes comparação ignora maiúsculas e acentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoNomeInvalido nome livre passa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoNomeInvalido nome vazio</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoNomeInvalido repetido entre os ativos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoNomeInvalido repetido com um arquivado sugere desarquivar</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoNomeInvalido tag compara sem o #</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lerDiaDoMes de 1 a 31</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lerDiaDoMes fora da faixa ou vazio</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoParaNaoTirarConta conta livre pode sair</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoParaNaoTirarConta última conta ativa fica</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoParaNaoTirarConta conta que paga cartão ativo fica</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoDataSaldoInvalida hoje e dias anteriores servem</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoDataSaldoInvalida futuro não serve</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivoDataSaldoInvalida data inválida</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">textos de contagem subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">textos de contagem uso de tags</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/data_digitada_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dd/mm completa com o ano de hoje</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dd/mm/aaaa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">aceita dia e mês com um número só e espaços</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas que não existem</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">29/02 só em ano bissexto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">textos que não são data</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/dinheiro_e_datas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos valores pequenos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatarCentavos negativo com o sinal de menos tipográfico</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas dia e mês no formato do banco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas dia no formato da tela e leitura do formato do banco</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/exclusao_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">idsNoAlcance só este</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">idsNoAlcance este e os próximos, pela parcela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">idsNoAlcance este e os próximos, pela data na recorrência</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">idsNoAlcance todos, na ordem do grupo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">idsNoAlcance lançamento sozinho</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">fim da recorrência: o dia anterior, virando o mês e o ano</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/fatura_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura exemplo do escopo: fecha dia 5 e vence dia 12</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura compra no dia do fechamento vai para a fatura seguinte</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura vencimento antes do fechamento cai no mês seguinte ao fechamento</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura virada do ano</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura fechamento no dia 31 vira o último dia dos meses mais curtos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês da fatura compra no dia 31 com fechamento no 31</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">vencimento da fatura dia do vencimento no mês da fatura</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">vencimento da fatura dia que não existe no mês vira o último dia</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas da fatura mês por extenso e leitura de AAAA-MM</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas da fatura último dia do mês e dia no mês, passando de dezembro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">mês da fatura de cada parcela exemplo do escopo: 3x no dia 06/10 em novembro, dezembro e janeiro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">recálculo ao mudar o cartão compra que muda de fatura com o novo fechamento</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">recálculo ao mudar o cartão fatura trocada à mão ou já no mês certo não muda</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">recálculo ao mudar o cartão parcela mantém a distância da primeira</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">fechamento e situação da fatura fechamento no mês do vencimento ou no anterior</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">fechamento e situação da fatura situação em 12/10, com um cartão que fecha 5 e vence 12</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">total da fatura com estornos e crédito total = compras − estornos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">total da fatura com estornos e crédito estornos acima das compras: zero e crédito para a seguinte</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">total da fatura com estornos e crédito a fatura aberta aparece mesmo vazia, e a lista vem da mais recente</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/lancamento_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">multicategoria contador com o que falta, como no escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">multicategoria soma que bate fecha a distribuição</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">multicategoria passar do total mostra o que sobra</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">multicategoria categoria com valor vazio não fecha, mesmo com a soma certa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">multicategoria sem limite de categorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivo para não salvar tudo certo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivo para não salvar cada campo obrigatório, na ordem do formulário</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivo para não salvar com uma categoria só, o valor dela é o total</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivo para não salvar compra parcelada: de 2 a 48 parcelas, ao menos R$ 0,01 em cada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">motivo para não salvar estorno e compra parcelada pedem o cartão</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">motivo para não salvar data no futuro e no passado distante são aceitas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês de referência no cartão é o mês da fatura; nas contas, o da data</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">sugestões nome contém o texto, sem diferenciar maiúsculas nem acentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">sugestões campo vazio não sugere nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">sugestões do mais recente ao mais antigo, até 8</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">sugestões categoria principal e subcategoria aparecem na busca</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/mes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">totalDeGastos soma as despesas, em conta e no cartão</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">totalDeGastos estorno abate do total</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">totalDeGastos ganhos e transferências ficam de fora</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">totalDeGastos mês vazio dá zero, e só estornos dão negativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">como aparece na lista nome com a parcela atual</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">como aparece na lista transferência tem o nome gerado pelas contas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">como aparece na lista valor com sinal pelo tipo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">como aparece na lista detalhe com a primeira categoria e a conta ou o cartão com o vencimento</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">como aparece na lista inicial da categoria principal e categorias a mais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">ordem da lista: mais recente primeiro, lançamentos antes das transferências</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas da tela do mês mês e ano, dia e mês e início do mês</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">datas da tela do mês quanto falta até a meia-noite</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/parcelas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">divisão em parcelas exemplo do escopo: R$ 300 em 3x são três de R$ 100</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">divisão em parcelas os centavos que sobram vão para a primeira parcela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">divisão em parcelas a soma das parcelas é sempre o total</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">divisão em parcelas texto da divisão</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">divisão em parcelas limites de parcelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias em cada parcela uma categoria só segue a divisão da compra</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias em cada parcela divisão exata fica igual em todas as parcelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias em cada parcela com sobra, as somas batem nas parcelas e nas categorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">categorias em cada parcela poucos centavos: uma categoria pode ficar com zero numa parcela</span><span class="tempo"></span></li>
+<li class="arquivo">test/domain/valor_caixa_eletronico_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar começa em R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar cada número entra pela direita, como no escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar vírgula, ponto e letras são ignorados</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar agrupa milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">digitar para no limite de 11 números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">apagar backspace tira o último número</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">apagar apagar tudo volta para R$ 0,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar "12,50" vira R$ 12,50</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar aceita o símbolo e os milhares</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar texto sem centavos é lido como reais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar um número só depois da vírgula vira dezena de centavos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar texto sem números não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar valor acima do máximo não muda o valor</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar sinal de menos é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">colar sinal de menos vale com permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" deixa negativo e mostra −R$</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" de novo volta para positivo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal com o campo zerado, o sinal fica guardado para os próximos números</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal apagar com o valor zerado tira o sinal</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal "-" é ignorado sem permiteNegativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">troca de sinal começa com valor negativo quando permitido</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Banco</span><span class="contagem bom">77 de 77</span></summary>
+<ul class="testes">
+<li class="arquivo">test/data/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">migração banco da versão 1 ganha a coluna arquivada em tags e mantém as tags</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas cria e edita com saldo inicial e data</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas lista as ativas primeiro, em ordem de nome sem ligar para acentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas conta nova não está em uso; com lançamento, transferência ou cartão, está</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas exclui a conta nunca usada e arquiva a usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas não arquiva nem exclui a última conta ativa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas não arquiva a conta que paga um cartão ativo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões cria e edita fechamento, vencimento e conta de pagamento</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões exclui o cartão nunca usado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões cartão usado só é arquivado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões só desarquiva com a conta de pagamento ativa</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias árvore em ordem de nome, com as subcategorias de cada uma</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias subcategoria herda o tipo da principal e tem um nível só</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias cria e renomeia</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias arquivar a principal leva as subcategorias; desarquivar traz de volta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias desarquivar uma subcategoria traz a principal, mas não as irmãs</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias uso: a principal conta como usada quando uma subcategoria foi usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias exclui a principal nunca usada junto com as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias não exclui categoria usada, nem a principal de uma subcategoria usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tags cria sem o #, renomeia e conta os lançamentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tags exclui a tag nunca usada e arquiva a usada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">apagarTudo também limpa as tags arquivadas</span><span class="tempo"></span></li>
+<li class="arquivo">test/data/database_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cria as doze tabelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cria os índices do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">chaves estrangeiras ligadas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias padrão: 10 de despesa, 5 de ganho e 25 subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">configurações iniciais</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento com conta e cartão ao mesmo tempo é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento sem conta e sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">estorno sem cartão é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartão com conta de pagamento inexistente é recusado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">conta com saldo inicial negativo é gravada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas grava contas e cartões e marca como concluída</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas sem contas não grava nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dados de exemplo geram um cenário válido e concluem as boas-vindas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">dados de exemplo apagarTudo volta ao banco recém-criado</span><span class="tempo"></span></li>
+<li class="arquivo">test/data/faturas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">faturas Nubank: compras − estornos em cada mês, da mais recente para a mais antiga</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">faturas Inter: o estorno da Mochila passa das compras e vira crédito</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">faturas atualiza sozinho quando um lançamento muda</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar o cartão mudar o fechamento recalcula a fatura dos lançamentos automáticos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar o cartão só trocar o nome não mexe em nenhum lançamento</span><span class="tempo"></span></li>
+<li class="arquivo">test/data/lancamentos_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar despesa no cartão com duas categorias, tag nova e observação</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar ganho na conta conta pelo mês da data, sem fatura</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar fatura trocada à mão fica marcada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar categoria principal com subcategorias pode ser escolhida direto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar tag arquivada digitada é reaproveitada e desarquivada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar editar troca os dados, as categorias e as tags e mantém o resto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">salvar nunca grava soma de categorias diferente do valor nem cartão sem fatura</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido nomes usados por tipo, do mais recente ao mais antigo, sem repetir</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido repete da última vez as categorias, o cartão e as tags</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido usa a vez mais recente</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido deixa de fora o que foi arquivado</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido nome nunca usado no tipo não preenche nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada exemplo do escopo: R$ 300 em 3x no dia 06/10, de novembro a janeiro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada centavos que sobram e duas categorias: as somas batem em cada parcela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada fatura trocada à mão vale para a primeira, e todas ficam marcadas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada nome conhecido repete o número de parcelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada só em despesa no cartão, de 2 a 48 e ao menos 1 centavo por parcela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcelas "só este" muda só a parcela aberta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcelas "este e os próximos" muda a 2 e a 3</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcelas "todos" muda as três, e a fatura trocada leva as outras junto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno grava no cartão, com categoria, e abre para editar</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno nunca numa conta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">exemplos o gerador usa a regra da fatura: compra no fechamento vai para a seguinte</span><span class="tempo"></span></li>
+<li class="arquivo">test/data/mes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês cartão conta pelo mês da fatura; conta, pela data</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês mais recente primeiro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês categorias, cartão com vencimento, etiquetas e tipos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês total de gastos do mês: despesas menos estornos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês mês sem nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lista do mês atualiza sozinha quando um lançamento muda</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer lançamento sozinho sai com as categorias e as tags, e volta igual</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer parcela: "este e os próximos" tira a 2 e a 3</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer parcela: "todos" tira as três</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer recorrência: "só este" não mexe na recorrência</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer recorrência: "este e os próximos" encerra no dia anterior, e desfazer reabre</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer recorrência: "todos" desliga a recorrência</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir e desfazer transferência sai e volta</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Interface</span><span class="contagem bom">84 de 84</span></summary>
+<ul class="testes">
+<li class="arquivo">test/ui/app_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">banco novo abre nas boas-vindas</span><span class="tempo">1.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">com as boas-vindas concluídas, abre na tela do mês</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">saldo: digitar 2, 0, 0, 0, 0 e "-" mostra −R$ 200,00</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">Tab até "Começar" mostra o anel de foco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">formatador: backspace, vírgula e texto colado</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas lista com tipo, data e saldo inicial; usada arquiva</span><span class="tempo">1.9 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas nova conta: travas do Salvar e conta salva com data passada</span><span class="tempo">1.1 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas Enter no nome salva e Esc cancela</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas campo de data reescreve dd/mm como dd/mm/aaaa ao sair</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">contas conta que paga cartão ativo não é arquivada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias despesas e ganhos, com as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias nova subcategoria não repete o nome de uma irmã</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias excluir categoria nunca usada leva as subcategorias</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tags arquivar some da lista; "Mostrar arquivadas" traz de volta</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões lista e detalhe do cartão escolhido</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões faturas do Inter com situação, datas, total e crédito</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões editar o fechamento avisa quantos lançamentos mudaram de fatura</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões novo cartão: travas do Salvar e cartão escolhido depois</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/lancamento_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">janela Ctrl+N abre com o foco no nome, Salvar travado e Esc fecha</span><span class="tempo">2.4 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">janela Ctrl+N com a janela aberta não abre outra</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">janela travas do Salvar, na ordem dos campos</span><span class="tempo">1.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">teclado ordem do Tab e Enter no último campo salva</span><span class="tempo">1.4 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">teclado Enter com o Salvar travado não fecha nem tira o foco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">teclado Enter e Esc no menu fechado salvam e cancelam</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">teclado Enter no menu fechado salva</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido sugestão preenche categorias, cartão e fatura, sem o valor</span><span class="tempo">1.5 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido voltar ao nome escolhido não reabre a lista; Esc fecha de primeira</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido Esc com a lista aberta só fecha a lista</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido preenche as tags e abre "Mais detalhes"</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido nomes de ganho só aparecem no ganho</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias a segunda categoria abre os valores e leva o foco ao primeiro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias categoria principal e subcategoria aparecem na busca</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias categoria arquivada não aparece na busca</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">categorias trocar para ganho tira as categorias de despesa e o cartão</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">fatura trocada à mão não muda com a data; o mês calculado volta ao automático</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">fatura escolher de novo o mês calculado volta ao cálculo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mais detalhes tag nova, tag existente e observação</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">parcelada campo Parcelas com a divisão, só cartões e salva em 3 parcelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">parcelada escolher Parcelada tira a conta; no ganho, Parcelada não vale</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">parcelada nome conhecido repete a compra parcelada e o número de parcelas</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno a chave só aparece no cartão; ligada, trava a recorrência e salva</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno Enter e espaço na chave ligam e desligam, sem salvar</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno ligar o estorno volta a recorrência para Única</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno nome de despesa numa conta não tira o cartão do estorno</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcela abre com a fatura da parcela e a recorrência travada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcela Salvar pergunta o alcance; "Todos" muda as três</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar parcela cancelar a pergunta volta à janela sem salvar</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">editar abre preenchida, com o título de edição, e grava no mesmo lançamento</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/mes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total abre no mês de hoje, com o total sem filtro e a lista</span><span class="tempo">1.5 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total as setas trocam o mês, e o mês fica ao voltar de outra tela</span><span class="tempo">1.1 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total trocar de mês volta a lista para o topo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total mês sem lançamentos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total "+1 categoria" abre a divisão</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total Esc fecha a divisão e devolve o foco à linha</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">mês e total clique fora fecha a divisão sem abrir a edição</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">foco do teclado na lista com o teclado, a linha com foco ganha o anel de foco</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">foco do teclado na lista com o mouse, o foco não acende o anel</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">editar clique abre a edição, e o total muda ao salvar</span><span class="tempo">1.0 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">editar Enter na linha também abre a edição</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">editar lançamento que vai para outro mês: "Ver" leva até ele</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">editar novo lançamento feito em outra tela: "Ver" volta para o mês</span><span class="tempo">1.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">editar estorno abre a edição com a chave ligada; transferência ainda não</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir Delete pede confirmação, exclui e "Desfazer" devolve</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir o "Desfazer" some sozinho depois de alguns segundos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir parcela pela janela de edição: "Este e os próximos"</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir recorrente: as três opções falam em meses</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir transferência pelo Delete</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/navegacao_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">começa no mês de hoje e as setas andam um mês</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">virada do dia no mesmo mês não muda nada</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">na virada do mês, quem estava no mês atual vai junto</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">na virada do mês, quem tinha navegado fica onde está</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">a tela aberta começa no mês e muda pelo provider</span><span class="tempo"></span></li>
+<li class="arquivo">test/ui/tema_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">verde claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">verde escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">roxo claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">roxo escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">azul claro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">azul escuro segue a tabela do escopo</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cor do sistema usa a cor de destaque e harmoniza o aviso</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cor do sistema sem cor de destaque cai no verde</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">fontes: Libron nos títulos, Roboto Flex nos textos, números fixos</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">anel de foco aparece em todos os botões só com foco (dark)</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">anel de foco aparece em todos os botões só com foco (light)</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">valores guardados no banco</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">Capturas de tela</span><span class="contagem bom">37 de 37</span></summary>
+<ul class="testes">
+<li class="arquivo">test/golden/telas_golden_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, verde claro</span><span class="tempo">1.5 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas, roxo escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas com foco no "Começar", verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">boas-vindas com foco no "Começar", verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês outubro, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês outubro, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês outubro, azul claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês foco do teclado numa linha, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês foco do teclado numa linha, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês mês sem lançamentos, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês divisão do "+1 categoria" aberta, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês janela de editar, com o "Excluir", verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">tela do mês confirmação de excluir uma parcela, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">ajustes, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros contas, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros contas com as arquivadas, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros categorias, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros categorias, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros categorias de ganho, roxo claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros tags, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros janela de editar conta, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cadastros janela de nova conta, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões cartões, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões cartões, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões cartões sem nenhum cadastrado, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões faturas do Nubank, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">cartões faturas do Nubank, verde escuro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">cartões janela de editar cartão, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento despesa com uma categoria, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento despesa no cartão com duas categorias, verde claro</span><span class="tempo">1.1 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento despesa no cartão com duas categorias, verde escuro</span><span class="tempo">1.0 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lançamento compra parcelada, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">lançamento estorno no cartão, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento ganho, roxo claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento sugestões de nome abertas, verde claro</span><span class="tempo"></span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento "Mais detalhes" aberto, verde claro</span><span class="tempo"></span></li>
+</ul></details>
+<details open>
+<summary><span class="titulo">App real (integração)</span><span class="contagem bom">10 de 10</span></summary>
+<ul class="testes">
+<li class="arquivo">integration_test/boas_vindas_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">primeira abertura completa: conta negativa, cartão e Ctrl+N</span><span class="tempo">11.7 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">barra lateral troca de tela e mantém o botão +</span><span class="tempo">3.5 s</span></li>
+<li class="arquivo">integration_test/cadastros_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">conta com saldo de outra data, categoria nova, excluir e arquivar</span><span class="tempo">13.4 s</span></li>
+<li class="arquivo">integration_test/cartao_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">compra parcelada só pelo teclado, com as parcelas nos meses certos</span><span class="tempo">9.9 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="novo">novo</span><span class="nome">estorno vira crédito na fatura, e o fechamento novo move os lançamentos</span><span class="tempo">6.1 s</span></li>
+<li class="arquivo">integration_test/cartoes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">novo cartão, editar o vencimento e conta que paga não arquiva</span><span class="tempo">9.8 s</span></li>
+<li class="arquivo">integration_test/lancamento_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">lançamento só pelo teclado: Ctrl+N, Tab e Enter</span><span class="tempo">8.0 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">nome conhecido, duas categorias no cartão e tag nova</span><span class="tempo">7.9 s</span></li>
+<li class="arquivo">integration_test/mes_test.dart</li>
+<li class="passou"><span class="icone">✓</span><span class="nome">navegar entre meses e editar um lançamento pelo teclado</span><span class="tempo">4.3 s</span></li>
+<li class="passou"><span class="icone">✓</span><span class="nome">excluir as próximas parcelas e desfazer</span><span class="tempo">5.0 s</span></li>
+</ul></details>
+
+
+
+
+<h2>Capturas de tela</h2>
+<div class="galeria"><figure><a href="capturas/ajustes_verde_claro.png"><img src="capturas/ajustes_verde_claro.png" alt="ajustes_verde_claro.png" loading="lazy"></a><figcaption>ajustes verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_foco_verde_claro.png"><img src="capturas/boas_vindas_foco_verde_claro.png" alt="boas_vindas_foco_verde_claro.png" loading="lazy"></a><figcaption>boas vindas foco verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_foco_verde_escuro.png"><img src="capturas/boas_vindas_foco_verde_escuro.png" alt="boas_vindas_foco_verde_escuro.png" loading="lazy"></a><figcaption>boas vindas foco verde escuro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_roxo_escuro.png"><img src="capturas/boas_vindas_roxo_escuro.png" alt="boas_vindas_roxo_escuro.png" loading="lazy"></a><figcaption>boas vindas roxo escuro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_claro.png"><img src="capturas/boas_vindas_verde_claro.png" alt="boas_vindas_verde_claro.png" loading="lazy"></a><figcaption>boas vindas verde claro</figcaption></figure>
+<figure><a href="capturas/boas_vindas_verde_escuro.png"><img src="capturas/boas_vindas_verde_escuro.png" alt="boas_vindas_verde_escuro.png" loading="lazy"></a><figcaption>boas vindas verde escuro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_ganhos_roxo_claro.png"><img src="capturas/cadastros_categorias_ganhos_roxo_claro.png" alt="cadastros_categorias_ganhos_roxo_claro.png" loading="lazy"></a><figcaption>cadastros categorias ganhos roxo claro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_verde_claro.png"><img src="capturas/cadastros_categorias_verde_claro.png" alt="cadastros_categorias_verde_claro.png" loading="lazy"></a><figcaption>cadastros categorias verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_categorias_verde_escuro.png"><img src="capturas/cadastros_categorias_verde_escuro.png" alt="cadastros_categorias_verde_escuro.png" loading="lazy"></a><figcaption>cadastros categorias verde escuro</figcaption></figure>
+<figure><a href="capturas/cadastros_contas_arquivadas_verde_claro.png"><img src="capturas/cadastros_contas_arquivadas_verde_claro.png" alt="cadastros_contas_arquivadas_verde_claro.png" loading="lazy"></a><figcaption>cadastros contas arquivadas verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_contas_verde_claro.png"><img src="capturas/cadastros_contas_verde_claro.png" alt="cadastros_contas_verde_claro.png" loading="lazy"></a><figcaption>cadastros contas verde claro</figcaption></figure>
+<figure><a href="capturas/cadastros_tags_verde_claro.png"><img src="capturas/cadastros_tags_verde_claro.png" alt="cadastros_tags_verde_claro.png" loading="lazy"></a><figcaption>cadastros tags verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_faturas_nubank_verde_claro.png"><img src="capturas/cartoes_faturas_nubank_verde_claro.png" alt="cartoes_faturas_nubank_verde_claro.png" loading="lazy"></a><figcaption>cartoes faturas nubank verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_faturas_nubank_verde_escuro.png"><img src="capturas/cartoes_faturas_nubank_verde_escuro.png" alt="cartoes_faturas_nubank_verde_escuro.png" loading="lazy"></a><figcaption>cartoes faturas nubank verde escuro</figcaption></figure>
+<figure><a href="capturas/cartoes_vazio_verde_claro.png"><img src="capturas/cartoes_vazio_verde_claro.png" alt="cartoes_vazio_verde_claro.png" loading="lazy"></a><figcaption>cartoes vazio verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_verde_claro.png"><img src="capturas/cartoes_verde_claro.png" alt="cartoes_verde_claro.png" loading="lazy"></a><figcaption>cartoes verde claro</figcaption></figure>
+<figure><a href="capturas/cartoes_verde_escuro.png"><img src="capturas/cartoes_verde_escuro.png" alt="cartoes_verde_escuro.png" loading="lazy"></a><figcaption>cartoes verde escuro</figcaption></figure>
+<figure><a href="capturas/janela_cartao_verde_claro.png"><img src="capturas/janela_cartao_verde_claro.png" alt="janela_cartao_verde_claro.png" loading="lazy"></a><figcaption>janela cartao verde claro</figcaption></figure>
+<figure><a href="capturas/janela_conta_verde_claro.png"><img src="capturas/janela_conta_verde_claro.png" alt="janela_conta_verde_claro.png" loading="lazy"></a><figcaption>janela conta verde claro</figcaption></figure>
+<figure><a href="capturas/janela_nova_conta_verde_escuro.png"><img src="capturas/janela_nova_conta_verde_escuro.png" alt="janela_nova_conta_verde_escuro.png" loading="lazy"></a><figcaption>janela nova conta verde escuro</figcaption></figure>
+<figure><a href="capturas/lancamento_cartao_multicategoria_verde_claro.png"><img src="capturas/lancamento_cartao_multicategoria_verde_claro.png" alt="lancamento_cartao_multicategoria_verde_claro.png" loading="lazy"></a><figcaption>lancamento cartao multicategoria verde claro</figcaption></figure>
+<figure><a href="capturas/lancamento_cartao_multicategoria_verde_escuro.png"><img src="capturas/lancamento_cartao_multicategoria_verde_escuro.png" alt="lancamento_cartao_multicategoria_verde_escuro.png" loading="lazy"></a><figcaption>lancamento cartao multicategoria verde escuro</figcaption></figure>
+<figure><a href="capturas/lancamento_despesa_verde_claro.png"><img src="capturas/lancamento_despesa_verde_claro.png" alt="lancamento_despesa_verde_claro.png" loading="lazy"></a><figcaption>lancamento despesa verde claro</figcaption></figure>
+<figure><a href="capturas/lancamento_estorno_verde_claro.png"><img src="capturas/lancamento_estorno_verde_claro.png" alt="lancamento_estorno_verde_claro.png" loading="lazy"></a><figcaption>lancamento estorno verde claro</figcaption></figure>
+<figure><a href="capturas/lancamento_ganho_roxo_claro.png"><img src="capturas/lancamento_ganho_roxo_claro.png" alt="lancamento_ganho_roxo_claro.png" loading="lazy"></a><figcaption>lancamento ganho roxo claro</figcaption></figure>
+<figure><a href="capturas/lancamento_mais_detalhes_verde_claro.png"><img src="capturas/lancamento_mais_detalhes_verde_claro.png" alt="lancamento_mais_detalhes_verde_claro.png" loading="lazy"></a><figcaption>lancamento mais detalhes verde claro</figcaption></figure>
+<figure><a href="capturas/lancamento_parcelada_verde_claro.png"><img src="capturas/lancamento_parcelada_verde_claro.png" alt="lancamento_parcelada_verde_claro.png" loading="lazy"></a><figcaption>lancamento parcelada verde claro</figcaption></figure>
+<figure><a href="capturas/lancamento_sugestoes_verde_claro.png"><img src="capturas/lancamento_sugestoes_verde_claro.png" alt="lancamento_sugestoes_verde_claro.png" loading="lazy"></a><figcaption>lancamento sugestoes verde claro</figcaption></figure>
+<figure><a href="capturas/mes_azul_claro.png"><img src="capturas/mes_azul_claro.png" alt="mes_azul_claro.png" loading="lazy"></a><figcaption>mes azul claro</figcaption></figure>
+<figure><a href="capturas/mes_divisao_verde_claro.png"><img src="capturas/mes_divisao_verde_claro.png" alt="mes_divisao_verde_claro.png" loading="lazy"></a><figcaption>mes divisao verde claro</figcaption></figure>
+<figure><a href="capturas/mes_editar_verde_claro.png"><img src="capturas/mes_editar_verde_claro.png" alt="mes_editar_verde_claro.png" loading="lazy"></a><figcaption>mes editar verde claro</figcaption></figure>
+<figure><a href="capturas/mes_excluir_parcela_verde_claro.png"><img src="capturas/mes_excluir_parcela_verde_claro.png" alt="mes_excluir_parcela_verde_claro.png" loading="lazy"></a><figcaption>mes excluir parcela verde claro</figcaption></figure>
+<figure><a href="capturas/mes_foco_linha_verde_claro.png"><img src="capturas/mes_foco_linha_verde_claro.png" alt="mes_foco_linha_verde_claro.png" loading="lazy"></a><figcaption>mes foco linha verde claro</figcaption></figure>
+<figure><a href="capturas/mes_foco_linha_verde_escuro.png"><img src="capturas/mes_foco_linha_verde_escuro.png" alt="mes_foco_linha_verde_escuro.png" loading="lazy"></a><figcaption>mes foco linha verde escuro</figcaption></figure>
+<figure><a href="capturas/mes_vazio_verde_claro.png"><img src="capturas/mes_vazio_verde_claro.png" alt="mes_vazio_verde_claro.png" loading="lazy"></a><figcaption>mes vazio verde claro</figcaption></figure>
+<figure><a href="capturas/mes_verde_claro.png"><img src="capturas/mes_verde_claro.png" alt="mes_verde_claro.png" loading="lazy"></a><figcaption>mes verde claro</figcaption></figure>
+<figure><a href="capturas/mes_verde_escuro.png"><img src="capturas/mes_verde_escuro.png" alt="mes_verde_escuro.png" loading="lazy"></a><figcaption>mes verde escuro</figcaption></figure></div>
+
+<h2 id="roteiro">Roteiro para testar na mão</h2>
+<p class="apoio"><b id="contador-roteiro"></b> · As marcações ficam só neste navegador; o <code>roteiro-manual.md</code> não muda.
+<button id="limpar-roteiro" type="button">Limpar marcações</button></p>
+<div class="roteiro"><h3>Roteiro manual · Etapa 5</h3>
+<p class="apoio">Abra com <code>flutter run -d windows</code>. Para ter dados para testar, vá em Ajustes → "Recriar dados de exemplo" (só no modo de desenvolvimento). Os exemplos ficam em volta do mês de hoje: as contas Carteira, Nubank e Inter, o cartão Nubank (fecha dia 5, vence dia 12), o cartão Inter (fecha dia 8, vence dia 15), "Fone Bluetooth" em 3 parcelas no Nubank, um estorno do "Restaurante" no Nubank e, novidade desta etapa, uma "Mochila" comprada no Inter no mês passado e devolvida (estorno) no dia 9 deste mês. Nos itens abaixo, "M" é o mês atual, "M+1" o seguinte e assim por diante.</p>
+<p class="apoio"></p>
+<p class="apoio">O "Ajustar pagamento" das faturas chega na etapa 7, junto com o saldo.</p>
+<h4>Compra parcelada</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Ctrl+N, nome &quot;Fone novo&quot;, valor R$ 300,02. No campo Recorrência, escolha &quot;Parcelada&quot;: aparece o campo &quot;Parcelas&quot; logo abaixo, e embaixo da janela o aviso &quot;Parcelas vão de 2 a 48.&quot;." data-md="1" checked> Ctrl+N, nome "Fone novo", valor R$ 300,02. No campo Recorrência, escolha "Parcelada": aparece o campo "Parcelas" logo abaixo, e embaixo da janela o aviso "Parcelas vão de 2 a 48.".</label></li>
+<li><label><input type="checkbox" data-item="Digite 3 em Parcelas: ao lado aparece &quot;1x de R$ 100,02 e 2x de R$ 100,00&quot;. Com 49, o aviso volta; com o valor R$ 0,02 e 3 parcelas, aparece &quot;O valor não dá R$ 0,01 por parcela.&quot;." data-md="1" checked> Digite 3 em Parcelas: ao lado aparece "1x de R$ 100,02 e 2x de R$ 100,00". Com 49, o aviso volta; com o valor R$ 0,02 e 3 parcelas, aparece "O valor não dá R$ 0,01 por parcela.".</label></li>
+<li><label><input type="checkbox" data-item="Com Parcelada escolhida, o menu passa a se chamar &quot;Cartão&quot; e só tem os cartões. Se uma conta estava escolhida antes, ela sai." data-md="1" checked> Com Parcelada escolhida, o menu passa a se chamar "Cartão" e só tem os cartões. Se uma conta estava escolhida antes, ela sai.</label></li>
+<li><label><input type="checkbox" data-item="Escolha uma categoria e o Cartão Nubank, com a data de hoje. O campo Fatura mostra a fatura calculada e o texto &quot;1ª parcela; as outras vêm depois&quot;." data-md="1" checked> Escolha uma categoria e o Cartão Nubank, com a data de hoje. O campo Fatura mostra a fatura calculada e o texto "1ª parcela; as outras vêm depois".</label></li>
+<li><label><input type="checkbox" data-item="Salve: aparece &quot;Lançamento &quot;Fone novo&quot; salvo em 3 parcelas.&quot; com &quot;Ver&quot;. &quot;Ver&quot; leva ao mês da 1ª parcela, onde está &quot;Fone novo (1/3)&quot; com R$ 100,02; nos dois meses seguintes aparecem &quot;(2/3)&quot; e &quot;(3/3)&quot; com R$ 100,00." data-md="1" checked> Salve: aparece "Lançamento "Fone novo" salvo em 3 parcelas." com "Ver". "Ver" leva ao mês da 1ª parcela, onde está "Fone novo (1/3)" com R$ 100,02; nos dois meses seguintes aparecem "(2/3)" e "(3/3)" com R$ 100,00.</label></li>
+<li><label><input type="checkbox" data-item="Tudo pelo teclado: nome, Tab, valor, Tab, digite &quot;parc&quot; e Enter na Recorrência, Tab, parcelas, Tab, categoria e Enter, Tab, digite &quot;nub&quot; e Enter no Cartão, Tab (chave Estorno), Tab (data) e Enter salva." data-md="1" checked> Tudo pelo teclado: nome, Tab, valor, Tab, digite "parc" e Enter na Recorrência, Tab, parcelas, Tab, categoria e Enter, Tab, digite "nub" e Enter no Cartão, Tab (chave Estorno), Tab (data) e Enter salva.</label></li>
+<li><label><input type="checkbox" data-item="Na troca para Ganho, a opção &quot;Parcelada&quot; fica desativada." data-md="1" checked> Na troca para Ganho, a opção "Parcelada" fica desativada.</label></li>
+<li><label><input type="checkbox" data-item="Num lançamento novo, comece a digitar &quot;Fone Blue&quot; e escolha a sugestão: a Recorrência vem como &quot;Parcelada&quot; com 3 parcelas, e o Cartão Nubank já escolhido." data-md="1" checked> Num lançamento novo, comece a digitar "Fone Blue" e escolha a sugestão: a Recorrência vem como "Parcelada" com 3 parcelas, e o Cartão Nubank já escolhido.</label></li>
+</ul>
+<h4>Editar uma parcela</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Em M+1, clique em &quot;Fone Bluetooth (2/3)&quot;: a janela mostra &quot;Parcelada · 3x&quot; travado na Recorrência, sem o campo Parcelas, sem a chave Estorno e com o segmento &quot;Ganho&quot; desativado." data-md="1" checked> Em M+1, clique em "Fone Bluetooth (2/3)": a janela mostra "Parcelada · 3x" travado na Recorrência, sem o campo Parcelas, sem a chave Estorno e com o segmento "Ganho" desativado.</label></li>
+<li><label><input type="checkbox" data-item="O campo Fatura mostra o mês M+1 (o da parcela 2), e não o da 1ª parcela. Salvar sem mudar nada deixa a parcela onde estava." data-md="1" checked> O campo Fatura mostra o mês M+1 (o da parcela 2), e não o da 1ª parcela. Salvar sem mudar nada deixa a parcela onde estava.</label></li>
+<li><label><input type="checkbox" data-item="Mude o nome e clique em Salvar: aparece &quot;Alterar &quot;Fone Bluetooth (2/3)&quot;?&quot;, com &quot;Só este&quot; (1 parcela), &quot;Este e os próximos&quot; (2 parcelas) e &quot;Todos&quot; (3 parcelas), e o foco em &quot;Só este&quot;." data-md="1" checked> Mude o nome e clique em Salvar: aparece "Alterar "Fone Bluetooth (2/3)"?", com "Só este" (1 parcela), "Este e os próximos" (2 parcelas) e "Todos" (3 parcelas), e o foco em "Só este".</label></li>
+<li><label><input type="checkbox" data-item="&quot;Cancelar&quot; volta à janela sem salvar. &quot;Este e os próximos&quot; muda a 2 e a 3; a 1 continua com o nome antigo." data-md="1" checked> "Cancelar" volta à janela sem salvar. "Este e os próximos" muda a 2 e a 3; a 1 continua com o nome antigo.</label></li>
+<li><label><input type="checkbox" data-item="Troque a fatura da parcela e escolha &quot;Todos&quot;: as outras andam junto, mantendo um mês entre cada uma." data-md="1" checked> Troque a fatura da parcela e escolha "Todos": as outras andam junto, mantendo um mês entre cada uma.</label></li>
+</ul>
+<h4>Estorno</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Num lançamento novo, a chave &quot;Estorno&quot; só aparece ao lado do campo quando um cartão está escolhido. Com uma conta, ela some." data-md="1" checked> Num lançamento novo, a chave "Estorno" só aparece ao lado do campo quando um cartão está escolhido. Com uma conta, ela some.</label></li>
+<li><label><input type="checkbox" data-item="Ligue a chave: o menu passa a se chamar &quot;Cartão&quot; (só cartões) e a Recorrência fica em &quot;Única&quot;, travada. Se estava &quot;Parcelada&quot;, volta para &quot;Única&quot;." data-md="1" checked> Ligue a chave: o menu passa a se chamar "Cartão" (só cartões) e a Recorrência fica em "Única", travada. Se estava "Parcelada", volta para "Única".</label></li>
+<li><label><input type="checkbox" data-item="Com o foco na chave, a barra de espaço e o Enter ligam e desligam, sem salvar. Tab até a Data e Enter salva." data-md="0"> Com o foco na chave, a barra de espaço e o Enter ligam e desligam, sem salvar. Tab até a Data e Enter salva.</label></li>
+<li><label><input type="checkbox" data-item="Com a chave ligada, digite &quot;Padar&quot; no nome e escolha &quot;Padaria&quot; (que foi numa conta): a categoria é preenchida, mas o cartão e a chave continuam como estavam." data-md="1" checked> Com a chave ligada, digite "Padar" no nome e escolha "Padaria" (que foi numa conta): a categoria é preenchida, mas o cartão e a chave continuam como estavam.</label></li>
+<li><label><input type="checkbox" data-item="Salve um estorno de R$ 50,00: na lista do mês da fatura ele aparece como &quot;−R$ 50,00&quot; com a etiqueta &quot;estorno&quot;, e o total do mês diminui R$ 50,00." data-md="1" checked> Salve um estorno de R$ 50,00: na lista do mês da fatura ele aparece como "−R$ 50,00" com a etiqueta "estorno", e o total do mês diminui R$ 50,00.</label></li>
+<li><label><input type="checkbox" data-item="Clique no estorno do &quot;Restaurante&quot; na lista do mês: abre &quot;Editar lançamento&quot; com a chave Estorno ligada. Desligue e salve: ele vira despesa (sem o sinal de menos)." data-md="1" checked> Clique no estorno do "Restaurante" na lista do mês: abre "Editar lançamento" com a chave Estorno ligada. Desligue e salve: ele vira despesa (sem o sinal de menos).</label></li>
+</ul>
+<h4>Faturas na tela de Cartões</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="Em Cartões, escolha o Nubank: a seção &quot;Faturas&quot; lista os meses do mais recente para o mais antigo (M+2, M+1 e M), cada um com a etiqueta, as datas e o total." data-md="1" checked> Em Cartões, escolha o Nubank: a seção "Faturas" lista os meses do mais recente para o mais antigo (M+2, M+1 e M), cada um com a etiqueta, as datas e o total.</label></li>
+<li><label><input type="checkbox" data-item="A fatura que recebe as compras de hoje tem a etiqueta &quot;Aberta&quot; e fica em destaque, com o mês e o total em negrito. As seguintes são &quot;Futura&quot;." data-md="1" checked> A fatura que recebe as compras de hoje tem a etiqueta "Aberta" e fica em destaque, com o mês e o total em negrito. As seguintes são "Futura".</label></li>
+<li><label><input type="checkbox" data-item="Uma fatura que ainda não venceu mostra &quot;Fecha dd/mm · vence dd/mm · sai da conta Nubank&quot;. Uma que já venceu tem a etiqueta &quot;Paga&quot; (com o ícone de marcado) e &quot;Paga em 12/&lt;mês&gt; pela conta Nubank, automaticamente&quot;." data-md="1" checked> Uma fatura que ainda não venceu mostra "Fecha dd/mm · vence dd/mm · sai da conta Nubank". Uma que já venceu tem a etiqueta "Paga" (com o ícone de marcado) e "Paga em 12/&lt;mês&gt; pela conta Nubank, automaticamente".</label></li>
+<li><label><input type="checkbox" data-item="A fatura de M do Nubank soma R$ 868,30: as compras (R$ 898,30) menos o estorno do Restaurante (R$ 30,00)." data-md="1" checked> A fatura de M do Nubank soma R$ 868,30: as compras (R$ 898,30) menos o estorno do Restaurante (R$ 30,00).</label></li>
+<li><label><input type="checkbox" data-item="No Inter, a fatura de M+1 fica em R$ 0,00, com &quot;Crédito de R$ 15,10 para a próxima fatura&quot; (Netflix de R$ 44,90 menos o estorno de R$ 60,00 da Mochila). A de M+2 mostra &quot;Inclui crédito de R$ 15,10 da anterior&quot; e fica em R$ 29,80." data-md="1" checked> No Inter, a fatura de M+1 fica em R$ 0,00, com "Crédito de R$ 15,10 para a próxima fatura" (Netflix de R$ 44,90 menos o estorno de R$ 60,00 da Mochila). A de M+2 mostra "Inclui crédito de R$ 15,10 da anterior" e fica em R$ 29,80.</label></li>
+<li><label><input type="checkbox" data-item="Entre o dia do fechamento e o do vencimento (no Inter, do dia 8 ao 14), a fatura do mês aparece como &quot;Fechada&quot;." data-md="1" checked> Entre o dia do fechamento e o do vencimento (no Inter, do dia 8 ao 14), a fatura do mês aparece como "Fechada".</label></li>
+<li><label><input type="checkbox" data-item="Lance uma compra num cartão e volte a Cartões: o total da fatura dela já mudou." data-md="1" checked> Lance uma compra num cartão e volte a Cartões: o total da fatura dela já mudou.</label></li>
+</ul>
+<h4>Editar o cartão</h4>
+<ul class="marcar">
+<li><label><input type="checkbox" data-item="No Nubank, &quot;Editar cartão&quot;: troque o fechamento para 20 e o vencimento para 27 e salve. Aparece &quot;N lançamentos mudaram de fatura.&quot; (com os exemplos, 2) e surge a fatura do mês passado." data-md="1" checked> No Nubank, "Editar cartão": troque o fechamento para 20 e o vencimento para 27 e salve. Aparece "N lançamentos mudaram de fatura." (com os exemplos, 2) e surge a fatura do mês passado.</label></li>
+<li><label><input type="checkbox" data-item="Na tela do mês, o Combustível e o Restaurante do mês passado saem de M e aparecem no mês passado." data-md="1" checked> Na tela do mês, o Combustível e o Restaurante do mês passado saem de M e aparecem no mês passado.</label></li>
+<li><label><input type="checkbox" data-item="Um lançamento com a fatura trocada à mão não muda de fatura quando o fechamento muda." data-md="1" checked> Um lançamento com a fatura trocada à mão não muda de fatura quando o fechamento muda.</label></li>
+<li><label><input type="checkbox" data-item="Mudar só o nome do cartão não mostra a mensagem." data-md="1" checked> Mudar só o nome do cartão não mostra a mensagem.</label></li>
+</ul>
+</div>
+</main>
+<script>
+// Caixas do roteiro clicáveis, guardadas só neste navegador. Vale o clique,
+// a não ser que o item tenha mudado no .md depois dele: aí vale o .md.
+(function () {
+  var chave = 'centavinhos-roteiro-etapa-5';
+  var salvo = {};
+  try { salvo = JSON.parse(localStorage.getItem(chave) || '{}'); } catch (e) {}
+  var caixas = document.querySelectorAll('.roteiro input[type=checkbox]');
+  var contador = document.getElementById('contador-roteiro');
+  function atualizar() {
+    var feitos = 0;
+    caixas.forEach(function (caixa) {
+      if (caixa.checked) feitos++;
+      caixa.closest('li').classList.toggle('feito', caixa.checked);
+    });
+    if (contador) contador.textContent = feitos + ' de ' + caixas.length + ' conferidos';
+  }
+  caixas.forEach(function (caixa) {
+    var item = caixa.dataset.item;
+    var doMd = caixa.dataset.md === '1';
+    var anterior = salvo[item];
+    caixa.checked = anterior && anterior.md === doMd ? anterior.marcado : doMd;
+    caixa.addEventListener('change', function () {
+      salvo[item] = { marcado: caixa.checked, md: doMd };
+      try { localStorage.setItem(chave, JSON.stringify(salvo)); } catch (e) {}
+      atualizar();
+    });
+  });
+  var limpar = document.getElementById('limpar-roteiro');
+  if (limpar) {
+    limpar.addEventListener('click', function () {
+      try { localStorage.removeItem(chave); } catch (e) {}
+      location.reload();
+    });
+  }
+  atualizar();
+})();
+</script>
+</body>
+</html>
