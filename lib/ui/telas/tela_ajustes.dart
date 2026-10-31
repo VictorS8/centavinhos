@@ -1,9 +1,13 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../data/dev/dados_exemplo.dart';
 import '../../data/providers.dart';
+import '../licencas.dart';
 import '../widgets/tela_em_construcao.dart';
 
 class TelaAjustes extends StatelessWidget {
@@ -14,8 +18,42 @@ class TelaAjustes extends StatelessWidget {
     titulo: 'Ajustes',
     descricao: 'Cor do tema, modo claro ou escuro, backup e restauração.',
     etapa: 10,
-    extra: kDebugMode ? _SecaoDesenvolvimento() : null,
+    extra: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [_SecaoSobre(), if (kDebugMode) _SecaoDesenvolvimento()],
+    ),
   );
+}
+
+/// Licença do app, das fontes e dos pacotes.
+class _SecaoSobre extends StatelessWidget {
+  const _SecaoSobre();
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Sobre', style: tema.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            'O Centavinhos é licenciado sob a Apache License 2.0.',
+            style: tema.textTheme.bodyMedium?.copyWith(
+              color: tema.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonal(
+            onPressed: () => abrirLicencas(context),
+            child: const Text('Licenças'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Ferramentas que só existem no modo de desenvolvimento.
