@@ -53,14 +53,23 @@ centavinhos-kit.zip
 # Claude Code: permissões pessoais ficam fora, settings.json compartilhado entra
 .claude/settings.local.json
 
-# Banco local e backups gerados em testes
+# Banco local e backups (dados reais do app)
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal
 *.sqlite-shm
+*.db
 
-# Certificado de assinatura do MSIX
+# Segredos e certificados (o do MSIX é um .pfx)
+.env
+.env.*
+!.env.example
 *.pfx
+*.p12
+*.pem
+*.key
+*.jks
+key.properties
 
 # Diferenças geradas quando uma captura de tela falha
 test/golden/failures/
