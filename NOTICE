@@ -1,0 +1,58 @@
+Centavinhos
+Copyright 2026 João Victor das Neves Sousa Almeida
+
+English
+=======
+
+This program is licensed under the Apache License, Version 2.0.
+See the LICENSE file.
+
+Trademarks
+The name "Centavinhos", the tagline "Finanças descomplicadas", the logo and the
+files in marca/, assets/brand/, assets/pdf/ and msix/, the Windows icon
+(windows/runner/resources/app_icon.ico) and any other file showing the logo are
+not covered by the Apache License 2.0. They are for the author's exclusive use.
+Modified versions of this program must use a different name and logo.
+The fonts inside marca/ are an exception: they follow their own licenses below.
+
+Fonts
+The fonts in assets/fonts/ and marca/flutter/assets/fonts/ have their own
+licenses and are not under the Apache License 2.0:
+- Libron, SIL Open Font License 1.1 (assets/fonts/OFL-Libron.txt)
+  Newsreader (c) 2020 The Newsreader Project Authors
+  Readerly (c) 2026 Nico Verbruggen
+  Libron (c) 2026 Nico Verbruggen, with Reserved Font Name Libron
+- Roboto Flex, SIL Open Font License 1.1 (assets/fonts/OFL-RobotoFlex.txt)
+  Copyright 2011 The Roboto Flex Project Authors
+
+Third-party packages
+The Dart and Flutter packages used by the app keep their own licenses. They are
+listed on the app's licenses screen.
+
+Português
+=========
+
+Este programa é licenciado sob a Apache License, Version 2.0.
+Veja o arquivo LICENSE.
+
+Marca
+O nome "Centavinhos", a frase "Finanças descomplicadas", o logo e os arquivos
+das pastas marca/, assets/brand/, assets/pdf/ e msix/, o ícone do Windows
+(windows/runner/resources/app_icon.ico) e qualquer outro arquivo com o logo não
+estão incluídos na Apache License 2.0. Eles são de uso exclusivo do autor.
+Versões modificadas deste programa devem usar outro nome e outro logo.
+As fontes dentro de marca/ são exceção: seguem as licenças próprias abaixo.
+
+Fontes
+As fontes em assets/fonts/ e marca/flutter/assets/fonts/ têm licenças próprias
+e não estão sob a Apache License 2.0:
+- Libron, SIL Open Font License 1.1 (assets/fonts/OFL-Libron.txt)
+  Newsreader (c) 2020 The Newsreader Project Authors
+  Readerly (c) 2026 Nico Verbruggen
+  Libron (c) 2026 Nico Verbruggen, com o nome reservado Libron
+- Roboto Flex, SIL Open Font License 1.1 (assets/fonts/OFL-RobotoFlex.txt)
+  Copyright 2011 The Roboto Flex Project Authors
+
+Pacotes de terceiros
+Os pacotes Dart e Flutter usados pelo app mantêm as licenças deles. Elas
+aparecem na tela de licenças do app.
