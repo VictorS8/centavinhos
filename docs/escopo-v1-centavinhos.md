@@ -225,7 +225,7 @@ A versão 1 tem sete telas, com um menu lateral simples e o botão + sempre vis�
 | Filtros | Criar e editar filtros salvos | Lista de filtros e editor de critérios, com prévia do resultado no mês |
 | Cartões | Cartões e faturas | Nome, fechamento, vencimento, conta de pagamento; faturas por mês com "Ajustar pagamento" |
 | Cadastros | Contas, categorias e tags | Abas; contas com saldo inicial; listas com adicionar, renomear e arquivar |
-| Configurações | Tema e backup | Cor do tema, modo claro ou escuro, exportar e importar o arquivo do banco |
+| Configurações | Tema e backup | Cor do tema, modo claro ou escuro, exportar e importar o arquivo do banco, botão Licenças |
 | Boas-vindas | Primeira abertura | Só aparece com o banco vazio: cadastrar as contas com o saldo de hoje (ao menos uma) e, se quiser, os cartões. Depois vai para a tela do mês |
 
 Nenhum cadastro usado é apagado de vez: contas, cartões, categorias e tags usados em lançamentos são arquivados, para não quebrar relatórios antigos. Os que nunca foram usados podem ser excluídos.
@@ -252,7 +252,7 @@ Nenhum cadastro usado é apagado de vez: contas, cartões, categorias e tags usa
 
 ## Design
 
-O Centavinhos usa Material Design 3, com a Libron nos títulos e valores, a Roboto Flex nos rótulos, quatro opções de cor e modo claro ou escuro. As telas estão na [prévia visual](https://claude.ai/artifact/9HE7aFTK3BtXsiDZmQEPcp).
+O Centavinhos usa Material Design 3, com a Libron nos títulos e valores, a Roboto Flex nos rótulos, quatro opções de cor e modo claro ou escuro. As telas de referência estão em `docs/telas/`.
 
 **Nome e marca**
 
@@ -542,4 +542,5 @@ Só falta confirmar o domínio, que define o identificador do app. O próximo pa
 - [x] **Primeira abertura:** tela de boas-vindas para contas e cartões, com categorias padrão já criadas.
 - [x] **Dias que não existem no mês:** fechamento, vencimento e recorrência caem no último dia do mês.
 - [x] **Antes do saldo inicial:** lançamentos com data anterior não mexem no saldo, só nos gastos.
+- [x] **Licença:** código sob a Apache 2.0; nome e logo reservados; fontes com a OFL.
 - [ ] **Domínio e identificador:** registrar centavinhosfinancas.com.br (ou outro) e criar o projeto com o `--org` correspondente.

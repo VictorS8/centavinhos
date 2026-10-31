@@ -21,6 +21,7 @@ O andamento das etapas e o que mudou em relação ao escopo ficam no `PROGRESSO.
   1. Escreva `relatorios/etapa-N/roteiro-manual.md`: os fluxos principais para testar na mão, em caixas de marcar, cada uma com o que fazer e o que deve aparecer.
   2. Rode `dart run tool/relatorio.dart N`. Ele roda o `flutter analyze`, os testes, as capturas e a integração, e gera `relatorios/etapa-N/index.html`. A etapa só termina com ele sem falhas.
   3. Atualize o `PROGRESSO.md`: marque a etapa e anote cada diferença em relação ao escopo e cada pendência para as próximas.
+  4. Atualize o `README.md` (inglês) e o `README.pt-BR.md`: passe o que ficou pronto de "Coming next"/"A caminho" para "Working now"/"Já funciona" e troque o número de etapas prontas.
 
 ## Commits
 
@@ -40,6 +41,12 @@ O andamento das etapas e o que mudou em relação ao escopo ficam no `PROGRESSO.
 - Fontes: Libron para títulos e valores, Roboto Flex para rótulos e textos, com números de largura fixa (`FontFeature.tabularFigures()`).
 - Regras de negócio puras em `lib/domain/`, sem Flutter, cada uma com teste unitário.
 - Telas de referência em `docs/telas/`. Siga o layout, mas o tema do Material 3 manda nas cores exatas.
+- Todo arquivo `.dart` novo em `lib/` começa com o cabeçalho da licença, seguido de uma linha em branco (menos os gerados, como `*.g.dart`). Os testes não levam cabeçalho.
+
+  ```dart
+  // Copyright 2026 João Victor das Neves Sousa Almeida
+  // SPDX-License-Identifier: Apache-2.0
+  ```
 
 ## Arquivos que não devem ser alterados
 

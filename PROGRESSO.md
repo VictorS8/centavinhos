@@ -186,6 +186,28 @@ Tudo que foi feito diferente do escopo, decidido além dele ou deixado para depo
 - **Capturas geradas de novo:** as de Cartões (agora com as faturas), a `janela_cartao` (o fundo mostra as faturas), as `lancamento_cartao_multicategoria` (a chave Estorno ao lado do cartão), a `lancamento_sugestoes` (a "Mochila" também tem "a") e a `mes_editar` (Recorrência travada).
 - **Capturas que ainda não existem travam o `flutter test test/golden`:** o teste falha antes de desmontar o app, e fechar o banco fica esperando. Ao criar uma captura nova, gere com `--update-goldens` antes de rodar sem ele.
 
+### Licença (31/10/2026, entre as etapas 5 e 6)
+
+Feita a pedido de João, seguindo o guia `licenca-apache-2.0.md`. O escopo já foi atualizado (a pedido de João, em 31/10/2026): "botão Licenças" na linha de Configurações da tabela "Telas" e a decisão "Licença" na lista de Decisões.
+
+- **Apache License 2.0:**
+  - o `LICENSE` na raiz é o texto oficial, baixado de apache.org sem mudanças;
+  - o `NOTICE` é bilíngue (inglês primeiro, português depois) e traz a autoria, o que fica fora da licença e as licenças das fontes.
+- **Marca fora da licença:** o `NOTICE` reserva o nome, a frase de apoio, o logo e os arquivos de `marca/`, `assets/brand/`, `assets/pdf/` e `msix/`, o ícone do Windows e qualquer outro arquivo com o logo. O guia citava só `marca/` e `assets/brand/`.
+- **Fontes dentro de `marca/`:** `marca/flutter/assets/fonts/` tem cópias das fontes, que seguem a OFL e não podem ser reservadas. O `NOTICE` abre essa exceção. A Libron aparece com os três avisos do `OFL-Libron.txt`: Newsreader, Readerly e Libron, com o nome reservado Libron.
+- **READMEs:**
+  - o `README.md` em inglês é o padrão, com link para o `README.pt-BR.md`, e o `README.pt-BR.md` tem link de volta;
+  - os dois têm "o que ele faz" separado em "já funciona" e "a caminho", e são atualizados ao fechar cada etapa (regra nova no `CLAUDE.md`).
+- **Cabeçalho SPDX só em `lib/`:** todos os `.dart` de `lib/` têm as duas linhas, menos o `database.g.dart`. Testes, integração e `tool/` ficam sem, porque o `LICENSE` da raiz já vale para eles.
+- **Botão "Licenças" adiantado da etapa 10:**
+  - a tela de Ajustes ganhou a seção "Sobre" ("O Centavinhos é licenciado sob a Apache License 2.0."), sempre visível, acima da seção de desenvolvimento;
+  - o botão abre o `showLicensePage` com o logo, o nome, a autoria e a licença no topo;
+  - as licenças das fontes entram pela `registrarLicencasDasFontes()` (`lib/ui/licencas.dart`), chamada no `main()`. Os testes que abrem a tela de licenças precisam chamar essa função, porque não passam pelo `main()`.
+- **Capturas e testes:**
+  - a captura `ajustes_verde_claro` foi gerada de novo, com a seção "Sobre";
+  - os testes novos são `test/ui/licencas_test.dart` e o último do `integration_test/boas_vindas_test.dart`;
+  - a tela de licenças não tem captura, porque a lista de pacotes muda a cada atualização.
+
 ## Pendências para etapas seguintes
 
 Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembrar.
@@ -205,6 +227,7 @@ Coisas que uma etapa deixou prontas pela metade ou que outra etapa precisa lembr
 - **Etapa 8:** na tela do mês, o seletor de filtro no topo, os cartões "Filtro: …" (cor principal) e "<Próximo mês>, mesmo filtro" ao lado do total sem filtro (`Row` com dois `Spacer` em `tela_mes.dart`), e o título "Lançamentos · <filtro>" com a lista filtrada.
 - **Etapa 9:** o botão "Gerar PDF" ao lado do título "Lançamentos".
 - **Etapa 10:** o tema já lê `tema_cor` e `tema_modo` do banco e muda na hora; falta só a tela. A cor de destaque do Windows é lida uma vez ao abrir o app.
+- **Etapa 10:** a seção "Sobre" com o botão "Licenças" já existe na tela de Ajustes (`lib/ui/telas/tela_ajustes.dart`) e deve continuar na tela final.
 
 ## Como rodar
 
