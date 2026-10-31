@@ -1,5 +1,6 @@
 import 'package:centavinhos/data/configuracoes.dart';
 import 'package:centavinhos/ui/lancamento/janela_lancamento.dart';
+import 'package:centavinhos/ui/licencas.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -102,5 +103,25 @@ void main() {
     expect(find.text('Novo lançamento'), findsOneWidget);
     await tester.tap(find.byTooltip('Fechar'));
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('Ajustes abre as licenças do Centavinhos e das fontes', (tester) async {
+    // No app, o main() registra as fontes; aqui o teste faz isso.
+    registrarLicencasDasFontes();
+    final banco = await abrirApp(tester);
+    await banco.definirConfiguracao(ChaveConfiguracao.boasVindasConcluida, '1');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Ajustes').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Licenças'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LicensePage), findsOneWidget);
+    expect(find.textContaining('Licenciado sob a Apache License 2.0'), findsOneWidget);
+    await rolarAte(tester, find.text('Fonte Libron'));
+    expect(find.text('Fonte Libron'), findsWidgets);
+    await rolarAte(tester, find.text('Fonte Roboto Flex'));
+    expect(find.text('Fonte Roboto Flex'), findsWidgets);
   });
 }
