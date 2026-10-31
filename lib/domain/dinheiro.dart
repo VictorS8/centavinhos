@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Formatação de valores em centavos.
 library;
 

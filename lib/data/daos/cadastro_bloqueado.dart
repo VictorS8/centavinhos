@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Uma ação num cadastro que as regras não permitem, como excluir uma conta
 /// usada em lançamentos. [motivo] é a mensagem para mostrar na tela.
 class CadastroBloqueado implements Exception {

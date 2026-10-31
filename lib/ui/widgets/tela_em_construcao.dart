@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'package:material_ui/material_ui.dart';
 
 /// Conteúdo provisório das telas que ainda não foram construídas.

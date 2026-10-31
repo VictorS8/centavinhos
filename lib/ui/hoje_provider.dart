@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';

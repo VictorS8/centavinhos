@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'package:flutter/widgets.dart';
 
 /// Logo do Centavinhos (peso de papel com a moeda com espessura).

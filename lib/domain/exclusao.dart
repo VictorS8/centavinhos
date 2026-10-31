@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Regras de exclusão (e de edição) de lançamentos parcelados e
 /// recorrentes.
 library;

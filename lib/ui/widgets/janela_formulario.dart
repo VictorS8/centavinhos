@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'package:material_ui/material_ui.dart';
 
 /// Janela de formulário dos cadastros: título, campos, o motivo de o Salvar

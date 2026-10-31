@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Sugestões dos campos com busca: nome, categoria e tags.
 library;
 

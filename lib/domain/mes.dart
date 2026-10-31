@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Regras da tela do mês: como cada lançamento aparece na lista e o total
 /// de gastos.
 library;

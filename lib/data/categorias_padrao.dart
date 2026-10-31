@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Categorias criadas junto com o banco, como na tabela "Categorias padrão"
 /// do escopo. Ficam editáveis em Cadastros.
 class CategoriaPadrao {

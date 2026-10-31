@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Chaves da tabela `configuracoes` e os valores com que o banco nasce.
 abstract final class ChaveConfiguracao {
   /// verde | roxo | azul | sistema

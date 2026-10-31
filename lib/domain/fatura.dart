@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 /// Regra da fatura do cartão: em que mês uma compra é cobrada.
 library;
 

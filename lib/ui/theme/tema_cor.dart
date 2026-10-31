@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'package:material_ui/material_ui.dart';
 
 /// As quatro opções de cor do tema, como ficam na configuração `tema_cor`.

@@ -1,3 +1,6 @@
+// Copyright 2026 João Victor das Neves Sousa Almeida
+// SPDX-License-Identifier: Apache-2.0
+
 import 'dinheiro.dart';
 
 /// Valor digitado estilo caixa eletrônico: o campo começa em "R$ 0,00" e cada
